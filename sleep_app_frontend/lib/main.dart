@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,13 +6,16 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: LoginScreen(),
+
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: Center(child: Text('Hello World', style: TextStyle(fontSize: 24))),
     );
   }
 }
