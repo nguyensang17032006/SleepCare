@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/login_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -6,15 +7,15 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF001529)
       ),
-      home: Center(child: Text('Hello World', style: TextStyle(fontSize: 24))),
+      home: const LoginView(),
     );
   }
 }
