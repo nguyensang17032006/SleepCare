@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:sleep_app_frontend/features/auth/presentation/views/login_view.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF001529)
+        scaffoldBackgroundColor: const Color(0xFF001529),
       ),
       home: const LoginView(),
     );
