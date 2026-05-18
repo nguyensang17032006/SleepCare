@@ -11,10 +11,7 @@ class VerifyEmailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textMuted),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         title: const Text('Verify Email', style: TextStyle(color: AppTheme.textMuted, fontSize: 16)),
       ),
       body: Container(

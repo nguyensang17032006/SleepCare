@@ -41,13 +41,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 40),
                 Text('Create Account', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 22)),
                 const SizedBox(height: 30),
-                const CustomTextField(label: 'Full Name', hint: 'Mark Brooks'),
+                const CustomTextField(
+                  label: 'Username',
+                  hint: 'Enter user name',
+                  prefixIcon: Icons.person_outline,
+                ),
                 const SizedBox(height: 20),
-                const CustomTextField(label: 'Email Address', hint: 'name@example.com'),
+                const CustomTextField(
+                  label: 'Email',
+                  hint: 'Enter your email',
+                  prefixIcon: Icons.email_outlined,
+                ),
                 const SizedBox(height: 20),
-                const CustomTextField(label: 'Password', hint: '••••••••', isPassword: true),
+                const CustomTextField(
+                  label: 'Password',
+                  hint: 'Enter your password',
+                  prefixIcon: Icons.lock_outline,
+                  isPassword: true,
+                ),
                 const SizedBox(height: 20),
-                const CustomTextField(label: 'Confirm', hint: '••••••••', isPassword: true),
+                const CustomTextField(
+                  label: 'Confirm Password',
+                  hint: 'Confirm your password',
+                  prefixIcon: Icons.lock_outline,
+                  isPassword: true,
+                ),
                 const SizedBox(height: 20),
                 Row(
                   children: [

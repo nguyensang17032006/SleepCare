@@ -50,14 +50,14 @@ class LoginScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 40),
                           const CustomTextField(
-                            label: 'Email Address',
-                            hint: 'name@example.com',
-                            prefixIcon: Icons.email_outlined,
+                            label: 'Username',
+                            hint: 'Enter user name',
+                            prefixIcon: Icons.person_outline,
                           ),
                           const SizedBox(height: 20),
                           const CustomTextField(
                             label: 'Password',
-                            hint: '••••••••',
+                            hint: 'Enter your password',
                             prefixIcon: Icons.lock_outline,
                             isPassword: true,
                           ),
@@ -100,6 +100,34 @@ class LoginScreen extends StatelessWidget {
                             child: const Text(
                               'Create Account',
                               style: TextStyle(color: AppTheme.textLight, fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: OutlinedButton.icon(
+                              onPressed: () {},
+                              icon: Image.asset('assets/images/google.png', width: 20, height: 20, errorBuilder: (_,__,___) => const Icon(Icons.g_mobiledata, color: Colors.white)),
+                              label: const Text('Sign in with Google', style: TextStyle(color: Colors.white, fontSize: 16)),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: OutlinedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.phone, color: Colors.white, size: 20),
+                              label: const Text('Sign in with phone number', style: TextStyle(color: Colors.white, fontSize: 16)),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              ),
                             ),
                           ),
                         ],

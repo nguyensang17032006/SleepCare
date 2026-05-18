@@ -44,10 +44,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textMuted),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         title: const Text('STEP 1 OF 2 | Q1-Q4', style: TextStyle(color: AppTheme.textMuted, fontSize: 12, letterSpacing: 1.2)),
         actions: [
           TextButton(
