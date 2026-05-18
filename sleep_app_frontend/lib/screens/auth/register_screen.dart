@@ -77,6 +77,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 PrimaryButton(
                   text: 'Sign Up',
                   onPressed: () {
+                     if (!_agreedToTOS) {
+                       ScaffoldMessenger.of(context).showSnackBar(
+                         const SnackBar(content: Text('Please agree to the Terms of Service')),
+                       );
+                       return;
+                     }
                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const VerifyEmailScreen()));
                   },
                 ),

@@ -11,9 +11,13 @@ class QualityChecklistScreen extends StatefulWidget {
 }
 
 class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
-  int _selectedOption1 = 0;
+  int _selectedOptionA = 0;
+  int _selectedOptionB = 0;
+  int _selectedOptionC = 0;
+  int _selectedOptionD = 0;
+  int _selectedOptionE = 0;
 
-  Widget _buildChecklistItem(String title, bool showRadios, int groupValue) {
+  Widget _buildChecklistItem(String title, bool showRadios, int groupValue, [ValueChanged<int>? onChanged]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -26,10 +30,10 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildRadioColumn('Không', 0, groupValue),
-              _buildRadioColumn('Ít hơn\n1 lần', 1, groupValue),
-              _buildRadioColumn('1-2 lần', 2, groupValue),
-              _buildRadioColumn('>=3 lần', 3, groupValue),
+              _buildRadioColumn('Không', 0, groupValue, onChanged),
+              _buildRadioColumn('Ít hơn\n1 lần', 1, groupValue, onChanged),
+              _buildRadioColumn('1-2 lần', 2, groupValue, onChanged),
+              _buildRadioColumn('>=3 lần', 3, groupValue, onChanged),
             ],
           ),
         ],
@@ -40,7 +44,7 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
     );
   }
 
-  Widget _buildRadioColumn(String label, int value, int groupValue) {
+  Widget _buildRadioColumn(String label, int value, int groupValue, ValueChanged<int>? onChanged) {
     bool isSelected = value == groupValue;
     return Column(
       children: [
@@ -55,9 +59,7 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
         const SizedBox(height: 8),
         GestureDetector(
           onTap: () {
-            setState(() {
-              _selectedOption1 = value;
-            });
+            if (onChanged != null) onChanged(value);
           },
           child: Container(
             width: 24,
@@ -126,11 +128,11 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
                 ),
                 const SizedBox(height: 30),
                 
-                _buildChecklistItem('a. Sau 30 phút nhắm mắt vẫn không thể ngủ được', true, _selectedOption1),
-                _buildChecklistItem('b. Tỉnh dậy lúc nửa đêm hoặc sáng sớm', true, 0),
-                _buildChecklistItem('c. Phải dậy để đi vệ sinh', true, 0),
-                _buildChecklistItem('d. Khó thở', true, 0),
-                _buildChecklistItem('e. Ác mộng', true, 0),
+                _buildChecklistItem('a. Sau 30 phút nhắm mắt vẫn không thể ngủ được', true, _selectedOptionA, (val) => setState(() => _selectedOptionA = val)),
+                _buildChecklistItem('b. Tỉnh dậy lúc nửa đêm hoặc sáng sớm', true, _selectedOptionB, (val) => setState(() => _selectedOptionB = val)),
+                _buildChecklistItem('c. Phải dậy để đi vệ sinh', true, _selectedOptionC, (val) => setState(() => _selectedOptionC = val)),
+                _buildChecklistItem('d. Khó thở', true, _selectedOptionD, (val) => setState(() => _selectedOptionD = val)),
+                _buildChecklistItem('e. Ác mộng', true, _selectedOptionE, (val) => setState(() => _selectedOptionE = val)),
                 
                 const Text('f. Lý do khác', style: TextStyle(color: AppTheme.textLight, fontSize: 14, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 12),

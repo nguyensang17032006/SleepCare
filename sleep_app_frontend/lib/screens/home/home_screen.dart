@@ -10,10 +10,6 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: AppTheme.textLight),
-          onPressed: () {},
-        ),
         title: const Text('The Sanctuary', style: TextStyle(color: AppTheme.textLight, fontSize: 18, fontWeight: FontWeight.bold)),
         actions: [
           Padding(
