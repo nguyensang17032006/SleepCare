@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'core/theme.dart';
-import 'screens/auth/login_screen.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/login/login_screen.dart';
+import 'core/theme/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'SleepCare',
       theme: AppTheme.darkTheme,
-      home: const LoginScreen(),
+      home: LoginScreen(),
     );
   }
 }
