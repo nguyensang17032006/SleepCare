@@ -1,87 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:sleep_app_frontend/core/app/widget/app_bar.dart';
+import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/features/home/presentation/home_screen.dart';
+import 'package:sleep_app_frontend/features/library/presentation/library_screen.dart';
+import 'package:sleep_app_frontend/features/report/presentation/report_screen.dart';
+import 'package:sleep_app_frontend/features/setting/presentation/settings_screen.dart';
 
-class MainLayout extends StatefulWidget {
-  const MainLayout({super.key});
+class MainAppScreen extends StatefulWidget {
+  const MainAppScreen({super.key});
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  State<MainAppScreen> createState() => _MainAppScreenState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class _MainAppScreenState extends State<MainAppScreen> {
   int _currentIndex = 0;
-
-  void _onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    HomeScreen(),
-    HomeScreen(),
-    HomeScreen(),
+    LibraryScreen(),
+    ReportScreen(),
+    SettingsScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [Colors.blue, Colors.purple]),
+    return Scaffold(
+      appBar: AppBarWidget(
+        onProfileTap: () => setState(() {
+          _currentIndex = 3;
+        }),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.yellow,
-        body: Stack(
-          children: [
-            // Lớp 1: Nội dung chính (các màn hình)
-            _screens[_currentIndex],
-
-            // Lớp 2: Bottom navigation cố định ở dưới
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(27, 54, 86, 60),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: BottomNavigationBar(
-                  currentIndex: _currentIndex,
-                  onTap: _onTabTapped,
-
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  selectedItemColor: Color(0xFFDFBBE4),
-                  unselectedItemColor: Colors.grey,
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Trang chủ',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.explore),
-                      label: 'Khám phá',
-                    ),
-                  ],
-                ),
-              ),
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppTheme.bgColor,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppTheme.primaryColor,
+        unselectedItemColor: AppTheme.textMuted,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedFontSize: 10,
+        unselectedFontSize: 10,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.nightlight_round),
             ),
-          ],
-        ),
+            activeIcon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.nightlight_round, color: AppTheme.primaryColor),
+            ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.library_music_outlined),
+            ),
+            activeIcon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.library_music, color: AppTheme.primaryColor),
+            ),
+            label: 'Library',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.bar_chart_outlined),
+            ),
+            activeIcon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.bar_chart, color: AppTheme.primaryColor),
+            ),
+            label: 'Report',
+          ),
+          BottomNavigationBarItem(
+            icon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.settings_outlined),
+            ),
+            activeIcon: Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Icon(Icons.settings, color: AppTheme.primaryColor),
+            ),
+            label: 'Settings',
+          ),
+        ],
       ),
     );
   }
