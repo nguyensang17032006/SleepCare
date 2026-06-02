@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/register/register_screen.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/register/register_screen.dart';
 
 class CreateAccountButton extends StatelessWidget {
   const CreateAccountButton({super.key});

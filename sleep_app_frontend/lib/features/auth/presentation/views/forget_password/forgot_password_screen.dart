@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/forget_password/widget/btn_back_to_login.dart';
-import '../../../../core/theme/theme.dart';
-import '../../../../core/app/widget/primary_button.dart';
-import '../../../../core/app/widget/custom_text_field.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/forget_password/widget/btn_back_to_login.dart';
+import 'package:sleep_app_frontend/core/theme/theme.dart';
+import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
+import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});

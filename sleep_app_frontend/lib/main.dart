@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/login/login_screen.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart';
 import 'core/theme/theme.dart';
 
 void main() {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/theme.dart';
-import '../../../../core/app/widget/primary_button.dart';
-import '../../../home/presentation/widget/glass_card.dart';
-import '../../../onboarding/questionnaire_screen.dart';
+import 'package:sleep_app_frontend/core/theme/theme.dart';
+import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
+import 'package:sleep_app_frontend/features/home/presentation/widget/glass_card.dart';
+import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
 
 class VerifyEmailScreen extends StatelessWidget {
   const VerifyEmailScreen({super.key});

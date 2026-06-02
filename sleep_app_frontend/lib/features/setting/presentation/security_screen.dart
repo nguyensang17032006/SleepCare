@@ -46,21 +46,21 @@ class SecurityScreen extends StatelessWidget {
               const CustomTextField(
                 label: 'CURRENT PASSWORD',
                 hint: '••••••••',
-                isPassword: true,
+                
                 prefixIcon: Icons.lock_outline,
               ),
               const SizedBox(height: 20),
               const CustomTextField(
                 label: 'NEW PASSWORD',
                 hint: '••••••••',
-                isPassword: true,
+               
                 prefixIcon: Icons.lock_outline,
               ),
               const SizedBox(height: 20),
               const CustomTextField(
                 label: 'CONFIRM NEW PASSWORD',
                 hint: '••••••••',
-                isPassword: true,
+               
                 prefixIcon: Icons.lock_outline,
               ),
               const SizedBox(height: 30),

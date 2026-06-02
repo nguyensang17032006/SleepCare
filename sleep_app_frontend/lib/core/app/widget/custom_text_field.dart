@@ -5,7 +5,9 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final String hint;
   final IconData? prefixIcon;
-  final bool isPassword;
+  final bool obscureText;
+  final VoidCallback? onSuffixIconPressed;
+
   final TextEditingController? controller;
 
   const CustomTextField({
@@ -13,7 +15,9 @@ class CustomTextField extends StatelessWidget {
     required this.label,
     required this.hint,
     this.prefixIcon,
-    this.isPassword = false,
+    this.obscureText = false,
+    this.onSuffixIconPressed,
+
     this.controller,
   });
 
@@ -39,14 +43,27 @@ class CustomTextField extends StatelessWidget {
             border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: TextField(
+            obscureText: obscureText,
             controller: controller,
-            obscureText: isPassword,
+
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: TextStyle(color: AppTheme.textMuted.withValues(alpha: 0.5)),
+              hintStyle: TextStyle(
+                color: AppTheme.textMuted.withValues(alpha: 0.5),
+              ),
               prefixIcon: prefixIcon != null
                   ? Icon(prefixIcon, color: AppTheme.textMuted, size: 20)
+                  : null,
+              suffixIcon: onSuffixIconPressed != null
+                  ? IconButton(
+                      icon: Icon(
+                        obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
+                      onPressed: onSuffixIconPressed,
+                    )
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(

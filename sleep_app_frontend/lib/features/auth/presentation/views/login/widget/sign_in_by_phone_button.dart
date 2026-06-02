@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/phonenumber/login_phonenumber_screen.dart';
 
 class SignInByPhoneButton extends StatelessWidget {
   const SignInByPhoneButton({super.key});
@@ -9,7 +10,9 @@ class SignInByPhoneButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: OutlinedButton.icon(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPhoneNumberScreen()));
+        },
         icon: const Icon(Icons.phone, color: Colors.white, size: 20),
         label: const Text(
           'Sign in with phone number',
