@@ -1,14 +1,17 @@
-# SleepCare Flutter App
+# sleep_app_frontend
 
-A stunning, premium sleep tracker application built with Flutter.
-
-## Features Included
-- **Authentication**: Beautiful login, register, password reset, and verification screens.
-- **Onboarding Flow**: Guided questionnaire simulating data gathering for sleep metrics.
-- **Main Dashboard**: "The Sanctuary" active timer screen, Library for soothing melodies, Insights Engine with live charts (`fl_chart`), and a comprehensive Settings screen.
-- **Glassmorphism Design**: Custom `GlassCard` widgets, deep gradients, and sleek typography using `google_fonts`.
+A new Flutter project.
 
 ## Getting Started
-Please refer to the `Docs/` directory at the root of the project for in-depth documentation:
-- `Docs/setup.md`: How to run the app.
-- `Docs/architecture.md`: Understanding the codebase structure.
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
