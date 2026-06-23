@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-class ForgetPasswordVM extends ChangeNotifier {
+class TogglePasswordVM extends ChangeNotifier {
   bool _isPasswordVisible = true;
 
   bool get isPasswordVisible => _isPasswordVisible;

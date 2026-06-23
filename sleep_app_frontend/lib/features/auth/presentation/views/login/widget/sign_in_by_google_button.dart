@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../viewmodels/auth_vm.dart';
+import 'package:provider/provider.dart';
+
 class SignInByGoogleButton extends StatelessWidget {
   const SignInByGoogleButton({super.key});
 
@@ -9,7 +12,21 @@ class SignInByGoogleButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: OutlinedButton.icon(
-        onPressed: () {},
+        onPressed: () async {
+          final authVM = context.read<AuthViewModel>();
+
+          // Chỉ gọi hàm kích hoạt mở Browser đăng nhập Google
+          await authVM.signInWithGoogle();
+
+          if (context.mounted) {
+            // Nếu có lỗi trong quá trình khởi động Browser thì hiển thị
+            if (authVM.errorMessage != null) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(authVM.errorMessage!)));
+            }
+          }
+        },
         icon: Image.asset(
           'assets/images/google.png',
           width: 20,

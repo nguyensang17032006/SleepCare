@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/views/forget_password/widget/btn_back_to_login.dart';
+import 'package:provider/provider.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/forget_password/confirm_password_screen.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  late final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final authVM = context.watch<AuthViewModel>();
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -53,15 +70,41 @@ class ForgotPasswordScreen extends StatelessWidget {
                 ).textTheme.bodyMedium?.copyWith(height: 1.5),
               ),
               const SizedBox(height: 40),
-              const CustomTextField(
+              CustomTextField(
+                controller: _emailController,
                 label: 'Email Address',
                 hint: 'name@example.com',
                 prefixIcon: Icons.email_outlined,
               ),
               const SizedBox(height: 40),
-              PrimaryButton(text: 'Send Reset Link', onPressed: () {}),
+              authVM.isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppTheme.primaryColor,
+                      ),
+                    )
+                  : PrimaryButton(
+                      text: 'Send Reset Link',
+                      onPressed: () async {
+                        bool isSuccess = await authVM.resetPassword(email: _emailController.text.trim());
+                        if(context.mounted){
+                          if(isSuccess){
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>  ConfirmPasswordScreen(email: _emailController.text.trim()),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to send reset link. Please try again.')),
+                            );
+                          }
+                        }
+                      },
+                    ),
+
               const SizedBox(height: 30),
-              const BackToLoginWidget(),
             ],
           ),
         ),

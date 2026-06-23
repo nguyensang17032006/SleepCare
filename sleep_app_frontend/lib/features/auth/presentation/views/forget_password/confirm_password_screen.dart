@@ -7,18 +7,17 @@ import 'package:sleep_app_frontend/core/theme/pin_theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/time_remaining_vm.dart';
 import 'package:sleep_app_frontend/features/home/presentation/widget/glass_card.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/forget_password/newpassword_screen.dart';
 
-
-class VerifyEmailScreen extends StatefulWidget {
+class ConfirmPasswordScreen extends StatefulWidget {
   final String email;
-  const VerifyEmailScreen({super.key, required this.email});
+  const ConfirmPasswordScreen({super.key, required this.email});
 
   @override
-  State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
+  State<ConfirmPasswordScreen> createState() => _ConfirmPasswordScreenState();
 }
 
-class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
+class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   final pinController = TextEditingController();
   final focusNode = FocusNode();
   final TimeRemainingViewModel _timeRemainingVM = TimeRemainingViewModel();
@@ -129,9 +128,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     : PrimaryButton(
                         text: 'Verify and Continue',
                         onPressed: () async {
-                          final isSuccess = await authVM.verifyEmail(
+                          final isSuccess = await authVM.verifyResetPasswordOTP(
                             email: widget.email,
-                            token: pinController.text.trim(),
+                            otp: pinController.text.trim(),
                           );
 
                           if (!context.mounted) {
@@ -141,7 +140,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const LoginScreen(),
+                                builder: (_) => const NewPasswordScreen(),
                               ),
                             );
                           }
