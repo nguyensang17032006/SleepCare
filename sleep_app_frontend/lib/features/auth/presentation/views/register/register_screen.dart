@@ -4,6 +4,7 @@ import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
+import 'package:sleep_app_frontend/core/constants/app_size.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/check_privacy_vm.dart';
 import '../login/login_screen.dart';
 import '../verify_email/verify_email_screen.dart';
@@ -57,14 +58,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         return Scaffold(
           body: Container(
+            constraints: const BoxConstraints.expand(),
             decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
             child: SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(AppSizes.vGap24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
+                    SizedBox(height: AppSizes.vGap16),
 
                     //header với logo và slogan
                     Row(
@@ -73,33 +75,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Icon(
                           Icons.nights_stay,
                           color: AppTheme.primaryColor,
-                          size: 28,
+                          size: AppSizes.vGap24,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: AppSizes.vGap8),
                         Text(
                           'SleepCare',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.displayLarge?.copyWith(fontSize: 24),
+                          style: Theme.of(context).textTheme.displayLarge
+                              ?.copyWith(fontSize: AppSizes.f24),
                         ),
                       ],
                     ),
                     Center(
                       child: Text(
                         'Begin your journey to restorative rest',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(fontSize: 12),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: AppSizes.f12,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    SizedBox(height: AppSizes.vGap16),
                     Text(
-                      'Create Account',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.displayMedium?.copyWith(fontSize: 22),
+                      'Tạo Tài Khoản',
+                      style: Theme.of(context).textTheme.displayMedium
+                          ?.copyWith(fontSize: AppSizes.f18),
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: AppSizes.vGap16),
 
                     // các trường nhập liệu với errorText được bind trực tiếp từ ViewModel
                     CustomTextField(
@@ -109,7 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icons.person_outline,
                       errorText: authVM.fullNameError,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: AppSizes.vGap16),
 
                     CustomTextField(
                       controller: _usernameController,
@@ -118,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icons.account_circle_outlined,
                       errorText: authVM.usernameError,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: AppSizes.vGap16),
 
                     CustomTextField(
                       controller: _emailController,
@@ -127,32 +127,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icons.email_outlined,
                       errorText: authVM.emailError,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: AppSizes.vGap16),
 
                     CustomTextField(
                       controller: _passwordController,
-                      label: 'Password',
+                      label: 'Mật khẩu',
                       hint: 'Nhập mật khẩu của bạn',
                       prefixIcon: Icons.lock_outline,
                       obscureText: true,
                       errorText: authVM.passwordError,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: AppSizes.vGap16),
 
                     CustomTextField(
                       controller: _confirmPasswordController,
-                      label: 'Confirm Password',
+                      label: 'Xác nhận mật khẩu',
                       hint: 'Nhập lại mật khẩu để xác nhận',
                       prefixIcon: Icons.lock_outline,
                       obscureText: true,
                       errorText: authVM.confirmPasswordError,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: AppSizes.vGap16),
 
                     Row(
                       children: [
                         SizedBox(
-                          height: 20,
+                          height: AppSizes.vGap16,
                           width: 20,
                           child: Checkbox(
                             value: checkboxVM.isChecked,
@@ -161,26 +161,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onChanged: (value) => checkboxVM.toggleCheckbox(),
                           ),
                         ),
-                        const SizedBox(width: 15),
+                        SizedBox(width: AppSizes.hGap8),
                         Expanded(
                           child: RichText(
-                            text: const TextSpan(
-                              text: "I agree to the ",
+                            text: TextSpan(
+                              text: "Tôi đồng ý với ",
                               style: TextStyle(
                                 color: Colors.white70,
-                                fontSize: 13,
+                                fontSize: AppSizes.f12,
                               ),
                               children: [
                                 TextSpan(
-                                  text: "Terms of Service",
+                                  text: "Điều khoản Dịch vụ",
                                   style: TextStyle(
                                     color: Color(0xFFB39DDB),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                TextSpan(text: " and "),
+                                TextSpan(text: " và "),
                                 TextSpan(
-                                  text: "Privacy Policy",
+                                  text: "Chính sách Bảo mật của SleepCare",
                                   style: TextStyle(
                                     color: Color(0xFFB39DDB),
                                     fontWeight: FontWeight.bold,
@@ -192,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: AppSizes.vGap16),
 
                     // đang ký
                     authVM.isLoading
@@ -202,15 +202,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           )
                         : PrimaryButton(
-                            text: 'Sign Up',
+                            text: 'Đăng ký',
+
                             onPressed: () async {
                               final isSuccess = await authVM.register(
                                 fullname: _fullnameController.text.trim(),
+
                                 username: _usernameController.text.trim(),
+
                                 email: _emailController.text.trim(),
+
                                 password: _passwordController.text.trim(),
+
                                 confirmPassword: _confirmPasswordController.text
                                     .trim(),
+
                                 isTermsChecked: checkboxVM.isChecked,
                               );
 
@@ -218,6 +224,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 if (isSuccess) {
                                   Navigator.pushReplacement(
                                     context,
+
                                     MaterialPageRoute(
                                       builder: (_) => VerifyEmailScreen(
                                         email: _emailController.text.trim(),
@@ -236,7 +243,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               }
                             },
                           ),
-                    const SizedBox(height: 30),
+
+                    SizedBox(height: AppSizes.vGap16),
 
                     // chuyển sang đăng nhập nếu đã có tài khoản
                     Center(
@@ -244,7 +252,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           const Text(
-                            'Already have an account? ',
+                            'Bạn đã có tài khoản? ',
                             style: TextStyle(color: AppTheme.textMuted),
                           ),
                           TextButton(
@@ -257,7 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               );
                             },
                             child: const Text(
-                              'Sign in',
+                              'Đăng nhập',
                               style: TextStyle(
                                 color: AppTheme.textLight,
                                 fontWeight: FontWeight.bold,

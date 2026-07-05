@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:sleep_app_frontend/core/app/widget/primary_button.dart";
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
+import "package:sleep_app_frontend/core/constants/app_size.dart";
 import "package:sleep_app_frontend/core/theme/theme.dart";
 import "package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart";
 
@@ -28,13 +29,13 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
     final authVM = context.watch<AuthViewModel>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title:  Text(
           'New Password',
-          style: TextStyle(color: AppTheme.textMuted, fontSize: 16),
+          style: TextStyle(color: AppTheme.textMuted, fontSize: AppSizes.f16),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(AppSizes.p16),
         child: Column(
           children: [
             CustomTextField(
@@ -45,7 +46,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               obscureText: true,
               errorText: authVM.passwordError,
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: AppSizes.p16),
 
             CustomTextField(
               controller: _confirmPasswordController,
@@ -55,7 +56,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               obscureText: true,
               errorText: authVM.confirmPasswordError,
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: AppSizes.p16),
 
             authVM.isLoading
                 ? const CircularProgressIndicator()

@@ -242,9 +242,23 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<bool> resetPassword({required String email}) async {
-    try {
-      _isLoading = true;
+    clearAllErrors();
+    notifyListeners();
+    bool hasValidationError = false;
+    if (email.isEmpty) {
+      _emailError = 'Vui lòng nhập địa chỉ email';
+      hasValidationError = true;
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      _emailError = 'Định dạng email không hợp lệ';
+      hasValidationError = true;
+    }
+    if (hasValidationError) {
       notifyListeners();
+      return false;
+    }
+    _isLoading = true;
+    notifyListeners();
+    try {
       await _authRepository.resetPassword(email: email);
       _isLoading = false;
       notifyListeners();
@@ -258,6 +272,8 @@ class AuthViewModel extends ChangeNotifier {
     required String email,
     required String otp,
   }) async {
+    clearAllErrors();
+
     _isLoading = true;
     notifyListeners();
     try {
@@ -266,7 +282,7 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = ("Sai mã xác minh hoặc mã đã hết hạn. Vui lòng thử lại.");
+      _errorMessage = "Sai mã xác minh hoặc mã đã hết hạn. Vui lòng thử lại.";
       _isLoading = false;
       notifyListeners();
       return false;

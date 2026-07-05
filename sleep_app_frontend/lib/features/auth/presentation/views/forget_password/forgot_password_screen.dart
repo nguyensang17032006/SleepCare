@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
+import 'package:sleep_app_frontend/core/constants/app_size.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
@@ -32,20 +33,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           icon: const Icon(Icons.arrow_back, color: AppTheme.textMuted),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'SleepCare',
-          style: TextStyle(color: AppTheme.textMuted, fontSize: 16),
+          style: TextStyle(color: AppTheme.textMuted, fontSize: AppSizes.f16),
         ),
       ),
       body: Container(
         height: double.infinity,
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(AppSizes.p24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: AppSizes.p16),
               const Text(
                 'SECURITY',
                 style: TextStyle(
@@ -55,28 +56,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   letterSpacing: 1.5,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: AppSizes.p8),
               Text(
                 'Reset your\npeace of mind',
                 style: Theme.of(
                   context,
-                ).textTheme.displayMedium?.copyWith(fontSize: 28),
+                ).textTheme.displayMedium?.copyWith(fontSize: AppSizes.f24),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: AppSizes.p16),
               Text(
                 'Enter your email to receive reset instructions.',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(height: 1.5),
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: AppSizes.p24),
               CustomTextField(
                 controller: _emailController,
                 label: 'Email Address',
                 hint: 'name@example.com',
                 prefixIcon: Icons.email_outlined,
+                errorText: authVM.emailError,
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: AppSizes.p24),
               authVM.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
@@ -84,27 +86,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                     )
                   : PrimaryButton(
-                      text: 'Send Reset Link',
+                      text: 'Gửi mã xác nhận',
+
                       onPressed: () async {
-                        bool isSuccess = await authVM.resetPassword(email: _emailController.text.trim());
-                        if(context.mounted){
-                          if(isSuccess){
+                        bool isSuccess = await authVM.resetPassword(
+                          email: _emailController.text.trim(),
+                        );
+
+                        if (context.mounted) {
+                          if (isSuccess) {
                             Navigator.pushReplacement(
                               context,
+
                               MaterialPageRoute(
-                                builder: (_) =>  ConfirmPasswordScreen(email: _emailController.text.trim()),
+                                builder: (_) => ConfirmPasswordScreen(
+                                  email: _emailController.text.trim(),
+                                ),
                               ),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Failed to send reset link. Please try again.')),
+                              const SnackBar(
+                                content: Text(
+                                  'Failed to send reset link. Please try again.',
+                                ),
+                              ),
                             );
                           }
                         }
                       },
                     ),
 
-              const SizedBox(height: 30),
+              SizedBox(height: AppSizes.p24),
             ],
           ),
         ),

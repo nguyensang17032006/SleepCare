@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/core/constants/app_size.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/views/login/widget/create_account_button.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/views/login/widget/forgot_password_button.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/views/login/widget/header_login.dart';
@@ -55,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.all(24.0),
+                      padding:  EdgeInsets.all(AppSizes.p24),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           minHeight: constraints.maxHeight - 48,
@@ -65,13 +66,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Column(
                               children: [
-                                const SizedBox(height: 40),
+                                 SizedBox(height: AppSizes.vGap32),
                                 const HeaderLogin(),
-                                const SizedBox(height: 40),
+                                 SizedBox(height: AppSizes.vGap32),
                                 if (authVMLogin.errorMessage != null) ...[
                                   Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.all(12),
+                                    padding:  EdgeInsets.all(AppSizes.p12),
                                     decoration: BoxDecoration(
                                       color: Colors.redAccent.withValues(
                                         alpha: 0.1,
@@ -110,29 +111,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ],
                                 CustomTextField(
                                   controller: _usernameController,
-                                  label: 'Username',
-                                  hint: 'Enter user name',
+                                  label: 'Tài khoản',
+                                  hint: 'Nhập tên người dùng',
                                   prefixIcon: Icons.person_outline,
                                   errorText: authVMLogin.usernameError,
                                 ),
-                                const SizedBox(height: 20),
+                                 SizedBox(height: AppSizes.vGap12),
                                 CustomTextField(
                                   controller: _passwordController,
-                                  label: 'Password',
-                                  hint: 'Enter your password',
+                                  label: 'Mật khẩu',
+                                  hint: 'Nhập mật khẩu của bạn',
                                   prefixIcon: Icons.lock_outline,
                                   obscureText: authVM.isPasswordVisible,
                                   onSuffixIconPressed: () =>
                                       authVM.togglePasswordVisibility(),
                                   errorText: authVMLogin.passwordError,
                                 ),
-                                const SizedBox(height: 12),
+                                 SizedBox(height: AppSizes.vGap12),
                                 const ForgotPasswordButton(),
-                                const SizedBox(height: 24),
+                                 SizedBox(height: AppSizes.vGap12),
                                 authVMLogin.isLoading
                                     ? const CircularProgressIndicator()
                                     : PrimaryButton(
-                                        text: 'Sign In ->',
+                                        text: 'Đăng nhập ->',
                                         onPressed: () async {
                                           bool isSuccess = await authVMLogin
                                               .signInWithUsername(
@@ -156,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           
                                         },
                                       ),
-                                const SizedBox(height: 20),
+                                 SizedBox(height: AppSizes.vGap12),
                                 Row(
                                   children: [
                                     Expanded(
@@ -167,8 +168,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: AppSizes.p12,
                                       ),
                                       child: Text(
                                         'OR',
@@ -188,23 +189,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 20),
+                                 SizedBox(height: AppSizes.vGap12),
                                 const CreateAccountButton(),
-                                const SizedBox(height: 15),
+                                 SizedBox(height: AppSizes.vGap12),
                                 const SignInByGoogleButton(),
-                                const SizedBox(height: 15),
+                                SizedBox(height: AppSizes.vGap12),
                               ],
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: AppSizes.vGap12),
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
+                              padding: EdgeInsets.only(bottom: AppSizes.p16),
                               child: Text(
-                                'By continuing, you agree to our Terms of Service',
+                                'Bằng cách đăng nhập, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.',
                                 style: TextStyle(
                                   color: AppTheme.textMuted.withValues(
                                     alpha: 0.6,
                                   ),
-                                  fontSize: 12,
+                                  fontSize: AppSizes.f10,
                                 ),
                               ),
                             ),

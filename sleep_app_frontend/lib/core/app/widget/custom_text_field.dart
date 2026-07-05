@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sleep_app_frontend/core/constants/app_size.dart';
 import '../../theme/theme.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -8,8 +9,9 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final VoidCallback? onSuffixIconPressed;
   final TextEditingController? controller;
+  final bool? enabled;
   
-  // 1. Thêm thuộc tính errorText (Nếu null là không có lỗi, nếu có chữ là đang lỗi)
+ 
   final String? errorText; 
 
   const CustomTextField({
@@ -20,12 +22,13 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.onSuffixIconPressed,
     this.controller,
-    this.errorText, // Khai báo ở constructor
+    this.errorText, 
+    this.enabled,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 2. Kiểm tra xem ô này có đang bị lỗi hay không
+
     final hasError = errorText != null && errorText!.isNotEmpty;
 
     return Column(
@@ -33,20 +36,20 @@ class CustomTextField extends StatelessWidget {
       children: [
         Text(
           label.toUpperCase(),
-          style: const TextStyle(
+          style:  TextStyle(
             color: AppTheme.textMuted,
-            fontSize: 12,
+            fontSize: AppSizes.f10,
             fontWeight: FontWeight.w600,
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppSizes.vGap8),
         
         // 3. Thay đổi border của Container dựa vào trạng thái lỗi
         Container(
           decoration: BoxDecoration(
             color: AppTheme.cardLightColor,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppSizes.r16),
             border: Border.all(
               color: hasError 
                   ? Colors.red.withValues(alpha: 0.8) // Đỏ rực lên khi có lỗi
@@ -57,29 +60,30 @@ class CustomTextField extends StatelessWidget {
           child: TextField(
             obscureText: obscureText,
             controller: controller,
-            style: const TextStyle(color: Colors.white),
+            enabled: enabled,
+            style:  TextStyle(color: Colors.white),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: TextStyle(
+              hintStyle:  TextStyle(
                 color: AppTheme.textMuted.withValues(alpha: 0.5),
               ),
               prefixIcon: prefixIcon != null
-                  ? Icon(prefixIcon, color: hasError ? Colors.red.withValues(alpha: 0.7) : AppTheme.textMuted, size: 20)
+                  ? Icon(prefixIcon, color: hasError ? Colors.red.withValues(alpha: 0.7) : AppTheme.textMuted, size: AppSizes.f24)
                   : null,
               suffixIcon: onSuffixIconPressed != null
                   ? IconButton(
                       icon: Icon(
                         obscureText ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
-                        size: 20,
+                        size: AppSizes.f16,
                       ),
                       onPressed: onSuffixIconPressed,
                     )
                   : null,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 16,
+              contentPadding:  EdgeInsets.symmetric(
+                horizontal: AppSizes.vGap12,
+                vertical: AppSizes.vGap12,
               ),
             ),
           ),
@@ -87,14 +91,14 @@ class CustomTextField extends StatelessWidget {
         
         // 4. Nếu có lỗi, hiển thị dòng chữ thông báo màu đỏ ngay phía dưới ô nhập liệu
         if (hasError) ...[
-          const SizedBox(height: 6),
+          SizedBox(height: AppSizes.vGap8),
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
               errorText!,
-              style: const TextStyle(
+              style:  TextStyle(
                 color: Colors.redAccent,
-                fontSize: 12,
+                fontSize: AppSizes.f12,
                 fontWeight: FontWeight.w500,
               ),
             ),
