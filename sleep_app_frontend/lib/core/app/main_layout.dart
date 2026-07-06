@@ -4,7 +4,7 @@ import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/features/home/presentation/home_screen.dart';
 import 'package:sleep_app_frontend/features/library/presentation/library_screen.dart';
 import 'package:sleep_app_frontend/features/report/presentation/report_screen.dart';
-import 'package:sleep_app_frontend/features/setting/presentation/settings_screen.dart';
+import 'package:sleep_app_frontend/features/setting/presentation/views/settings_screen.dart';
 
 class MainAppScreen extends StatefulWidget {
   const MainAppScreen({super.key});

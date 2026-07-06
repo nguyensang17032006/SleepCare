@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pinput/pinput.dart';
+import 'package:sleep_app_frontend/core/constants/app_size.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/core/theme/pin_theme.dart';
+import 'package:sleep_app_frontend/features/auth/presentation/views/forget_password/newpassword_screen.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/time_remaining_vm.dart';
 import 'package:sleep_app_frontend/features/home/presentation/widget/glass_card.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/views/forget_password/newpassword_screen.dart';
 
 class ConfirmPasswordScreen extends StatefulWidget {
   final String email;
@@ -43,9 +44,9 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(
+        title: Text(
           'Verify Email',
-          style: TextStyle(color: AppTheme.textMuted, fontSize: 16),
+          style: TextStyle(color: AppTheme.textMuted, fontSize: AppSizes.f16),
         ),
       ),
       body: Container(
@@ -53,12 +54,15 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizes.p24,
+              vertical: AppSizes.vGap12,
+            ),
             child: Column(
               children: [
-                const SizedBox(height: 30),
+                SizedBox(height: AppSizes.vGap32),
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(AppSizes.p24),
                   decoration: BoxDecoration(
                     color: AppTheme.cardLightColor,
                     shape: BoxShape.circle,
@@ -70,30 +74,30 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.email,
                     color: AppTheme.textLight,
-                    size: 40,
+                    size: AppSizes.p32,
                   ),
                 ),
-                const SizedBox(height: 40),
-                const Text(
+                SizedBox(height: AppSizes.p32),
+                Text(
                   'SECURITY CHECK',
                   style: TextStyle(
                     color: AppTheme.primaryColor,
-                    fontSize: 12,
+                    fontSize: AppSizes.f12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: AppSizes.vGap12),
                 Text(
                   'Verify your email',
                   style: Theme.of(
                     context,
-                  ).textTheme.displayMedium?.copyWith(fontSize: 24),
+                  ).textTheme.displayMedium?.copyWith(fontSize: AppSizes.f24),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppSizes.vGap16),
                 Text(
                   "We've sent a 6-digit verification code to your email address. Please enter it below to continue.",
                   style: Theme.of(
@@ -112,17 +116,20 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                     autofocus: true,
                     keyboardType: TextInputType.number,
 
-                    forceErrorState: authVM.errorMessage != null,
-
+                    
                     errorText: authVM.errorMessage,
 
-                    errorTextStyle: const TextStyle(
+                    forceErrorState: authVM.errorMessage != null,
+                    errorTextStyle: TextStyle(
                       color: Colors.redAccent,
-                      fontSize: 13,
+                      fontSize: AppSizes.f12,
                     ),
+
+                    
                   ),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: AppSizes.p32),
+
                 authVM.isLoading
                     ? const CircularProgressIndicator()
                     : PrimaryButton(
@@ -132,7 +139,6 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                             email: widget.email,
                             otp: pinController.text.trim(),
                           );
-
                           if (!context.mounted) {
                             return;
                           }
@@ -146,12 +152,12 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                           }
                         },
                       ),
-                const SizedBox(height: 20),
+                SizedBox(height: AppSizes.p16),
                 Center(
                   child: Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         "Didn't receive a code? ",
                         style: TextStyle(color: AppTheme.textMuted),
                       ),
@@ -183,37 +189,37 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: AppSizes.vGap32),
                 GlassCard(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(AppSizes.p16),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.info_outline,
                         color: AppTheme.textMuted,
-                        size: 24,
+                        size: AppSizes.p24,
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: AppSizes.hGap16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Check your spam folder',
                               style: TextStyle(
                                 color: AppTheme.textLight,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: AppSizes.f14,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: AppSizes.vGap4),
                             Text(
                               'Sometimes the verification email might end up in your spam or junk folder.',
                               style: TextStyle(
                                 color: AppTheme.textMuted.withValues(
                                   alpha: 0.8,
                                 ),
-                                fontSize: 12,
+                                fontSize: AppSizes.f12,
                               ),
                             ),
                           ],

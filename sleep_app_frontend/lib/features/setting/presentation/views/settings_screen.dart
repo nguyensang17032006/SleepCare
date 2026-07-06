@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/theme.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/theme/theme.dart';
 import 'edit_profile_screen.dart';
+import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
+import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/logout_vm.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,6 +20,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final logoutVM = context.watch<LogoutViewModel>();
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
@@ -198,6 +203,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
               const SizedBox(height: 30),
+              logoutVM.isLoading
+                  ? const CircularProgressIndicator()
+                  : PrimaryButton(
+                      text: 'Đăng xuất',
+                      onPressed: () async {
+                        // Hiển thị popup xác nhận và chờ người dùng chọn
+                        final isLogout = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) {
+                            return AlertDialog(
+                              title: const Text('Đăng xuất'),
+                              content: const Text(
+                                'Bạn có chắc chắn muốn đăng xuất khỏi SleepCare không?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(
+                                    context,
+                                  ).pop(false), // Chọn Không -> trả về false
+                                  child: const Text(
+                                    'Không',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(
+                                    context,
+                                  ).pop(true), // Chọn Có -> trả về true
+                                  child: const Text(
+                                    'Đăng xuất',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        // Nếu người dùng chọn "Đăng xuất" (true), tiến hành xử lý logic
+                        if (isLogout == true) {
+                          await logoutVM.handleLogout();
+                          if (!context.mounted) return;
+                          Navigator.pushReplacementNamed(context, '/login');
+                        }
+                      },
+                    ),
             ],
           ),
         ),

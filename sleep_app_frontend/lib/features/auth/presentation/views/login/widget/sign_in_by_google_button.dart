@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:sleep_app_frontend/core/constants/app_size.dart';
 import '../../../viewmodels/auth_vm.dart';
 import 'package:provider/provider.dart';
 
@@ -34,9 +34,9 @@ class SignInByGoogleButton extends StatelessWidget {
           errorBuilder: (_, _, _) =>
               const Icon(Icons.g_mobiledata, color: Colors.white),
         ),
-        label: const Text(
-          'Sign in with Google',
-          style: TextStyle(color: Colors.white, fontSize: 16),
+        label: Text(
+          'Đăng nhập bằng Google',
+          style: TextStyle(color: Colors.white, fontSize: AppSizes.f16),
         ),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),

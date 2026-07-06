@@ -15,7 +15,7 @@ class CreateAccountButton extends StatelessWidget {
         );
       },
       child: const Text(
-        'Create Account',
+        'Tạo tài khoản mới',
         style: TextStyle(
           color: AppTheme.textLight,
           fontSize: 16,
