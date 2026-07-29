@@ -31,9 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildStatusChip(Icons.bed, 'Bedtime', 'Excellent'),
+                  _buildStatusChip(Icons.wb_sunny, 'Thời tiết', '28°C'),
                   const SizedBox(width: 16),
-                  _buildStatusChip(Icons.thermostat, 'Room', '22.5°C'),
+                  _buildStatusChip(Icons.score, 'Chỉ số giấc ngủ', '85'),
                 ],
               ),
               const SizedBox(height: 40),

@@ -8,7 +8,6 @@ import 'package:sleep_app_frontend/features/auth/presentation/views/login/widget
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
-import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/toggle_password_vm.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
 
@@ -20,8 +19,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late final TextEditingController _usernameController;
-  late final TextEditingController _passwordController;
+  late TextEditingController _usernameController;
+  late TextEditingController _passwordController;
+  bool _isPasswordVisible = true;
 
   @override
   void initState() {
@@ -42,21 +42,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TogglePasswordVM(),
-      child: Builder(
-        builder: (context) {
-          final authVM = context.watch<TogglePasswordVM>();
-          final authVMLogin = context.watch<AuthViewModel>();
+    final authVMLogin = context.watch<AuthViewModel>();
 
-          return Scaffold(
+    return Scaffold(
             body: Container(
               decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
               child: SafeArea(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
-                      padding:  EdgeInsets.all(AppSizes.p24),
+                      padding: EdgeInsets.all(AppSizes.p24),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           minHeight: constraints.maxHeight - 48,
@@ -66,13 +61,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Column(
                               children: [
-                                 SizedBox(height: AppSizes.vGap32),
+                                SizedBox(height: AppSizes.vGap32),
                                 const HeaderLogin(),
-                                 SizedBox(height: AppSizes.vGap32),
+                                SizedBox(height: AppSizes.vGap32),
                                 if (authVMLogin.errorMessage != null) ...[
                                   Container(
                                     width: double.infinity,
-                                    padding:  EdgeInsets.all(AppSizes.p12),
+                                    padding: EdgeInsets.all(AppSizes.p12),
                                     decoration: BoxDecoration(
                                       color: Colors.redAccent.withValues(
                                         alpha: 0.1,
@@ -116,20 +111,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                   prefixIcon: Icons.person_outline,
                                   errorText: authVMLogin.usernameError,
                                 ),
-                                 SizedBox(height: AppSizes.vGap12),
+                                SizedBox(height: AppSizes.vGap12),
                                 CustomTextField(
                                   controller: _passwordController,
                                   label: 'Mật khẩu',
                                   hint: 'Nhập mật khẩu của bạn',
                                   prefixIcon: Icons.lock_outline,
-                                  obscureText: authVM.isPasswordVisible,
-                                  onSuffixIconPressed: () =>
-                                      authVM.togglePasswordVisibility(),
+                                  obscureText: _isPasswordVisible,
+                                  onSuffixIconPressed: () {
+                                    setState(() {
+                                      _isPasswordVisible = !_isPasswordVisible;
+                                    });
+                                  },
                                   errorText: authVMLogin.passwordError,
                                 ),
-                                 SizedBox(height: AppSizes.vGap12),
+                                SizedBox(height: AppSizes.vGap12),
                                 const ForgotPasswordButton(),
-                                 SizedBox(height: AppSizes.vGap12),
+                                SizedBox(height: AppSizes.vGap12),
                                 authVMLogin.isLoading
                                     ? const CircularProgressIndicator()
                                     : PrimaryButton(
@@ -145,19 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                           if (!context.mounted) {
                                             return;
                                           }
-                                            if (isSuccess) {
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      const QuestionnaireScreen(),
-                                                ),
-                                              );
-                                            }
-                                          
                                         },
                                       ),
-                                 SizedBox(height: AppSizes.vGap12),
+                                SizedBox(height: AppSizes.vGap12),
                                 Row(
                                   children: [
                                     Expanded(
@@ -189,9 +177,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ],
                                 ),
-                                 SizedBox(height: AppSizes.vGap12),
+                                SizedBox(height: AppSizes.vGap12),
                                 const CreateAccountButton(),
-                                 SizedBox(height: AppSizes.vGap12),
+                                SizedBox(height: AppSizes.vGap12),
                                 const SignInByGoogleButton(),
                                 SizedBox(height: AppSizes.vGap12),
                               ],
@@ -218,8 +206,5 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           );
-        },
-      ),
-    );
   }
 }
