@@ -13,6 +13,8 @@ import 'package:sleep_app_frontend/features/setting/repository/logout_repository
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/logout_vm.dart';
 import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
 import 'package:sleep_app_frontend/features/setting/repository/profile_repository.dart';
+import 'package:sleep_app_frontend/features/onboarding/viewmodels/questionnaire_vm.dart';
+import 'package:sleep_app_frontend/core/app/main_layout.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/theme/theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -40,6 +42,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) =>
               ProfileViewModel(ProfileRepository(ProfileRemoteDataSource())),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => QuestionnaireViewModel(),
         ),
       ],
       child: const MyApp(),
@@ -111,9 +116,12 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           title: 'SleepCare',
           theme: AppTheme.darkTheme,
-          home: const LoginScreen(),
+          home: child,
         );
       },
+      child: supabaseClient.auth.currentUser != null 
+          ? const MainAppScreen() 
+          : const LoginScreen(),
     );
   }
 }
