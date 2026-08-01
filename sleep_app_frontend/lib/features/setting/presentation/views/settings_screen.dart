@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/main.dart';
 import '../../../../core/theme/theme.dart';
 import 'edit_profile_screen.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/logout_vm.dart';
+import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/profile_vm.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -18,10 +20,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _losslessEnabled = false;
   int _snoozeInterval = 15;
 
+  final String _userId = supabaseClient.auth.currentUser?.id ?? '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Sau khi màn hình render xong, tiến hành fetch dữ liệu từ Database
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final profileVM = context.read<ProfileViewModel>();
+      await profileVM.loadProfile(_userId);
+      await profileVM.loadProfile(_userId);
+      print(
+        "Dữ liệu User fetch được: ${profileVM.user?.toJson()}",
+      ); // <--- Thêm dòng này
+
+      if (profileVM.user != null) {
+        final u = profileVM.user!;
+        print("Số điện thoại trong model là: '${u.phoneNumber}'");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final logoutVM = context.watch<LogoutViewModel>();
-
+    final profileVM = context.watch<ProfileViewModel>();
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
@@ -76,17 +99,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'John Doe',
-                              style: TextStyle(
-                                color: AppTheme.textLight,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          children: [
+                            Consumer<ProfileViewModel>(
+                              builder: (context, profileVM, child) {
+                                final user = profileVM.user;
+                                return Text(
+                                  user?.fullName ?? '',
+                                  style: const TextStyle(
+                                    color: AppTheme.textLight,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              },
                             ),
                             Text(
-                              'johndoe@example.com',
+                              profileVM.user?.email ?? '',
                               style: TextStyle(
                                 color: AppTheme.textMuted,
                                 fontSize: 12,

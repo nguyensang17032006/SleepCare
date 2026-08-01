@@ -20,7 +20,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-
   String? _selectedGender;
   DateTime? _selectedDate;
 
@@ -100,12 +99,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         _isEditing = false; // Đưa UI về lại chế độ chỉ đọc
       });
-    } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cập nhật thất bại. Vui lòng thử lại!')),
-      );
-    }
+    } 
   }
 
   @override
@@ -209,7 +203,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               const SizedBox(height: 8),
                               DropdownButtonFormField<String>(
-                                initialValue: _selectedGender,
+                                value: _selectedGender,
                                 hint: const Text(
                                   'Chọn',
                                   style: TextStyle(
@@ -229,6 +223,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: AppTheme.cardLightColor,
+                                  // TRUYỀN ERROR TEXT VÀO ĐÂY
+                                  errorText: profileVM.sexError,
+                                  errorStyle: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                  ),
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 12,
                                     vertical: 14,
@@ -241,6 +241,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(16),
                                     borderSide: BorderSide.none,
+                                  ),
+                                  // Đảm bảo khi có lỗi border không bị đổi màu lạ nếu bạn muốn giữ giao diện phẳng
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1,
+                                    ),
                                   ),
                                 ),
                                 style: const TextStyle(
@@ -269,6 +284,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         const SizedBox(width: 16),
+
                         // Cột Ngày sinh (DatePicker)
                         Expanded(
                           child: Column(
@@ -294,6 +310,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   decoration: BoxDecoration(
                                     color: AppTheme.cardLightColor,
                                     borderRadius: BorderRadius.circular(16),
+                                    // Nếu có lỗi thì viền đỏ lên cho đồng bộ
+                                    border: Border.all(
+                                      color: profileVM.dateOfBirthError != null
+                                          ? Colors.red
+                                          : Colors.transparent,
+                                      width: profileVM.dateOfBirthError != null
+                                          ? 1
+                                          : 0,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -317,6 +342,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                 ),
                               ),
+                              // HÌNH THỨC HIỂN THỊ CHỮ BÁO LỖI DƯỚI CONTAINER NGÀY SINH
+                              if (profileVM.dateOfBirthError != null) ...[
+                                const SizedBox(height: 6),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12),
+                                  child: Text(
+                                    profileVM.dateOfBirthError!,
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),

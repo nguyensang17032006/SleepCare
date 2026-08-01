@@ -23,7 +23,7 @@ class UserModel {
       email: json['email'] ?? '',
       sex: json['sex'] ?? '',
       dateOfBirth: json['birth_day'] ?? '',
-      phoneNumber: json['phone_number'] ?? '',
+      phoneNumber: json['phone'] ?? '',
     );
   }
 
