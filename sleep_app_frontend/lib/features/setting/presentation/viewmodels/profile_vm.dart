@@ -18,10 +18,16 @@ class ProfileViewModel extends ChangeNotifier {
   String? get emailError => _emailError;
   String? _phoneNumberError;
   String? get phoneNumberError => _phoneNumberError;
+  String? _sexError;
+  String? get sexError => _sexError;
+  String? _dateOfBirthError;
+  String? get dateOfBirthError => _dateOfBirthError;
   void clearAllErrors() {
     _fullNameError = null;
     _emailError = null;
     _phoneNumberError = null;
+    _sexError = null;
+    _dateOfBirthError = null;
     _isLoading = false;
     notifyListeners();
   }
@@ -62,8 +68,24 @@ class ProfileViewModel extends ChangeNotifier {
       _emailError = 'Định dạng email không hợp lệ';
       hasValidationError = true;
     }
+
+    final phoneRegex = RegExp(r'^(0[35789])[0-9]{8}$');
+
     if (phoneNumber.isEmpty) {
       _phoneNumberError = 'Vui lòng nhập số điện thoại của bạn';
+      hasValidationError = true;
+    } else if (!phoneRegex.hasMatch(phoneNumber)) {
+      _phoneNumberError = 'Số điện thoại không đúng định dạng ';
+      hasValidationError = true;
+    }
+
+    if (sex.isEmpty) {
+      _sexError = 'Vui lòng chọn giới tính';
+      hasValidationError = true;
+    }
+
+    if (dateOfBirth.isEmpty) {
+      _dateOfBirthError = 'Vui lòng chọn ngày sinh';
       hasValidationError = true;
     }
     if (hasValidationError) {
@@ -89,7 +111,7 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print ('Error updating profile: $e');
+      print('Error updating profile: $e');
       return false;
     } finally {
       _isLoading = false;
