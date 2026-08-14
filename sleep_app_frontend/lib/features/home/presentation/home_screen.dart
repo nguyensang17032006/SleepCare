@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/theme.dart';
+import '../data/services/location_service.dart';
+import '../data/services/weather_api_service.dart';
+import '../repository/weather_repository.dart';
+import 'bloc/weather_cubit.dart';
 import 'widget/time_circle.dart';
 import 'widget/card_music.dart';
 import 'widget/glass_card.dart';
+import 'widget/weather_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,136 +22,104 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        width: size.width,
-        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              const TimeCircle(),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildStatusChip(Icons.bed, 'Bedtime', 'Excellent'),
-                  const SizedBox(width: 16),
-                  _buildStatusChip(Icons.thermostat, 'Room', '22.5°C'),
-                ],
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                'SOOTHING MELODY SELECTION',
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 10,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Choose music to your preference',
-                style: TextStyle(
-                  color: AppTheme.textLight,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const CardMusic(),
+    return BlocProvider(
+      create: (_) => WeatherCubit(
+        repository: const WeatherRepository(
+          locationService: LocationService(),
+          weatherApiService: WeatherApiService(),
+        ),
+      )..loadWeather(),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          width: size.width,
+          decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.h),
+                const TimeCircle(),
+                SizedBox(height: 18.h),
+                const WeatherCard(),
+                SizedBox(height: 18.h),
 
-              const SizedBox(height: 30),
-              GlassCard(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
+                Text(
+                  'SOOTHING MELODY SELECTION',
+                  style: TextStyle(
+                    color: AppTheme.primaryColor,
+                    fontSize: 10.sp,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.water_drop,
-                        color: AppTheme.primaryColor,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'ACTIVE SESSION',
-                            style: TextStyle(
-                              color: AppTheme.textMuted,
-                              fontSize: 10,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Ocean Waves & Rain',
-                            style: TextStyle(
-                              color: AppTheme.textLight,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.equalizer, color: AppTheme.primaryColor),
-                  ],
+                SizedBox(height: 8.h),
+                Text(
+                  'Choose music to your preference',
+                  style: TextStyle(
+                    color: AppTheme.textLight,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-            ],
+                SizedBox(height: 20.h),
+                const CardMusic(),
+
+                SizedBox(height: 30.h),
+                GlassCard(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 16.h,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(10.w),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.water_drop,
+                          color: AppTheme.primaryColor,
+                          size: 20.sp,
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'ACTIVE SESSION',
+                              style: TextStyle(
+                                color: AppTheme.textMuted,
+                                fontSize: 10.sp,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              'Ocean Waves & Rain',
+                              style: TextStyle(
+                                color: AppTheme.textLight,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.equalizer, color: AppTheme.primaryColor, size: 22.sp),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 30.h),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatusChip(IconData icon, String title, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.cardLightColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppTheme.primaryColor, size: 16),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(color: AppTheme.textMuted, fontSize: 10),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: AppTheme.textLight,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
