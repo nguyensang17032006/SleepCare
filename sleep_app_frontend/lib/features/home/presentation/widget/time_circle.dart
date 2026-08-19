@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 
 class TimeCircle extends StatefulWidget {
@@ -40,19 +41,19 @@ class _TimeCircleState extends State<TimeCircle> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: 220,
-        height: 220,
+        width: 220.w,
+        height: 220.w,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
             color: AppTheme.primaryColor.withValues(alpha: 0.5),
-            width: 2,
+            width: 2.w,
           ),
           boxShadow: [
             BoxShadow(
               color: AppTheme.primaryColor.withValues(alpha: 0.15),
-              spreadRadius: 10,
-              blurRadius: 40,
+              spreadRadius: 10.w,
+              blurRadius: 40.w,
             ),
           ],
         ),
@@ -63,7 +64,7 @@ class _TimeCircleState extends State<TimeCircle> {
               Text(
                 _formatTime(_currentTime),
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontSize: 48,
+                  fontSize: 48.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -72,7 +73,7 @@ class _TimeCircleState extends State<TimeCircle> {
                 'THỜI GIAN HIỆN TẠI',
                 style: TextStyle(
                   color: AppTheme.textMuted,
-                  fontSize: 10,
+                  fontSize: 10.sp,
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.bold,
                 ),
