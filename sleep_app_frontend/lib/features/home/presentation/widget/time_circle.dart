@@ -1,9 +1,41 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 
-class TimeCircle extends StatelessWidget {
+class TimeCircle extends StatefulWidget {
   const TimeCircle({super.key});
+
+  @override
+  State<TimeCircle> createState() => _TimeCircleState();
+}
+
+class _TimeCircleState extends State<TimeCircle> {
+  late Timer _timer;
+  late DateTime _currentTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentTime = DateTime.now();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatTime(DateTime time) {
+    String hour = time.hour.toString().padLeft(2, '0');
+    String minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +62,15 @@ class TimeCircle extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '07:45',
+                _formatTime(_currentTime),
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   fontSize: 48.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4.h),
-              Text(
-                'TIME REMAINING',
+              const SizedBox(height: 4),
+              const Text(
+                'THỜI GIAN HIỆN TẠI',
                 style: TextStyle(
                   color: AppTheme.textMuted,
                   fontSize: 10.sp,
