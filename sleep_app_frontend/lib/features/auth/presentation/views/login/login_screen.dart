@@ -8,8 +8,8 @@ import 'package:sleep_app_frontend/features/auth/presentation/views/login/widget
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/toggle_password_vm.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
+import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -136,8 +136,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                           username: _usernameController.text,
                                           password: _passwordController.text,
                                         );
-                                    if (!context.mounted) {
-                                      return;
+                                    if (!context.mounted) return;
+                                    if (isSuccess) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const QuestionnaireScreen(),
+                                        ),
+                                      );
                                     }
                                   },
                                 ),
