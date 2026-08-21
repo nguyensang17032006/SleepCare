@@ -11,8 +11,13 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
+    "@supabase/supabase-js": "^2.112.3",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "play-dl": "^1.9.7",
+    "youtube-dl-exec": "^3.1.12"
   }
 }
