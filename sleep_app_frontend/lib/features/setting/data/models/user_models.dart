@@ -5,6 +5,7 @@ class UserModel {
   final String sex;
   final String dateOfBirth;
   final String phoneNumber;
+  final bool onboardingCompleted;
 
   UserModel({
     required this.id,
@@ -13,6 +14,7 @@ class UserModel {
     required this.sex,
     required this.dateOfBirth,
     required this.phoneNumber,
+    this.onboardingCompleted = false,
   });
 
   // Hàm chuyển đổi từ JSON/Map (Supabase) sang Object UserModel
@@ -24,6 +26,7 @@ class UserModel {
       sex: json['sex'] ?? '',
       dateOfBirth: json['birth_day'] ?? '',
       phoneNumber: json['phone'] ?? '',
+      onboardingCompleted: json['onboarding_completed'] ?? false,
     );
   }
 
@@ -36,6 +39,7 @@ class UserModel {
       'sex': sex,
       'birth_day': dateOfBirth,
       'phone': phoneNumber,
+      'onboarding_completed': onboardingCompleted,
     };
   }
 }

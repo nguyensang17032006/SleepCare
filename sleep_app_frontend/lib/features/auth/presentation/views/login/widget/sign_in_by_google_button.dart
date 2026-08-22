@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/core/constants/app_size.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../../viewmodels/auth_vm.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +36,7 @@ class SignInByGoogleButton extends StatelessWidget {
               const Icon(Icons.g_mobiledata, color: Colors.white),
         ),
         label: Text(
-          'Đăng nhập bằng Google',
+          AppLocalizations.of(context)!.loginWithGoogle,
           style: TextStyle(color: Colors.white, fontSize: AppSizes.f16),
         ),
         style: OutlinedButton.styleFrom(

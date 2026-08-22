@@ -1,12 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 class BarChartWidget extends StatelessWidget {
   const BarChartWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -16,22 +18,22 @@ class BarChartWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Weekly Consistency',
-            style: TextStyle(
+          Text(
+            l10n.reportWeeklyConsistency,
+            style: const TextStyle(
               color: AppTheme.textLight,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 24),
-          SizedBox(height: 120, child: _buildBarChart()),
+          SizedBox(height: 120, child: _buildBarChart(l10n)),
         ],
       ),
     );
   }
 
-  Widget _buildBarChart() {
+  Widget _buildBarChart(AppLocalizations l10n) {
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -50,25 +52,25 @@ class BarChartWidget extends StatelessWidget {
                 String text;
                 switch (value.toInt()) {
                   case 0:
-                    text = 'MON';
+                    text = l10n.dayMon;
                     break;
                   case 1:
-                    text = 'TUE';
+                    text = l10n.dayTue;
                     break;
                   case 2:
-                    text = 'WED';
+                    text = l10n.dayWed;
                     break;
                   case 3:
-                    text = 'THU';
+                    text = l10n.dayThu;
                     break;
                   case 4:
-                    text = 'FRI';
+                    text = l10n.dayFri;
                     break;
                   case 5:
-                    text = 'SAT';
+                    text = l10n.daySat;
                     break;
                   case 6:
-                    text = 'SUN';
+                    text = l10n.daySun;
                     break;
                   default:
                     text = '';

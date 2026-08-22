@@ -10,6 +10,7 @@ import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
 import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -43,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authVMLogin = context.watch<AuthViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -104,16 +106,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                           CustomTextField(
                             controller: _usernameController,
-                            label: 'Tài khoản',
-                            hint: 'Nhập tên người dùng',
+                            label: l10n.loginUsernameLabel,
+                            hint: l10n.loginUsernameHint,
                             prefixIcon: Icons.person_outline,
                             errorText: authVMLogin.usernameError,
                           ),
                           SizedBox(height: AppSizes.vGap12),
                           CustomTextField(
                             controller: _passwordController,
-                            label: 'Mật khẩu',
-                            hint: 'Nhập mật khẩu của bạn',
+                            label: l10n.loginPasswordLabel,
+                            hint: l10n.loginPasswordHint,
                             prefixIcon: Icons.lock_outline,
                             obscureText: _isPasswordVisible,
                             onSuffixIconPressed: () {
@@ -129,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           authVMLogin.isLoading
                               ? const CircularProgressIndicator()
                               : PrimaryButton(
-                                  text: 'Đăng nhập ->',
+                                  text: l10n.loginButton,
                                   onPressed: () async {
                                     bool isSuccess = await authVMLogin
                                         .signInWithUsername(
@@ -161,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   horizontal: AppSizes.p12,
                                 ),
                                 child: Text(
-                                  'OR',
+                                  l10n.loginOr,
                                   style: TextStyle(
                                     color: AppTheme.textMuted.withValues(
                                       alpha: 0.5,
@@ -187,7 +189,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: EdgeInsets.only(bottom: AppSizes.p16),
                         child: Text(
-                          'Bằng cách đăng nhập, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.',
+                          l10n.loginTerms,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: AppTheme.textMuted.withValues(alpha: 0.6),
                             fontSize: AppSizes.f10,

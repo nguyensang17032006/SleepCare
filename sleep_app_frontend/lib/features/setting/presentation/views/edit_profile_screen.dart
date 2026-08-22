@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Đảm bảo bạn đã thêm provider vào pubspec.yaml
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import 'package:sleep_app_frontend/main.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/app/widget/custom_text_field.dart';
@@ -94,18 +95,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (success) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cập nhật Profile thành công!')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.profileUpdateSuccess),
+        ),
       );
       setState(() {
         _isEditing = false; // Đưa UI về lại chế độ chỉ đọc
       });
-    } 
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     // Theo dõi trạng thái loading của ViewModel để hiển thị vòng xoay nếu đang xử lý API
     final profileVM = context.watch<ProfileViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -113,9 +117,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           icon: const Icon(Icons.chevron_left, color: AppTheme.textLight),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(color: AppTheme.textLight, fontSize: 16),
+        title: Text(
+          l10n.profileEditTitle,
+          style: const TextStyle(color: AppTheme.textLight, fontSize: 16),
         ),
         actions: [
           // Logic hoán đổi nút Cây bút vẽ và Chữ Save
@@ -124,9 +128,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   onPressed: profileVM.isLoading
                       ? null
                       : _handleSaveChanges, // Nhấn Save thì chạy hàm cập nhật
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+                  child: Text(
+                    l10n.profileSave,
+                    style: const TextStyle(
+                      color: AppTheme.textMuted,
+                      fontSize: 14,
+                    ),
                   ),
                 )
               : IconButton(
@@ -158,8 +165,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     // --- CÁC TRƯỜNG DỮ LIỆU INPUT ---
                     CustomTextField(
                       controller: _nameController,
-                      label: 'Họ và tên',
-                      hint: 'Alex Moore',
+                      label: l10n.profileFullName,
+                      hint: l10n.profileFullNameHint,
                       prefixIcon: Icons.person_outline,
                       enabled: _isEditing,
                       errorText: profileVM.fullNameError,
@@ -167,8 +174,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 20),
                     CustomTextField(
                       controller: _emailController,
-                      label: 'Email ',
-                      hint: 'alex.m@example.com',
+                      label: l10n.profileEmail,
+                      hint: l10n.profileEmailHint,
                       prefixIcon: Icons.email_outlined,
                       enabled: _isEditing,
                       errorText: profileVM.emailError,
@@ -176,8 +183,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 20),
                     CustomTextField(
                       controller: _phoneController,
-                      label: 'Số điện thoại',
-                      hint: 'Nhập số điện thoại của bạn',
+                      label: l10n.profilePhone,
+                      hint: l10n.profilePhoneHint,
                       prefixIcon: Icons.phone_outlined,
                       enabled: _isEditing,
                       errorText: profileVM.phoneNumberError,
@@ -192,9 +199,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Giới tính',
-                                style: TextStyle(
+                              Text(
+                                l10n.profileGender,
+                                style: const TextStyle(
                                   color: AppTheme.textMuted,
                                   fontSize: 10,
                                   letterSpacing: 1.5,
@@ -204,16 +211,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               const SizedBox(height: 8),
                               DropdownButtonFormField<String>(
                                 value: _selectedGender,
-                                hint: const Text(
-                                  'Chọn',
-                                  style: TextStyle(
+                                hint: Text(
+                                  l10n.profileSelect,
+                                  style: const TextStyle(
                                     color: AppTheme.textMuted,
                                     fontSize: 14,
                                   ),
                                 ),
                                 dropdownColor: AppTheme.cardLightColor,
                                 disabledHint: Text(
-                                  _selectedGender ?? 'Chưa chọn',
+                                  _selectedGender ?? l10n.profileNotSelected,
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 icon: const Icon(
@@ -263,14 +270,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   fontSize: 14,
                                 ),
                                 items: _isEditing
-                                    ? const [
+                                    ? [
                                         DropdownMenuItem(
-                                          value: 'Nam',
-                                          child: Text('Nam'),
+                                          value:
+                                              'Nam', // Supabase currently stores 'Nam' or 'Nữ', let's keep value same or we should change the schema, I'll keep the UI label translated.
+                                          child: Text(l10n.profileMale),
                                         ),
                                         DropdownMenuItem(
                                           value: 'Nữ',
-                                          child: Text('Nữ'),
+                                          child: Text(l10n.profileFemale),
                                         ),
                                       ]
                                     : null,
@@ -290,9 +298,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Ngày sinh',
-                                style: TextStyle(
+                              Text(
+                                l10n.profileDob,
+                                style: const TextStyle(
                                   color: AppTheme.textMuted,
                                   fontSize: 10,
                                   letterSpacing: 1.5,
@@ -331,7 +339,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                       Text(
                                         _selectedDate == null
-                                            ? 'Chọn ngày'
+                                            ? l10n.profileSelectDate
                                             : '${_selectedDate!.day} ${_getMonthName(_selectedDate!.month)} ${_selectedDate!.year}',
                                         style: const TextStyle(
                                           color: Colors.white,
@@ -364,9 +372,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 40),
 
                     // --- PHẦN KHÁC GIỮ NGUYÊN ---
-                    const Text(
-                      'Sleep Settings',
-                      style: TextStyle(
+                    Text(
+                      l10n.profileSleepSettings,
+                      style: const TextStyle(
                         color: AppTheme.textLight,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -375,22 +383,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 16),
                     _buildSettingCard(
                       Icons.nights_stay,
-                      'Sleep Goal',
-                      '8.0 hours',
-                      'TARGET',
+                      l10n.profileSleepGoal,
+                      l10n.profile8Hours,
+                      l10n.profileTarget,
                     ),
                     const SizedBox(height: 12),
                     _buildSettingCard(
                       Icons.wb_sunny,
-                      'Chronotype',
-                      'Early Bird',
+                      l10n.profileChronotype,
+                      l10n.profileEarlyBird,
                       '',
                     ),
                     const SizedBox(height: 40),
 
-                    const Text(
-                      'Security',
-                      style: TextStyle(
+                    Text(
+                      l10n.profileSecurity,
+                      style: const TextStyle(
                         color: AppTheme.textLight,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -417,16 +425,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
+                          children: [
+                            const Icon(
                               Icons.lock_outline,
                               color: AppTheme.textLight,
                               size: 20,
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
-                              'Change Password',
-                              style: TextStyle(
+                              l10n.profileChangePassword,
+                              style: const TextStyle(
                                 color: AppTheme.textLight,
                                 fontWeight: FontWeight.bold,
                               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/features/report/presentation/widget/bar_chart_widget.dart';
 import 'package:sleep_app_frontend/features/report/presentation/widget/line_chart_widget.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../../core/theme/theme.dart';
 import '../../../core/app/widget/primary_button.dart';
 
@@ -9,6 +10,7 @@ class ReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
@@ -17,9 +19,9 @@ class ReportScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'INSIGHTS ENGINE',
-                style: TextStyle(
+              Text(
+                l10n.reportInsightsEngine,
+                style: const TextStyle(
                   color: AppTheme.primaryColor,
                   fontSize: 10,
                   letterSpacing: 1.5,
@@ -27,9 +29,9 @@ class ReportScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Your Sleep\nArchitecture',
-                style: TextStyle(
+              Text(
+                l10n.reportSleepArchitecture,
+                style: const TextStyle(
                   color: AppTheme.textLight,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -50,9 +52,9 @@ class ReportScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Average Duration',
-                            style: TextStyle(
+                          Text(
+                            l10n.reportAvgDuration,
+                            style: const TextStyle(
                               color: AppTheme.textMuted,
                               fontSize: 12,
                             ),
@@ -60,8 +62,8 @@ class ReportScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 '7.5',
                                 style: TextStyle(
                                   color: AppTheme.textLight,
@@ -70,12 +72,12 @@ class ReportScreen extends StatelessWidget {
                                   height: 1.0,
                                 ),
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Padding(
-                                padding: EdgeInsets.only(bottom: 4.0),
+                                padding: const EdgeInsets.only(bottom: 4.0),
                                 child: Text(
-                                  'hours',
-                                  style: TextStyle(
+                                  l10n.reportHours,
+                                  style: const TextStyle(
                                     color: AppTheme.textMuted,
                                     fontSize: 14,
                                   ),
@@ -85,16 +87,16 @@ class ReportScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 12),
                           Row(
-                            children: const [
-                              Icon(
+                            children: [
+                              const Icon(
                                 Icons.arrow_upward,
                                 color: Colors.greenAccent,
                                 size: 12,
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
-                                '12% more sleep than last week',
-                                style: TextStyle(
+                                l10n.reportMoreSleep,
+                                style: const TextStyle(
                                   color: Colors.greenAccent,
                                   fontSize: 10,
                                 ),
@@ -123,9 +125,9 @@ class ReportScreen extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              const Text(
-                'PILLOW TALK',
-                style: TextStyle(
+              Text(
+                l10n.reportPillowTalkTitle,
+                style: const TextStyle(
                   color: AppTheme.textMuted,
                   fontSize: 10,
                   letterSpacing: 1.5,
@@ -137,20 +139,20 @@ class ReportScreen extends StatelessWidget {
 
               _buildInsightCard(
                 Icons.lightbulb_outline,
-                'Nightly Rhythms',
-                'Your sleep latency was noticeably improved by 15% during REM cycles. Some evening deep tones worked well for you last month.',
+                l10n.reportNightlyRhythms,
+                l10n.reportNightlyRhythmsDesc,
               ),
 
               const SizedBox(height: 12),
 
               _buildInsightCard(
                 Icons.star_outline,
-                'Pillow Talk',
-                'Consistency is key. Your 10:30 PM bed time is becoming a normal routine for your circadian body.',
+                l10n.reportPillowTalk,
+                l10n.reportPillowTalkDesc,
               ),
               const SizedBox(height: 30),
 
-              PrimaryButton(text: 'Generate Full PDF Report', onPressed: () {}),
+              PrimaryButton(text: l10n.reportGeneratePdf, onPressed: () {}),
               const SizedBox(height: 30),
             ],
           ),

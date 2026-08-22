@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 class ViewAllWidget extends StatelessWidget {
   final String title;
@@ -25,9 +26,9 @@ class ViewAllWidget extends StatelessWidget {
         ),
         TextButton(
           onPressed: onViewAll,
-          child: const Text(
-            'View all',
-            style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
+          child: Text(
+            AppLocalizations.of(context)!.libraryViewAll,
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
           ),
         ),
       ],

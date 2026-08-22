@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/features/library/presentation/widget/search_box.dart';
 import 'package:sleep_app_frontend/features/library/presentation/widget/view_all.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../../core/theme/theme.dart';
 
 class LibraryScreen extends StatelessWidget {
@@ -8,6 +9,7 @@ class LibraryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
@@ -19,9 +21,9 @@ class LibraryScreen extends StatelessWidget {
               SearchBox(),
               const SizedBox(height: 30),
 
-              const Text(
-                'PERSONALIZED',
-                style: TextStyle(
+              Text(
+                l10n.libraryPersonalized,
+                style: const TextStyle(
                   color: AppTheme.primaryColor,
                   fontSize: 10,
                   letterSpacing: 1.5,
@@ -29,13 +31,13 @@ class LibraryScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              ViewAllWidget(title: 'Recommended for You', onViewAll: () {}),
+              ViewAllWidget(title: l10n.libraryRecommended, onViewAll: () {}),
               const SizedBox(height: 16),
 
               _buildRecommendedCard(
                 'Lunar Echoes',
                 'Frequency 432Hz',
-                'NEW',
+                l10n.libraryNew,
                 Icons.nightlight_round,
                 const Color(0xFF6B429A),
               ),
@@ -43,15 +45,15 @@ class LibraryScreen extends StatelessWidget {
               _buildRecommendedCard(
                 'Mist & Moss',
                 'Atmospheric',
-                'NEW',
+                l10n.libraryNew,
                 Icons.forest,
                 const Color(0xFF2C5E47),
               ),
               const SizedBox(height: 30),
 
-              const Text(
-                'ATMOSPHERE 3D',
-                style: TextStyle(
+              Text(
+                l10n.libraryAtmosphere,
+                style: const TextStyle(
                   color: AppTheme.primaryColor,
                   fontSize: 10,
                   letterSpacing: 1.5,
@@ -60,7 +62,7 @@ class LibraryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              ViewAllWidget(title: 'Nature Music', onViewAll: () {}),
+              ViewAllWidget(title: l10n.libraryNatureMusic, onViewAll: () {}),
 
               const SizedBox(height: 16),
 

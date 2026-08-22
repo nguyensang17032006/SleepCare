@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../../core/theme/theme.dart';
 import '../data/services/location_service.dart';
 import '../data/services/weather_api_service.dart';
@@ -10,6 +11,7 @@ import 'widget/time_circle.dart';
 import 'widget/card_music.dart';
 import 'widget/glass_card.dart';
 import 'widget/weather_card.dart';
+import '../../onboarding/daily_short_survey_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocProvider(
       create: (_) => WeatherCubit(
         repository: const WeatherRepository(
@@ -45,8 +49,73 @@ class _HomeScreenState extends State<HomeScreen> {
                 const WeatherCard(),
                 SizedBox(height: 18.h),
 
+                // Daily Check-in Banner
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const DailyShortSurveyScreen(),
+                      ),
+                    );
+                  },
+                  child: GlassCard(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 16.h,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(10.w),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.assignment_turned_in,
+                            color: AppTheme.primaryColor,
+                            size: 20.sp,
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.homeRecordSleep,
+                                style: TextStyle(
+                                  color: AppTheme.textMuted,
+                                  fontSize: 10.sp,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                l10n.homeEnterLastNightData,
+                                style: TextStyle(
+                                  color: AppTheme.textLight,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: AppTheme.primaryColor,
+                          size: 24.sp,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24.h),
+
                 Text(
-                  'SOOTHING MELODY SELECTION',
+                  l10n.homeSoothingMelody,
                   style: TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 10.sp,
@@ -56,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'Choose music to your preference',
+                  l10n.homeChooseMusic,
                   style: TextStyle(
                     color: AppTheme.textLight,
                     fontSize: 18.sp,
@@ -92,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'ACTIVE SESSION',
+                              l10n.homeActiveSession,
                               style: TextStyle(
                                 color: AppTheme.textMuted,
                                 fontSize: 10.sp,
@@ -101,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              'Ocean Waves & Rain',
+                              l10n.homeOceanWaves,
                               style: TextStyle(
                                 color: AppTheme.textLight,
                                 fontSize: 14.sp,
@@ -111,7 +180,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      Icon(Icons.equalizer, color: AppTheme.primaryColor, size: 22.sp),
+                      Icon(
+                        Icons.equalizer,
+                        color: AppTheme.primaryColor,
+                        size: 22.sp,
+                      ),
                     ],
                   ),
                 ),

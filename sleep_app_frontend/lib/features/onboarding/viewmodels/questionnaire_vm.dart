@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../data/sources/onboarding_sources.dart';
 
 class QuestionnaireViewModel extends ChangeNotifier {
+  bool isSubmitting = false;
   // --- Q1 to Q4 ---
   TimeOfDay? bedtime; // Q1
   int? sleepLatencyMinutes; // Q2
@@ -76,6 +78,13 @@ class QuestionnaireViewModel extends ChangeNotifier {
   }
 
   // --- Q10 (a to e) ---
+  int? q10HasPartner; // 0: Có, 1: Không
+  
+  void updateQ10HasPartner(int value) {
+    q10HasPartner = value;
+    notifyListeners();
+  }
+
   Map<String, int?> q10 = {
     'a': null, 'b': null, 'c': null, 'd': null, 'e': null,
   };
@@ -101,13 +110,21 @@ class QuestionnaireViewModel extends ChangeNotifier {
   }
 
   bool validateQ6To10() {
+    bool q10Valid = false;
+    if (q10HasPartner == 1) {
+      q10Valid = true;
+    } else if (q10HasPartner == 0) {
+      q10Valid = q10.entries
+          .where((e) => e.key != 'e' || q10eOtherReason.trim().isNotEmpty)
+          .every((e) => e.value != null);
+    }
+
     return q6 != null && 
            q7 != null && 
            q8 != null && 
            q9 != null && 
-           q10.entries
-              .where((e) => e.key != 'e' || q10eOtherReason.trim().isNotEmpty)
-              .every((e) => e.value != null);
+           q10HasPartner != null && 
+           q10Valid;
   }
 
   bool calculatePSQI() {
@@ -115,7 +132,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     if (!validateQ5() || !validateQ6To10()) return false;
 
     // Component 1: Subjective sleep quality
-    int comp1 = q6!;
+    int comp1 = q9!;
 
     // Component 2: Sleep latency
     int q2Score = 0;
@@ -166,10 +183,10 @@ class QuestionnaireViewModel extends ChangeNotifier {
     else comp5 = 3;
 
     // Component 6: Use of sleeping medication
-    int comp6 = q7!;
+    int comp6 = q6!;
 
     // Component 7: Daytime dysfunction
-    int comp7Sum = q8! + q9!;
+    int comp7Sum = q7! + q8!;
     int comp7 = 0;
     if (comp7Sum == 0) comp7 = 0;
     else if (comp7Sum <= 2) comp7 = 1;
@@ -179,5 +196,70 @@ class QuestionnaireViewModel extends ChangeNotifier {
     finalPsqiScore = comp1 + comp2 + comp3 + comp4 + comp5 + comp6 + comp7;
     notifyListeners();
     return true;
+  }
+
+  Future<bool> submitQuestionnaire() async {
+    if (!calculatePSQI()) return false;
+    
+    isSubmitting = true;
+    notifyListeners();
+
+    try {
+      final source = OnboardingRemoteSource();
+
+      String formatTime(TimeOfDay? time) {
+        if (time == null) return "00:00:00";
+        return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:00";
+      }
+      
+      double bedTimeDecimal = bedtime!.hour + bedtime!.minute / 60.0;
+      double wakeTimeDecimal = wakeUpTime!.hour + wakeUpTime!.minute / 60.0;
+      double hoursInBed = wakeTimeDecimal - bedTimeDecimal;
+      if (hoursInBed < 0) hoursInBed += 24; 
+      double efficiency = hoursInBed > 0 ? (hoursSlept! / hoursInBed) * 100 : 0;
+
+      final assessmentData = {
+        'assessment_type': 'baseline_full',
+        'raw_total_score': finalPsqiScore,
+        'status': 'completed',
+        'scoring_details': {
+          'q1': formatTime(bedtime),
+          'q2': sleepLatencyMinutes,
+          'q3': formatTime(wakeUpTime),
+          'q4': hoursSlept,
+          'q5': q5,
+          'q5jOtherReason': q5jOtherReason,
+          'q6': q6,
+          'q7': q7,
+          'q8': q8,
+          'q9': q9,
+          'q10HasPartner': q10HasPartner,
+          'q10': q10,
+          'q10eOtherReason': q10eOtherReason,
+        }
+      };
+
+      final metricsData = {
+        'bedtime': formatTime(bedtime),
+        'wake_time': formatTime(wakeUpTime),
+        'sleep_latency_minutes': sleepLatencyMinutes,
+        'sleep_duration_minutes': (hoursSlept! * 60).toInt(),
+        'sleep_efficiency_percent': efficiency,
+        'subjective_quality_score': q9,
+      };
+
+      await source.saveSleepAssessment(
+        assessmentData: assessmentData,
+        metricsData: metricsData,
+      );
+
+      isSubmitting = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      isSubmitting = false;
+      notifyListeners();
+      return false;
+    }
   }
 }

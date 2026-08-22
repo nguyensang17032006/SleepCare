@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 class LineChartWidget extends StatefulWidget {
   final bool initialIsWeekly;
@@ -34,13 +35,14 @@ class _LineChartWidgetState extends State<LineChartWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Sleep Quality Index',
+            Text(
+              l10n.reportSleepQualityIndex,
               style: TextStyle(
                 color: AppTheme.textLight,
                 fontSize: 18,
@@ -73,7 +75,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Weekly',
+                        l10n.reportWeekly,
                         style: TextStyle(
                           color: isWeekly
                               ? AppTheme.primaryColor
@@ -105,7 +107,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Monthly',
+                        l10n.reportMonthly,
                         style: TextStyle(
                           color: !isWeekly
                               ? AppTheme.primaryColor
@@ -133,7 +135,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
           child: SizedBox(
             height: 120,
             child: _hasData
-                ? _buildLineChart()
+                ? _buildLineChart(l10n)
                 : Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -144,9 +146,9 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                           size: 32,
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'No data available',
-                          style: TextStyle(
+                        Text(
+                          l10n.reportNoData,
+                          style: const TextStyle(
                             color: AppTheme.textMuted,
                             fontSize: 12,
                           ),
@@ -160,7 +162,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     );
   }
 
-  Widget _buildLineChart() {
+  Widget _buildLineChart(AppLocalizations l10n) {
     return LineChart(
       key: ValueKey(isWeekly),
       LineChartData(
@@ -183,25 +185,25 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 if (isWeekly) {
                   switch (value.toInt()) {
                     case 0:
-                      text = 'MON';
+                      text = l10n.dayMon;
                       break;
                     case 1:
-                      text = 'TUE';
+                      text = l10n.dayTue;
                       break;
                     case 2:
-                      text = 'WED';
+                      text = l10n.dayWed;
                       break;
                     case 3:
-                      text = 'THU';
+                      text = l10n.dayThu;
                       break;
                     case 4:
-                      text = 'FRI';
+                      text = l10n.dayFri;
                       break;
                     case 5:
-                      text = 'SAT';
+                      text = l10n.daySat;
                       break;
                     case 6:
-                      text = 'SUN';
+                      text = l10n.daySun;
                       break;
                     default:
                       text = '';
@@ -210,16 +212,16 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 } else {
                   switch (value.toInt()) {
                     case 1:
-                      text = 'WEEK 1';
+                      text = l10n.week1;
                       break;
                     case 2:
-                      text = 'WEEK 2';
+                      text = l10n.week2;
                       break;
                     case 3:
-                      text = 'WEEK 3';
+                      text = l10n.week3;
                       break;
                     case 4:
-                      text = 'WEEK 4';
+                      text = l10n.week4;
                       break;
                     default:
                       text = '';

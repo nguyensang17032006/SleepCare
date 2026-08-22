@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import 'package:sleep_app_frontend/main.dart';
 import '../../../../core/theme/theme.dart';
 import 'edit_profile_screen.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/logout_vm.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/profile_vm.dart';
+import 'package:sleep_app_frontend/core/app/locale_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -29,14 +31,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final profileVM = context.read<ProfileViewModel>();
       await profileVM.loadProfile(_userId);
-      await profileVM.loadProfile(_userId);
-      print(
-        "Dữ liệu User fetch được: ${profileVM.user?.toJson()}",
-      ); // <--- Thêm dòng này
 
       if (profileVM.user != null) {
         final u = profileVM.user!;
-        print("Số điện thoại trong model là: '${u.phoneNumber}'");
       }
     });
   }
@@ -45,6 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final logoutVM = context.watch<LogoutViewModel>();
     final profileVM = context.watch<ProfileViewModel>();
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
@@ -53,9 +51,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'SETTINGS',
-                style: TextStyle(
+              Text(
+                l10n.settingsTitle,
+                style: const TextStyle(
                   color: AppTheme.primaryColor,
                   fontSize: 10,
                   letterSpacing: 1.5,
@@ -63,9 +61,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Sleep Hygiene',
-                style: TextStyle(
+              Text(
+                l10n.settingsSleepHygiene,
+                style: const TextStyle(
                   color: AppTheme.textLight,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -133,9 +131,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 30),
 
-              const Text(
-                'Automation',
-                style: TextStyle(
+              Text(
+                l10n.settingsLanguage,
+                style: const TextStyle(
+                  color: AppTheme.textLight,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  _buildLanguageChip('Tiếng Việt', 'vi'),
+                  const SizedBox(width: 12),
+                  _buildLanguageChip('English', 'en'),
+                ],
+              ),
+              const SizedBox(height: 30),
+
+              Text(
+                l10n.settingsAutomation,
+                style: const TextStyle(
                   color: AppTheme.textLight,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -144,8 +160,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               _buildSwitchTile(
                 Icons.do_not_disturb_on_total_silence,
-                'Autocall in OS Focus',
-                'Mutes all notifications when active',
+                l10n.settingsOsFocus,
+                l10n.settingsOsFocusDesc,
                 _osFocusEnabled,
                 (val) {
                   setState(() => _osFocusEnabled = val);
@@ -154,8 +170,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 12),
               _buildTile(
                 Icons.music_note,
-                'Music Playback',
-                'Duration',
+                l10n.settingsMusicPlayback,
+                l10n.settingsDuration,
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -177,9 +193,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 30),
 
-              const Text(
-                'Reminders',
-                style: TextStyle(
+              Text(
+                l10n.settingsReminders,
+                style: const TextStyle(
                   color: AppTheme.textLight,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -188,17 +204,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               _buildSwitchTile(
                 Icons.nights_stay,
-                'Sleep Prep Reminder',
-                'Reminds at 10:30 PM (30 min \nbefore sleep)',
+                l10n.settingsSleepPrep,
+                l10n.settingsSleepPrepDesc,
                 _sleepPrepEnabled,
                 (val) {
                   setState(() => _sleepPrepEnabled = val);
                 },
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Snooze Intervals',
-                style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
+              Text(
+                l10n.settingsSnooze,
+                style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
               ),
               const SizedBox(height: 12),
               Row(
@@ -212,9 +228,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 30),
 
-              const Text(
-                'Audio Fidelity',
-                style: TextStyle(
+              Text(
+                l10n.settingsAudioFidelity,
+                style: const TextStyle(
                   color: AppTheme.textLight,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -223,8 +239,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               _buildSwitchTile(
                 Icons.speaker,
-                'Lossless Playback',
-                'Higher battery usage',
+                l10n.settingsLossless,
+                l10n.settingsLosslessDesc,
                 _losslessEnabled,
                 (val) {
                   setState(() => _losslessEnabled = val);
@@ -234,34 +250,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
               logoutVM.isLoading
                   ? const CircularProgressIndicator()
                   : PrimaryButton(
-                      text: 'Đăng xuất',
+                      text: l10n.settingsLogout,
                       onPressed: () async {
                         // Hiển thị popup xác nhận và chờ người dùng chọn
                         final isLogout = await showDialog<bool>(
                           context: context,
                           builder: (dialogContext) {
                             return AlertDialog(
-                              title: const Text('Đăng xuất'),
-                              content: const Text(
-                                'Bạn có chắc chắn muốn đăng xuất khỏi SleepCare không?',
-                              ),
+                              title: Text(l10n.settingsLogout),
+                              content: Text(l10n.settingsLogoutConfirm),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.of(
                                     context,
                                   ).pop(false), // Chọn Không -> trả về false
-                                  child: const Text(
-                                    'Không',
-                                    style: TextStyle(color: Colors.grey),
+                                  child: Text(
+                                    l10n.settingsNo,
+                                    style: const TextStyle(color: Colors.grey),
                                   ),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.of(
                                     context,
                                   ).pop(true), // Chọn Có -> trả về true
-                                  child: const Text(
-                                    'Đăng xuất',
-                                    style: TextStyle(color: Colors.red),
+                                  child: Text(
+                                    l10n.settingsYes,
+                                    style: const TextStyle(color: Colors.red),
                                   ),
                                 ),
                               ],
@@ -373,6 +387,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
             color: isSelected ? Colors.white : AppTheme.textMuted,
             fontSize: 12,
             fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageChip(String label, String langCode) {
+    final localeProvider = context.watch<LocaleProvider>();
+    final currentCode =
+        localeProvider.locale?.languageCode ??
+        'vi'; // Default fallback or system
+    bool isSelected = currentCode == langCode;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          localeProvider.setLocale(Locale(langCode));
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? AppTheme.primaryColor : AppTheme.cardLightColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? AppTheme.primaryColor
+                  : Colors.white.withValues(alpha: 0.1),
+            ),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? Colors.white : AppTheme.textLight,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

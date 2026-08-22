@@ -6,16 +6,19 @@ import 'package:sleep_app_frontend/features/auth/data/sources/auth_sources.dart'
 import 'package:sleep_app_frontend/features/auth/repository/auth_repository.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart';
+import 'package:sleep_app_frontend/core/app/auth_wrapper.dart';
 import 'package:sleep_app_frontend/features/setting/data/sources/logout_sources.dart';
 import 'package:sleep_app_frontend/features/setting/data/sources/profile_sources.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/profile_vm.dart';
 import 'package:sleep_app_frontend/features/setting/repository/logout_repository.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/logout_vm.dart';
-import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
 import 'package:sleep_app_frontend/features/setting/repository/profile_repository.dart';
 import 'package:sleep_app_frontend/features/onboarding/viewmodels/questionnaire_vm.dart';
-import 'package:sleep_app_frontend/core/app/main_layout.dart';
+import 'package:sleep_app_frontend/features/onboarding/viewmodels/daily_short_vm.dart';
+import 'package:sleep_app_frontend/core/app/locale_provider.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -43,9 +46,9 @@ void main() async {
           create: (_) =>
               ProfileViewModel(ProfileRepository(ProfileRemoteDataSource())),
         ),
-        ChangeNotifierProvider(
-          create: (_) => QuestionnaireViewModel(),
-        ),
+        ChangeNotifierProvider(create: (_) => QuestionnaireViewModel()),
+        ChangeNotifierProvider(create: (_) => DailyShortViewModel()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
       child: const MyApp(),
     ),
@@ -76,12 +79,11 @@ class _MyAppState extends State<MyApp> {
     // Lắng nghe sự kiện thay đổi trạng thái Auth từ Supabase
     _authSubscription = supabaseClient.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
-      final Session? session = data.session;
 
-      // Chỉ chuyển màn hình khi có sự kiện SIGNED_IN thực sự hoàn tất (kể cả từ Google OAuth)
-      if (event == AuthChangeEvent.signedIn && session != null) {
+      // Khi đăng nhập thành công, chuyển hướng về AuthWrapper để kiểm tra logic onboarding
+      if (event == AuthChangeEvent.signedIn) {
         _navigatorKey.currentState?.pushReplacement(
-          MaterialPageRoute(builder: (_) => const QuestionnaireScreen()),
+          MaterialPageRoute(builder: (_) => const AuthWrapper()),
         );
       }
 
@@ -111,17 +113,24 @@ class _MyAppState extends State<MyApp> {
       splitScreenMode:
           true, // Hỗ trợ tốt khi dùng tính năng chia đôi màn hình/Màn hình Tablet lớn
       builder: (context, child) {
+        final localeProvider = Provider.of<LocaleProvider>(context);
         return MaterialApp(
           navigatorKey: _navigatorKey,
           debugShowCheckedModeBanner: false,
           title: 'SleepCare',
           theme: AppTheme.darkTheme,
+          locale: localeProvider.locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en'), Locale('vi')],
           home: child,
         );
       },
-      child: supabaseClient.auth.currentUser != null 
-          ? const MainAppScreen() 
-          : const LoginScreen(),
+      child: const AuthWrapper(),
     );
   }
 }
