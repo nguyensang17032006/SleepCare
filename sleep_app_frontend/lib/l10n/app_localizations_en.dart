@@ -90,10 +90,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailySurveyErrorGeneric => 'An error occurred, please try again!';
 
   @override
-  String get loginUsernameLabel => 'Account';
+  String get loginEmailLabel => 'Account';
 
   @override
-  String get loginUsernameHint => 'Enter your username';
+  String get loginEmailHint => 'Enter your email';
 
   @override
   String get loginPasswordLabel => 'Password';
@@ -302,7 +302,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please answer all questions or an error occurred!';
 
   @override
-  String qPsqiResult(int score) {
+  String qPsqiResult(Object score) {
     return 'Your PSQI Score: $score';
   }
 

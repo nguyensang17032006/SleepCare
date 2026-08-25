@@ -26,8 +26,8 @@
   "dailySurveyErrorFillAll": "Vui lòng điền đầy đủ các thông tin!",
   "dailySurveySuccess": "Đã lưu kết quả khảo sát thành công!",
   "dailySurveyErrorGeneric": "Có lỗi xảy ra, vui lòng thử lại!",
-  "loginUsernameLabel": "Tài khoản",
-  "loginUsernameHint": "Nhập tên người dùng",
+  "loginEmailLabel": "Tài khoản",
+  "loginEmailHint": "Nhập email người dùng",
   "loginPasswordLabel": "Mật khẩu",
   "loginPasswordHint": "Nhập mật khẩu của bạn",
   "loginButton": "Đăng nhập ->",
@@ -94,6 +94,13 @@
   "qFinish": "Hoàn thành",
   "qErrorGeneric": "Vui lòng trả lời tất cả câu hỏi hoặc có lỗi xảy ra!",
   "qPsqiResult": "Điểm chất lượng giấc ngủ (PSQI) của bạn: {score}",
+  "@qPsqiResult": {
+    "placeholders": {
+      "score": {
+        "type": "Object"
+      }
+    }
+  },
   "qPsqiBad": "Giấc ngủ của bạn có vẻ kém, cần cải thiện!",
   "qPsqiGood": "Giấc ngủ của bạn khá tốt!",
   "librarySearchHint": "Tìm kiếm tần số, thiên nhiên, tâm trạng",

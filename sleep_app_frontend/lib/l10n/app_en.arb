@@ -26,8 +26,8 @@
   "dailySurveyErrorFillAll": "Please fill in all information!",
   "dailySurveySuccess": "Survey results saved successfully!",
   "dailySurveyErrorGeneric": "An error occurred, please try again!",
-  "loginUsernameLabel": "Account",
-  "loginUsernameHint": "Enter your username",
+  "loginEmailLabel": "Account",
+  "loginEmailHint": "Enter your email",
   "loginPasswordLabel": "Password",
   "loginPasswordHint": "Enter your password",
   "loginButton": "Login ->",
@@ -97,7 +97,7 @@
   "@qPsqiResult": {
     "placeholders": {
       "score": {
-        "type": "int"
+        "type": "Object"
       }
     }
   },

@@ -130,7 +130,7 @@ class _MyAppState extends State<MyApp> {
           home: child,
         );
       },
-      child: const AuthWrapper(),
+      child: const LoginScreen(),
     );
   }
 }

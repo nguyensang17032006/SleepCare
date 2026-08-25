@@ -5,7 +5,6 @@ class AuthRemoteSource {
   // Hàm đăng ký bằng Email & Password
   Future<AuthResponse> signUpWithEmail({
     required String fullname,
-    required String username,
     required String email,
     required String password,
   }) async {
@@ -13,7 +12,7 @@ class AuthRemoteSource {
       return await supabaseClient.auth.signUp(
         email: email,
         password: password,
-        data: {'full_name': fullname, 'username': username},
+        data: {'full_name': fullname},
       );
     } catch (e) {
       rethrow;
@@ -21,8 +20,8 @@ class AuthRemoteSource {
   }
 
   // dăng nhập bằng email & password
-  Future<void> signInWithUsername({
-    required String username,
+  Future<void> signInWithEmail({
+    required String email,
     required String password,
   }) async {
     try {
@@ -30,8 +29,7 @@ class AuthRemoteSource {
 
       final response = await supabaseClient
           .from('profile_sleep_app')
-          .select('email')
-          .eq('username', username.trim())
+          .select('email').eq('email', email)
           .maybeSingle(); // Trả về 1 dòng duy nhất hoặc null nếu không thấy
 
       // Nếu không tìm thấy username trong hệ thống
@@ -60,7 +58,7 @@ class AuthRemoteSource {
       await supabaseClient.auth.verifyOTP(
         email: email,
         token: otp,
-        type: OtpType.email,
+        type: OtpType.signup,
       );
     } catch (e) {
       rethrow;

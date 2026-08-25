@@ -88,10 +88,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dailySurveyErrorGeneric => 'Có lỗi xảy ra, vui lòng thử lại!';
 
   @override
-  String get loginUsernameLabel => 'Tài khoản';
+  String get loginEmailLabel => 'Tài khoản';
 
   @override
-  String get loginUsernameHint => 'Nhập tên người dùng';
+  String get loginEmailHint => 'Nhập email người dùng';
 
   @override
   String get loginPasswordLabel => 'Mật khẩu';
@@ -300,7 +300,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Vui lòng trả lời tất cả câu hỏi hoặc có lỗi xảy ra!';
 
   @override
-  String qPsqiResult(int score) {
+  String qPsqiResult(Object score) {
     return 'Điểm chất lượng giấc ngủ (PSQI) của bạn: $score';
   }
 

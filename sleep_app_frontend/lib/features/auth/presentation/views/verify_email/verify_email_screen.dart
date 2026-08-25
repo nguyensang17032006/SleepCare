@@ -116,6 +116,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     autofocus: true,
                     keyboardType: TextInputType.number,
 
+                    errorText: authVM.errorMessage,
                     forceErrorState: authVM.errorMessage != null,
 
                     errorTextStyle: TextStyle(

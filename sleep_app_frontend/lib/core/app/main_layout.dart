@@ -31,7 +31,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
           _currentIndex = 3;
         }),
       ),
-      body: _screens[_currentIndex],
+      // Giữ nguyên trạng thái của các tab, không bị reload khi chuyển qua lại
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppTheme.bgColor,
         type: BottomNavigationBarType.fixed,

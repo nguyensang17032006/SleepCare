@@ -100,1040 +100,1040 @@ abstract class AppLocalizations {
 
   /// No description provided for @homeSoothingMelody.
   ///
-  /// In en, this message translates to:
-  /// **'SOOTHING MELODY SELECTION'**
+  /// In vi, this message translates to:
+  /// **'NHẠC THƯ GIÃN'**
   String get homeSoothingMelody;
 
   /// No description provided for @homeChooseMusic.
   ///
-  /// In en, this message translates to:
-  /// **'Choose music to your preference'**
+  /// In vi, this message translates to:
+  /// **'Chọn bản nhạc bạn thích'**
   String get homeChooseMusic;
 
   /// No description provided for @homeActiveSession.
   ///
-  /// In en, this message translates to:
-  /// **'ACTIVE SESSION'**
+  /// In vi, this message translates to:
+  /// **'ĐANG PHÁT'**
   String get homeActiveSession;
 
   /// No description provided for @homeOceanWaves.
   ///
-  /// In en, this message translates to:
-  /// **'Ocean Waves & Rain'**
+  /// In vi, this message translates to:
+  /// **'Sóng biển & Mưa rơi'**
   String get homeOceanWaves;
 
   /// No description provided for @homeRecordSleep.
   ///
-  /// In en, this message translates to:
-  /// **'RECORD SLEEP'**
+  /// In vi, this message translates to:
+  /// **'GHI NHẬN GIẤC NGỦ'**
   String get homeRecordSleep;
 
   /// No description provided for @homeEnterLastNightData.
   ///
-  /// In en, this message translates to:
-  /// **'Enter last night\'s data'**
+  /// In vi, this message translates to:
+  /// **'Nhập dữ liệu đêm qua'**
   String get homeEnterLastNightData;
 
   /// No description provided for @dailySurveyTitle.
   ///
-  /// In en, this message translates to:
-  /// **'DAILY SURVEY'**
+  /// In vi, this message translates to:
+  /// **'KHẢO SÁT HẰNG NGÀY'**
   String get dailySurveyTitle;
 
   /// No description provided for @dailySurveyGreeting.
   ///
-  /// In en, this message translates to:
-  /// **'Good morning! How did you sleep last night?'**
+  /// In vi, this message translates to:
+  /// **'Chào buổi sáng! Đêm qua bạn ngủ thế nào?'**
   String get dailySurveyGreeting;
 
   /// No description provided for @dailySurveyQ1.
   ///
-  /// In en, this message translates to:
-  /// **'1. What time did you go to bed last night?'**
+  /// In vi, this message translates to:
+  /// **'1. Đêm qua bạn lên giường lúc mấy giờ?'**
   String get dailySurveyQ1;
 
   /// No description provided for @dailySurveySelectTime.
   ///
-  /// In en, this message translates to:
-  /// **'Select time'**
+  /// In vi, this message translates to:
+  /// **'Chọn giờ'**
   String get dailySurveySelectTime;
 
   /// No description provided for @dailySurveyQ2.
   ///
-  /// In en, this message translates to:
-  /// **'2. How many minutes did it take you to fall asleep?'**
+  /// In vi, this message translates to:
+  /// **'2. Bạn mất bao nhiêu phút để vào giấc ngủ?'**
   String get dailySurveyQ2;
 
   /// No description provided for @dailySurveyExample15.
   ///
-  /// In en, this message translates to:
-  /// **'Example: 15'**
+  /// In vi, this message translates to:
+  /// **'Ví dụ: 15'**
   String get dailySurveyExample15;
 
   /// No description provided for @dailySurveyQ3.
   ///
-  /// In en, this message translates to:
-  /// **'3. What time did you wake up this morning?'**
+  /// In vi, this message translates to:
+  /// **'3. Sáng nay bạn thức dậy lúc mấy giờ?'**
   String get dailySurveyQ3;
 
   /// No description provided for @dailySurveyQ4.
   ///
-  /// In en, this message translates to:
-  /// **'4. How many hours of actual sleep did you get?'**
+  /// In vi, this message translates to:
+  /// **'4. Số giờ bạn thực sự ngủ là bao nhiêu?'**
   String get dailySurveyQ4;
 
   /// No description provided for @dailySurveyExample75.
   ///
-  /// In en, this message translates to:
-  /// **'Example: 7.5'**
+  /// In vi, this message translates to:
+  /// **'Ví dụ: 7.5'**
   String get dailySurveyExample75;
 
   /// No description provided for @dailySurveyQ5.
   ///
-  /// In en, this message translates to:
-  /// **'5. How many times did you wake up during the night?'**
+  /// In vi, this message translates to:
+  /// **'5. Đêm qua bạn thức giấc mấy lần?'**
   String get dailySurveyQ5;
 
   /// No description provided for @dailySurveyExampleCount.
   ///
-  /// In en, this message translates to:
-  /// **'Example: 0, 1, 2...'**
+  /// In vi, this message translates to:
+  /// **'Ví dụ: 0, 1, 2...'**
   String get dailySurveyExampleCount;
 
   /// No description provided for @dailySurveyQ6.
   ///
-  /// In en, this message translates to:
-  /// **'6. How would you rate your sleep quality?'**
+  /// In vi, this message translates to:
+  /// **'6. Bạn đánh giá chất lượng giấc ngủ của mình như thế nào?'**
   String get dailySurveyQ6;
 
   /// No description provided for @dailySurveyVeryGood.
   ///
-  /// In en, this message translates to:
-  /// **'Very good'**
+  /// In vi, this message translates to:
+  /// **'Rất tốt'**
   String get dailySurveyVeryGood;
 
   /// No description provided for @dailySurveyFairlyGood.
   ///
-  /// In en, this message translates to:
-  /// **'Fairly good'**
+  /// In vi, this message translates to:
+  /// **'Khá tốt'**
   String get dailySurveyFairlyGood;
 
   /// No description provided for @dailySurveyFairlyBad.
   ///
-  /// In en, this message translates to:
-  /// **'Fairly bad'**
+  /// In vi, this message translates to:
+  /// **'Khá tệ'**
   String get dailySurveyFairlyBad;
 
   /// No description provided for @dailySurveyVeryBad.
   ///
-  /// In en, this message translates to:
-  /// **'Very bad'**
+  /// In vi, this message translates to:
+  /// **'Rất tệ'**
   String get dailySurveyVeryBad;
 
   /// No description provided for @dailySurveySave.
   ///
-  /// In en, this message translates to:
-  /// **'Save results'**
+  /// In vi, this message translates to:
+  /// **'Lưu kết quả'**
   String get dailySurveySave;
 
   /// No description provided for @dailySurveyErrorFillAll.
   ///
-  /// In en, this message translates to:
-  /// **'Please fill in all information!'**
+  /// In vi, this message translates to:
+  /// **'Vui lòng điền đầy đủ các thông tin!'**
   String get dailySurveyErrorFillAll;
 
   /// No description provided for @dailySurveySuccess.
   ///
-  /// In en, this message translates to:
-  /// **'Survey results saved successfully!'**
+  /// In vi, this message translates to:
+  /// **'Đã lưu kết quả khảo sát thành công!'**
   String get dailySurveySuccess;
 
   /// No description provided for @dailySurveyErrorGeneric.
   ///
-  /// In en, this message translates to:
-  /// **'An error occurred, please try again!'**
+  /// In vi, this message translates to:
+  /// **'Có lỗi xảy ra, vui lòng thử lại!'**
   String get dailySurveyErrorGeneric;
 
-  /// No description provided for @loginUsernameLabel.
+  /// No description provided for @loginEmailLabel.
   ///
-  /// In en, this message translates to:
-  /// **'Account'**
-  String get loginUsernameLabel;
+  /// In vi, this message translates to:
+  /// **'Tài khoản'**
+  String get loginEmailLabel;
 
-  /// No description provided for @loginUsernameHint.
+  /// No description provided for @loginEmailHint.
   ///
-  /// In en, this message translates to:
-  /// **'Enter your username'**
-  String get loginUsernameHint;
+  /// In vi, this message translates to:
+  /// **'Nhập email người dùng'**
+  String get loginEmailHint;
 
   /// No description provided for @loginPasswordLabel.
   ///
-  /// In en, this message translates to:
-  /// **'Password'**
+  /// In vi, this message translates to:
+  /// **'Mật khẩu'**
   String get loginPasswordLabel;
 
   /// No description provided for @loginPasswordHint.
   ///
-  /// In en, this message translates to:
-  /// **'Enter your password'**
+  /// In vi, this message translates to:
+  /// **'Nhập mật khẩu của bạn'**
   String get loginPasswordHint;
 
   /// No description provided for @loginButton.
   ///
-  /// In en, this message translates to:
-  /// **'Login ->'**
+  /// In vi, this message translates to:
+  /// **'Đăng nhập ->'**
   String get loginButton;
 
   /// No description provided for @loginOr.
   ///
-  /// In en, this message translates to:
-  /// **'OR'**
+  /// In vi, this message translates to:
+  /// **'HOẶC'**
   String get loginOr;
 
   /// No description provided for @loginTerms.
   ///
-  /// In en, this message translates to:
-  /// **'By logging in, you agree to our Terms of Service and Privacy Policy.'**
+  /// In vi, this message translates to:
+  /// **'Bằng cách đăng nhập, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.'**
   String get loginTerms;
 
   /// No description provided for @loginForgotPassword.
   ///
-  /// In en, this message translates to:
-  /// **'Forgot password?'**
+  /// In vi, this message translates to:
+  /// **'Quên mật khẩu?'**
   String get loginForgotPassword;
 
   /// No description provided for @loginCreateAccount.
   ///
-  /// In en, this message translates to:
-  /// **'Create a new account'**
+  /// In vi, this message translates to:
+  /// **'Tạo tài khoản mới'**
   String get loginCreateAccount;
 
   /// No description provided for @loginWithGoogle.
   ///
-  /// In en, this message translates to:
-  /// **'Sign in with Google'**
+  /// In vi, this message translates to:
+  /// **'Đăng nhập bằng Google'**
   String get loginWithGoogle;
 
   /// No description provided for @q1SelectTime.
   ///
-  /// In en, this message translates to:
-  /// **'Select time'**
+  /// In vi, this message translates to:
+  /// **'Chọn thời gian'**
   String get q1SelectTime;
 
   /// No description provided for @qStep1.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'STEP 1 OF 3 | Q1-Q4'**
   String get qStep1;
 
   /// No description provided for @qWelcome.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'Hi, welcome to\nSleepCare'**
   String get qWelcome;
 
   /// No description provided for @qIntro.
   ///
-  /// In en, this message translates to:
-  /// **'Please tell us about your sleep\nduring the past month.'**
+  /// In vi, this message translates to:
+  /// **'Hãy cho chúng tôi biết về giấc ngủ của bạn\ntrong tháng vừa qua.'**
   String get qIntro;
 
   /// No description provided for @qQuestion1.
   ///
-  /// In en, this message translates to:
-  /// **'QUESTION 01'**
+  /// In vi, this message translates to:
+  /// **'CÂU HỎI 01'**
   String get qQuestion1;
 
   /// No description provided for @q1Desc.
   ///
-  /// In en, this message translates to:
-  /// **'During the past month, what time have you\nusually gone to bed at night?'**
+  /// In vi, this message translates to:
+  /// **'Trong tháng vừa rồi, bạn thường đi\nngủ vào ban đêm lúc mấy giờ?'**
   String get q1Desc;
 
   /// No description provided for @qQuestion2.
   ///
-  /// In en, this message translates to:
-  /// **'QUESTION 02'**
+  /// In vi, this message translates to:
+  /// **'CÂU HỎI 02'**
   String get qQuestion2;
 
   /// No description provided for @q2Desc.
   ///
-  /// In en, this message translates to:
-  /// **'How long (in minutes) has it usually taken\nyou to fall asleep each night?'**
+  /// In vi, this message translates to:
+  /// **'Mỗi đêm bạn thường mất khoảng bao\nnhiêu phút để ngủ được?'**
   String get q2Desc;
 
   /// No description provided for @q2Hint.
   ///
-  /// In en, this message translates to:
-  /// **'Example: 15'**
+  /// In vi, this message translates to:
+  /// **'Ví dụ: 15'**
   String get q2Hint;
 
   /// No description provided for @qQuestion3.
   ///
-  /// In en, this message translates to:
-  /// **'QUESTION 03'**
+  /// In vi, this message translates to:
+  /// **'CÂU HỎI 03'**
   String get qQuestion3;
 
   /// No description provided for @q3Desc.
   ///
-  /// In en, this message translates to:
-  /// **'What time have you usually gotten up in the morning?'**
+  /// In vi, this message translates to:
+  /// **'Bạn thường thức dậy lúc mấy giờ?'**
   String get q3Desc;
 
   /// No description provided for @qQuestion4.
   ///
-  /// In en, this message translates to:
-  /// **'QUESTION 04'**
+  /// In vi, this message translates to:
+  /// **'CÂU HỎI 04'**
   String get qQuestion4;
 
   /// No description provided for @q4Desc.
   ///
-  /// In en, this message translates to:
-  /// **'How many hours of actual sleep did you\nget at night?'**
+  /// In vi, this message translates to:
+  /// **'Mỗi đêm bạn thường ngủ thực tế\nđược mấy tiếng?'**
   String get q4Desc;
 
   /// No description provided for @q4Hint.
   ///
-  /// In en, this message translates to:
-  /// **'Example: 7.5'**
+  /// In vi, this message translates to:
+  /// **'Ví dụ: 7.5'**
   String get q4Hint;
 
   /// No description provided for @qContinue.
   ///
-  /// In en, this message translates to:
-  /// **'Continue ->'**
+  /// In vi, this message translates to:
+  /// **'Tiếp tục ->'**
   String get qContinue;
 
   /// No description provided for @qErrorFillAll.
   ///
-  /// In en, this message translates to:
-  /// **'Please answer all questions'**
+  /// In vi, this message translates to:
+  /// **'Vui lòng trả lời đầy đủ các câu hỏi'**
   String get qErrorFillAll;
 
   /// No description provided for @qFreq0.
   ///
-  /// In en, this message translates to:
-  /// **'None'**
+  /// In vi, this message translates to:
+  /// **'Không'**
   String get qFreq0;
 
   /// No description provided for @qFreq1.
   ///
-  /// In en, this message translates to:
-  /// **'<1 time\n/week'**
+  /// In vi, this message translates to:
+  /// **'<1 lần\n/tuần'**
   String get qFreq1;
 
   /// No description provided for @qFreq2.
   ///
-  /// In en, this message translates to:
-  /// **'1-2 times\n/week'**
+  /// In vi, this message translates to:
+  /// **'1-2 lần\n/tuần'**
   String get qFreq2;
 
   /// No description provided for @qFreq3.
   ///
-  /// In en, this message translates to:
-  /// **'>=3 times\n/week'**
+  /// In vi, this message translates to:
+  /// **'>=3 lần\n/tuần'**
   String get qFreq3;
 
   /// No description provided for @qStep2.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'STEP 2 OF 3 | Q5'**
   String get qStep2;
 
   /// No description provided for @qQuestion5.
   ///
-  /// In en, this message translates to:
-  /// **'QUESTION 05'**
+  /// In vi, this message translates to:
+  /// **'CÂU HỎI 05'**
   String get qQuestion5;
 
   /// No description provided for @q5Desc.
   ///
-  /// In en, this message translates to:
-  /// **'During the past month, how often have you had trouble sleeping because you...'**
+  /// In vi, this message translates to:
+  /// **'Tần suất bạn gặp phải những hiện tượng gây khó ngủ trong tháng vừa qua?'**
   String get q5Desc;
 
   /// No description provided for @q5a.
   ///
-  /// In en, this message translates to:
-  /// **'a. Cannot get to sleep within 30 minutes'**
+  /// In vi, this message translates to:
+  /// **'a. Sau 30 phút nhắm mắt vẫn không thể ngủ được'**
   String get q5a;
 
   /// No description provided for @q5b.
   ///
-  /// In en, this message translates to:
-  /// **'b. Wake up in the middle of the night or early morning'**
+  /// In vi, this message translates to:
+  /// **'b. Tỉnh dậy lúc nửa đêm hoặc sáng sớm'**
   String get q5b;
 
   /// No description provided for @q5c.
   ///
-  /// In en, this message translates to:
-  /// **'c. Have to get up to use the bathroom'**
+  /// In vi, this message translates to:
+  /// **'c. Phải dậy để đi vệ sinh'**
   String get q5c;
 
   /// No description provided for @q5d.
   ///
-  /// In en, this message translates to:
-  /// **'d. Cannot breathe comfortably'**
+  /// In vi, this message translates to:
+  /// **'d. Không thể hít thở bình thường'**
   String get q5d;
 
   /// No description provided for @q5e.
   ///
-  /// In en, this message translates to:
-  /// **'e. Cough or snore loudly'**
+  /// In vi, this message translates to:
+  /// **'e. Ho hoặc ngáy lớn tiếng khi ngủ'**
   String get q5e;
 
   /// No description provided for @q5f.
   ///
-  /// In en, this message translates to:
-  /// **'f. Feel too cold'**
+  /// In vi, this message translates to:
+  /// **'f. Cảm thấy quá lạnh nên không ngủ được'**
   String get q5f;
 
   /// No description provided for @q5g.
   ///
-  /// In en, this message translates to:
-  /// **'g. Feel too hot'**
+  /// In vi, this message translates to:
+  /// **'g. Cảm thấy quá nóng nên không ngủ được'**
   String get q5g;
 
   /// No description provided for @q5h.
   ///
-  /// In en, this message translates to:
-  /// **'h. Had bad dreams'**
+  /// In vi, this message translates to:
+  /// **'h. Gặp ác mộng khó ngủ trở lại'**
   String get q5h;
 
   /// No description provided for @q5i.
   ///
-  /// In en, this message translates to:
-  /// **'i. Have pain'**
+  /// In vi, this message translates to:
+  /// **'i. Bị đau nên không ngủ được'**
   String get q5i;
 
   /// No description provided for @q5jTitle.
   ///
-  /// In en, this message translates to:
-  /// **'j. Other reason(s)'**
+  /// In vi, this message translates to:
+  /// **'j. Lý do khác khiến bạn khó ngủ'**
   String get q5jTitle;
 
   /// No description provided for @q5jHint.
   ///
-  /// In en, this message translates to:
-  /// **'Enter your reason...'**
+  /// In vi, this message translates to:
+  /// **'Nhập lý do của bạn...'**
   String get q5jHint;
 
   /// No description provided for @q5jFreq.
   ///
-  /// In en, this message translates to:
-  /// **'How often?'**
+  /// In vi, this message translates to:
+  /// **'Tần suất bạn mất ngủ vì lý do trên?'**
   String get q5jFreq;
 
   /// No description provided for @qStep3.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'STEP 3 OF 3 | Q6-Q10'**
   String get qStep3;
 
   /// No description provided for @q6Title.
   ///
-  /// In en, this message translates to:
-  /// **'6. During the past month, how often have you taken medicine to help you sleep?'**
+  /// In vi, this message translates to:
+  /// **'6. Trong tháng vừa qua, tần suất bạn uống thuốc giúp bạn ngủ?'**
   String get q6Title;
 
   /// No description provided for @q7Title.
   ///
-  /// In en, this message translates to:
-  /// **'7. During the past month, how often have you had trouble staying awake while driving, eating meals, or engaging in social activity?'**
+  /// In vi, this message translates to:
+  /// **'7. Trong tháng vừa qua, bạn có thường xuyên gặp khó khăn trong việc tỉnh táo khi lái xe, ăn uống hoặc tham gia vào các hoạt động xã hội không?'**
   String get q7Title;
 
   /// No description provided for @q8Title.
   ///
-  /// In en, this message translates to:
-  /// **'8. During the past month, how much of a problem has it been for you to keep up enough enthusiasm to get things done?'**
+  /// In vi, this message translates to:
+  /// **'8. Trong tháng qua, bạn đã gặp bao nhiêu vấn đề để duy trì đủ nhiệt huyết để hoàn thành công việc?'**
   String get q8Title;
 
   /// No description provided for @q8Opt0.
   ///
-  /// In en, this message translates to:
-  /// **'No problem at all'**
+  /// In vi, this message translates to:
+  /// **'Không có vấn đề gì cả'**
   String get q8Opt0;
 
   /// No description provided for @q8Opt1.
   ///
-  /// In en, this message translates to:
-  /// **'Only a very slight problem'**
+  /// In vi, this message translates to:
+  /// **'Hơi có vấn đề'**
   String get q8Opt1;
 
   /// No description provided for @q8Opt2.
   ///
-  /// In en, this message translates to:
-  /// **'Somewhat of a problem'**
+  /// In vi, this message translates to:
+  /// **'Khá có vấn đề'**
   String get q8Opt2;
 
   /// No description provided for @q8Opt3.
   ///
-  /// In en, this message translates to:
-  /// **'A very big problem'**
+  /// In vi, this message translates to:
+  /// **'Rất có vấn đề'**
   String get q8Opt3;
 
   /// No description provided for @q9Title.
   ///
-  /// In en, this message translates to:
-  /// **'9. During the past month, how would you rate your sleep quality overall?'**
+  /// In vi, this message translates to:
+  /// **'9. Trong tháng qua, bạn đánh giá chất lượng giấc ngủ của mình như thế nào?'**
   String get q9Title;
 
   /// No description provided for @q10Title.
   ///
-  /// In en, this message translates to:
-  /// **'10. Do you have a bed partner or roommate?'**
+  /// In vi, this message translates to:
+  /// **'10. Bạn có bạn giường hoặc phòng không?'**
   String get q10Title;
 
   /// No description provided for @qYes.
   ///
-  /// In en, this message translates to:
-  /// **'Yes'**
+  /// In vi, this message translates to:
+  /// **'Có'**
   String get qYes;
 
   /// No description provided for @qNo.
   ///
-  /// In en, this message translates to:
-  /// **'No'**
+  /// In vi, this message translates to:
+  /// **'Không'**
   String get qNo;
 
   /// No description provided for @q10SubTitle.
   ///
-  /// In en, this message translates to:
-  /// **'10. If you have a roommate or bed partner, ask him/her how often in the past month you have had...'**
+  /// In vi, this message translates to:
+  /// **'10. Nếu bạn có bạn cùng phòng, họ có nhận thấy bạn:'**
   String get q10SubTitle;
 
   /// No description provided for @q10a.
   ///
-  /// In en, this message translates to:
-  /// **'a. Loud snoring'**
+  /// In vi, this message translates to:
+  /// **'a. Ngáy to'**
   String get q10a;
 
   /// No description provided for @q10b.
   ///
-  /// In en, this message translates to:
-  /// **'b. Long pauses between breaths while asleep'**
+  /// In vi, this message translates to:
+  /// **'b. Ngưng thở một lúc khi ngủ'**
   String get q10b;
 
   /// No description provided for @q10c.
   ///
-  /// In en, this message translates to:
-  /// **'c. Legs twitching or jerking while you sleep'**
+  /// In vi, this message translates to:
+  /// **'c. Chân co giật khi ngủ'**
   String get q10c;
 
   /// No description provided for @q10d.
   ///
-  /// In en, this message translates to:
-  /// **'d. Episodes of disorientation or confusion during sleep'**
+  /// In vi, this message translates to:
+  /// **'d. Bị ngã khỏi giường'**
   String get q10d;
 
   /// No description provided for @q10eTitle.
   ///
-  /// In en, this message translates to:
-  /// **'e. Other restlessness while you sleep'**
+  /// In vi, this message translates to:
+  /// **'e. Tình trạng đặc biệt khác'**
   String get q10eTitle;
 
   /// No description provided for @q10eHint.
   ///
-  /// In en, this message translates to:
-  /// **'Enter other conditions...'**
+  /// In vi, this message translates to:
+  /// **'Nhập tình trạng khác...'**
   String get q10eHint;
 
   /// No description provided for @q10eFreq.
   ///
-  /// In en, this message translates to:
-  /// **'How often?'**
+  /// In vi, this message translates to:
+  /// **'Tần suất xuất hiện?'**
   String get q10eFreq;
 
   /// No description provided for @qFinish.
   ///
-  /// In en, this message translates to:
-  /// **'Finish'**
+  /// In vi, this message translates to:
+  /// **'Hoàn thành'**
   String get qFinish;
 
   /// No description provided for @qErrorGeneric.
   ///
-  /// In en, this message translates to:
-  /// **'Please answer all questions or an error occurred!'**
+  /// In vi, this message translates to:
+  /// **'Vui lòng trả lời tất cả câu hỏi hoặc có lỗi xảy ra!'**
   String get qErrorGeneric;
 
   /// No description provided for @qPsqiResult.
   ///
-  /// In en, this message translates to:
-  /// **'Your PSQI Score: {score}'**
-  String qPsqiResult(int score);
+  /// In vi, this message translates to:
+  /// **'Điểm chất lượng giấc ngủ (PSQI) của bạn: {score}'**
+  String qPsqiResult(Object score);
 
   /// No description provided for @qPsqiBad.
   ///
-  /// In en, this message translates to:
-  /// **'Your sleep quality seems poor, needs improvement!'**
+  /// In vi, this message translates to:
+  /// **'Giấc ngủ của bạn có vẻ kém, cần cải thiện!'**
   String get qPsqiBad;
 
   /// No description provided for @qPsqiGood.
   ///
-  /// In en, this message translates to:
-  /// **'Your sleep quality is fairly good!'**
+  /// In vi, this message translates to:
+  /// **'Giấc ngủ của bạn khá tốt!'**
   String get qPsqiGood;
 
   /// No description provided for @librarySearchHint.
   ///
-  /// In en, this message translates to:
-  /// **'Search frequencies, nature, or moods'**
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm tần số, thiên nhiên, tâm trạng'**
   String get librarySearchHint;
 
   /// No description provided for @libraryPersonalized.
   ///
-  /// In en, this message translates to:
-  /// **'PERSONALIZED'**
+  /// In vi, this message translates to:
+  /// **'CÁ NHÂN HÓA'**
   String get libraryPersonalized;
 
   /// No description provided for @libraryRecommended.
   ///
-  /// In en, this message translates to:
-  /// **'Recommended for You'**
+  /// In vi, this message translates to:
+  /// **'Đề xuất cho bạn'**
   String get libraryRecommended;
 
   /// No description provided for @libraryNew.
   ///
-  /// In en, this message translates to:
-  /// **'NEW'**
+  /// In vi, this message translates to:
+  /// **'MỚI'**
   String get libraryNew;
 
   /// No description provided for @libraryAtmosphere.
   ///
-  /// In en, this message translates to:
-  /// **'ATMOSPHERE 3D'**
+  /// In vi, this message translates to:
+  /// **'BẦU KHÔNG KHÍ 3D'**
   String get libraryAtmosphere;
 
   /// No description provided for @libraryNatureMusic.
   ///
-  /// In en, this message translates to:
-  /// **'Nature Music'**
+  /// In vi, this message translates to:
+  /// **'Nhạc Thiên Nhiên'**
   String get libraryNatureMusic;
 
   /// No description provided for @libraryViewAll.
   ///
-  /// In en, this message translates to:
-  /// **'View all'**
+  /// In vi, this message translates to:
+  /// **'Xem tất cả'**
   String get libraryViewAll;
 
   /// No description provided for @reportInsightsEngine.
   ///
-  /// In en, this message translates to:
-  /// **'INSIGHTS ENGINE'**
+  /// In vi, this message translates to:
+  /// **'ĐỘNG CƠ PHÂN TÍCH'**
   String get reportInsightsEngine;
 
   /// No description provided for @reportSleepArchitecture.
   ///
-  /// In en, this message translates to:
-  /// **'Your Sleep\nArchitecture'**
+  /// In vi, this message translates to:
+  /// **'Cấu trúc\nGiấc ngủ của bạn'**
   String get reportSleepArchitecture;
 
   /// No description provided for @reportAvgDuration.
   ///
-  /// In en, this message translates to:
-  /// **'Average Duration'**
+  /// In vi, this message translates to:
+  /// **'Thời lượng trung bình'**
   String get reportAvgDuration;
 
   /// No description provided for @reportHours.
   ///
-  /// In en, this message translates to:
-  /// **'hours'**
+  /// In vi, this message translates to:
+  /// **'giờ'**
   String get reportHours;
 
   /// No description provided for @reportMoreSleep.
   ///
-  /// In en, this message translates to:
-  /// **'12% more sleep than last week'**
+  /// In vi, this message translates to:
+  /// **'Ngủ nhiều hơn 12% so với tuần trước'**
   String get reportMoreSleep;
 
   /// No description provided for @reportPillowTalkTitle.
   ///
-  /// In en, this message translates to:
-  /// **'PILLOW TALK'**
+  /// In vi, this message translates to:
+  /// **'CHUYỆN BÊN GỐI'**
   String get reportPillowTalkTitle;
 
   /// No description provided for @reportNightlyRhythms.
   ///
-  /// In en, this message translates to:
-  /// **'Nightly Rhythms'**
+  /// In vi, this message translates to:
+  /// **'Nhịp điệu hàng đêm'**
   String get reportNightlyRhythms;
 
   /// No description provided for @reportNightlyRhythmsDesc.
   ///
-  /// In en, this message translates to:
-  /// **'Your sleep latency was noticeably improved by 15% during REM cycles. Some evening deep tones worked well for you last month.'**
+  /// In vi, this message translates to:
+  /// **'Độ trễ giấc ngủ của bạn đã cải thiện rõ rệt 15% trong các chu kỳ REM. Một số âm thanh trầm vào buổi tối có tác dụng tốt với bạn trong tháng qua.'**
   String get reportNightlyRhythmsDesc;
 
   /// No description provided for @reportPillowTalk.
   ///
-  /// In en, this message translates to:
-  /// **'Pillow Talk'**
+  /// In vi, this message translates to:
+  /// **'Chuyện bên gối'**
   String get reportPillowTalk;
 
   /// No description provided for @reportPillowTalkDesc.
   ///
-  /// In en, this message translates to:
-  /// **'Consistency is key. Your 10:30 PM bed time is becoming a normal routine for your circadian body.'**
+  /// In vi, this message translates to:
+  /// **'Sự nhất quán là chìa khóa. Giờ đi ngủ 10:30 tối của bạn đang trở thành thói quen bình thường cho cơ thể bạn.'**
   String get reportPillowTalkDesc;
 
   /// No description provided for @reportGeneratePdf.
   ///
-  /// In en, this message translates to:
-  /// **'Generate Full PDF Report'**
+  /// In vi, this message translates to:
+  /// **'Tạo báo cáo PDF đầy đủ'**
   String get reportGeneratePdf;
 
   /// No description provided for @reportWeeklyConsistency.
   ///
-  /// In en, this message translates to:
-  /// **'Weekly Consistency'**
+  /// In vi, this message translates to:
+  /// **'Độ ổn định hàng tuần'**
   String get reportWeeklyConsistency;
 
   /// No description provided for @dayMon.
   ///
-  /// In en, this message translates to:
-  /// **'MON'**
+  /// In vi, this message translates to:
+  /// **'T2'**
   String get dayMon;
 
   /// No description provided for @dayTue.
   ///
-  /// In en, this message translates to:
-  /// **'TUE'**
+  /// In vi, this message translates to:
+  /// **'T3'**
   String get dayTue;
 
   /// No description provided for @dayWed.
   ///
-  /// In en, this message translates to:
-  /// **'WED'**
+  /// In vi, this message translates to:
+  /// **'T4'**
   String get dayWed;
 
   /// No description provided for @dayThu.
   ///
-  /// In en, this message translates to:
-  /// **'THU'**
+  /// In vi, this message translates to:
+  /// **'T5'**
   String get dayThu;
 
   /// No description provided for @dayFri.
   ///
-  /// In en, this message translates to:
-  /// **'FRI'**
+  /// In vi, this message translates to:
+  /// **'T6'**
   String get dayFri;
 
   /// No description provided for @daySat.
   ///
-  /// In en, this message translates to:
-  /// **'SAT'**
+  /// In vi, this message translates to:
+  /// **'T7'**
   String get daySat;
 
   /// No description provided for @daySun.
   ///
-  /// In en, this message translates to:
-  /// **'SUN'**
+  /// In vi, this message translates to:
+  /// **'CN'**
   String get daySun;
 
   /// No description provided for @reportSleepQualityIndex.
   ///
-  /// In en, this message translates to:
-  /// **'Sleep Quality Index'**
+  /// In vi, this message translates to:
+  /// **'Chỉ số chất lượng giấc ngủ'**
   String get reportSleepQualityIndex;
 
   /// No description provided for @reportWeekly.
   ///
-  /// In en, this message translates to:
-  /// **'Weekly'**
+  /// In vi, this message translates to:
+  /// **'Hàng tuần'**
   String get reportWeekly;
 
   /// No description provided for @reportMonthly.
   ///
-  /// In en, this message translates to:
-  /// **'Monthly'**
+  /// In vi, this message translates to:
+  /// **'Hàng tháng'**
   String get reportMonthly;
 
   /// No description provided for @reportNoData.
   ///
-  /// In en, this message translates to:
-  /// **'No data available'**
+  /// In vi, this message translates to:
+  /// **'Không có dữ liệu'**
   String get reportNoData;
 
   /// No description provided for @week1.
   ///
-  /// In en, this message translates to:
-  /// **'WEEK 1'**
+  /// In vi, this message translates to:
+  /// **'TUẦN 1'**
   String get week1;
 
   /// No description provided for @week2.
   ///
-  /// In en, this message translates to:
-  /// **'WEEK 2'**
+  /// In vi, this message translates to:
+  /// **'TUẦN 2'**
   String get week2;
 
   /// No description provided for @week3.
   ///
-  /// In en, this message translates to:
-  /// **'WEEK 3'**
+  /// In vi, this message translates to:
+  /// **'TUẦN 3'**
   String get week3;
 
   /// No description provided for @week4.
   ///
-  /// In en, this message translates to:
-  /// **'WEEK 4'**
+  /// In vi, this message translates to:
+  /// **'TUẦN 4'**
   String get week4;
 
   /// No description provided for @settingsTitle.
   ///
-  /// In en, this message translates to:
-  /// **'SETTINGS'**
+  /// In vi, this message translates to:
+  /// **'CÀI ĐẶT'**
   String get settingsTitle;
 
   /// No description provided for @settingsSleepHygiene.
   ///
-  /// In en, this message translates to:
-  /// **'Sleep Hygiene'**
+  /// In vi, this message translates to:
+  /// **'Vệ sinh giấc ngủ'**
   String get settingsSleepHygiene;
 
   /// No description provided for @settingsLanguage.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'Ngôn ngữ / Language'**
   String get settingsLanguage;
 
   /// No description provided for @settingsAutomation.
   ///
-  /// In en, this message translates to:
-  /// **'Automation'**
+  /// In vi, this message translates to:
+  /// **'Tự động hóa'**
   String get settingsAutomation;
 
   /// No description provided for @settingsOsFocus.
   ///
-  /// In en, this message translates to:
-  /// **'Autocall in OS Focus'**
+  /// In vi, this message translates to:
+  /// **'Tự động gọi trong chế độ Tập trung'**
   String get settingsOsFocus;
 
   /// No description provided for @settingsOsFocusDesc.
   ///
-  /// In en, this message translates to:
-  /// **'Mutes all notifications when active'**
+  /// In vi, this message translates to:
+  /// **'Tắt tất cả thông báo khi hoạt động'**
   String get settingsOsFocusDesc;
 
   /// No description provided for @settingsMusicPlayback.
   ///
-  /// In en, this message translates to:
-  /// **'Music Playback'**
+  /// In vi, this message translates to:
+  /// **'Phát nhạc'**
   String get settingsMusicPlayback;
 
   /// No description provided for @settingsDuration.
   ///
-  /// In en, this message translates to:
-  /// **'Duration'**
+  /// In vi, this message translates to:
+  /// **'Thời lượng'**
   String get settingsDuration;
 
   /// No description provided for @settingsReminders.
   ///
-  /// In en, this message translates to:
-  /// **'Reminders'**
+  /// In vi, this message translates to:
+  /// **'Nhắc nhở'**
   String get settingsReminders;
 
   /// No description provided for @settingsSleepPrep.
   ///
-  /// In en, this message translates to:
-  /// **'Sleep Prep Reminder'**
+  /// In vi, this message translates to:
+  /// **'Nhắc nhở chuẩn bị ngủ'**
   String get settingsSleepPrep;
 
   /// No description provided for @settingsSleepPrepDesc.
   ///
-  /// In en, this message translates to:
-  /// **'Reminds at 10:30 PM (30 min \nbefore sleep)'**
+  /// In vi, this message translates to:
+  /// **'Nhắc nhở lúc 10:30 PM (30 phút \ntrước khi ngủ)'**
   String get settingsSleepPrepDesc;
 
   /// No description provided for @settingsSnooze.
   ///
-  /// In en, this message translates to:
-  /// **'Snooze Intervals'**
+  /// In vi, this message translates to:
+  /// **'Khoảng thời gian báo lại'**
   String get settingsSnooze;
 
   /// No description provided for @settingsAudioFidelity.
   ///
-  /// In en, this message translates to:
-  /// **'Audio Fidelity'**
+  /// In vi, this message translates to:
+  /// **'Chất lượng âm thanh'**
   String get settingsAudioFidelity;
 
   /// No description provided for @settingsLossless.
   ///
-  /// In en, this message translates to:
-  /// **'Lossless Playback'**
+  /// In vi, this message translates to:
+  /// **'Phát nhạc Lossless'**
   String get settingsLossless;
 
   /// No description provided for @settingsLosslessDesc.
   ///
-  /// In en, this message translates to:
-  /// **'Higher battery usage'**
+  /// In vi, this message translates to:
+  /// **'Sử dụng pin nhiều hơn'**
   String get settingsLosslessDesc;
 
   /// No description provided for @settingsLogout.
   ///
-  /// In en, this message translates to:
-  /// **'Logout'**
+  /// In vi, this message translates to:
+  /// **'Đăng xuất'**
   String get settingsLogout;
 
   /// No description provided for @settingsLogoutConfirm.
   ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to log out of SleepCare?'**
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc chắn muốn đăng xuất khỏi SleepCare không?'**
   String get settingsLogoutConfirm;
 
   /// No description provided for @settingsNo.
   ///
-  /// In en, this message translates to:
-  /// **'No'**
+  /// In vi, this message translates to:
+  /// **'Không'**
   String get settingsNo;
 
   /// No description provided for @settingsYes.
   ///
-  /// In en, this message translates to:
-  /// **'Yes'**
+  /// In vi, this message translates to:
+  /// **'Có'**
   String get settingsYes;
 
   /// No description provided for @profileEditTitle.
   ///
-  /// In en, this message translates to:
-  /// **'Edit Profile'**
+  /// In vi, this message translates to:
+  /// **'Sửa Hồ Sơ'**
   String get profileEditTitle;
 
   /// No description provided for @profileSave.
   ///
-  /// In en, this message translates to:
-  /// **'Save'**
+  /// In vi, this message translates to:
+  /// **'Lưu'**
   String get profileSave;
 
   /// No description provided for @profileFullName.
   ///
-  /// In en, this message translates to:
-  /// **'Full Name'**
+  /// In vi, this message translates to:
+  /// **'Họ và tên'**
   String get profileFullName;
 
   /// No description provided for @profileFullNameHint.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'Alex Moore'**
   String get profileFullNameHint;
 
   /// No description provided for @profileEmail.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'Email'**
   String get profileEmail;
 
   /// No description provided for @profileEmailHint.
   ///
-  /// In en, this message translates to:
+  /// In vi, this message translates to:
   /// **'alex.m@example.com'**
   String get profileEmailHint;
 
   /// No description provided for @profilePhone.
   ///
-  /// In en, this message translates to:
-  /// **'Phone Number'**
+  /// In vi, this message translates to:
+  /// **'Số điện thoại'**
   String get profilePhone;
 
   /// No description provided for @profilePhoneHint.
   ///
-  /// In en, this message translates to:
-  /// **'Enter your phone number'**
+  /// In vi, this message translates to:
+  /// **'Nhập số điện thoại của bạn'**
   String get profilePhoneHint;
 
   /// No description provided for @profileGender.
   ///
-  /// In en, this message translates to:
-  /// **'Gender'**
+  /// In vi, this message translates to:
+  /// **'Giới tính'**
   String get profileGender;
 
   /// No description provided for @profileSelect.
   ///
-  /// In en, this message translates to:
-  /// **'Select'**
+  /// In vi, this message translates to:
+  /// **'Chọn'**
   String get profileSelect;
 
   /// No description provided for @profileNotSelected.
   ///
-  /// In en, this message translates to:
-  /// **'Not selected'**
+  /// In vi, this message translates to:
+  /// **'Chưa chọn'**
   String get profileNotSelected;
 
   /// No description provided for @profileMale.
   ///
-  /// In en, this message translates to:
-  /// **'Male'**
+  /// In vi, this message translates to:
+  /// **'Nam'**
   String get profileMale;
 
   /// No description provided for @profileFemale.
   ///
-  /// In en, this message translates to:
-  /// **'Female'**
+  /// In vi, this message translates to:
+  /// **'Nữ'**
   String get profileFemale;
 
   /// No description provided for @profileDob.
   ///
-  /// In en, this message translates to:
-  /// **'Date of Birth'**
+  /// In vi, this message translates to:
+  /// **'Ngày sinh'**
   String get profileDob;
 
   /// No description provided for @profileSelectDate.
   ///
-  /// In en, this message translates to:
-  /// **'Select date'**
+  /// In vi, this message translates to:
+  /// **'Chọn ngày'**
   String get profileSelectDate;
 
   /// No description provided for @profileSleepSettings.
   ///
-  /// In en, this message translates to:
-  /// **'Sleep Settings'**
+  /// In vi, this message translates to:
+  /// **'Cài đặt giấc ngủ'**
   String get profileSleepSettings;
 
   /// No description provided for @profileSleepGoal.
   ///
-  /// In en, this message translates to:
-  /// **'Sleep Goal'**
+  /// In vi, this message translates to:
+  /// **'Mục tiêu giấc ngủ'**
   String get profileSleepGoal;
 
   /// No description provided for @profile8Hours.
   ///
-  /// In en, this message translates to:
-  /// **'8.0 hours'**
+  /// In vi, this message translates to:
+  /// **'8.0 giờ'**
   String get profile8Hours;
 
   /// No description provided for @profileTarget.
   ///
-  /// In en, this message translates to:
-  /// **'TARGET'**
+  /// In vi, this message translates to:
+  /// **'MỤC TIÊU'**
   String get profileTarget;
 
   /// No description provided for @profileChronotype.
   ///
-  /// In en, this message translates to:
-  /// **'Chronotype'**
+  /// In vi, this message translates to:
+  /// **'Kiểu ngủ'**
   String get profileChronotype;
 
   /// No description provided for @profileEarlyBird.
   ///
-  /// In en, this message translates to:
-  /// **'Early Bird'**
+  /// In vi, this message translates to:
+  /// **'Chào mào (Dậy sớm)'**
   String get profileEarlyBird;
 
   /// No description provided for @profileSecurity.
   ///
-  /// In en, this message translates to:
-  /// **'Security'**
+  /// In vi, this message translates to:
+  /// **'Bảo mật'**
   String get profileSecurity;
 
   /// No description provided for @profileChangePassword.
   ///
-  /// In en, this message translates to:
-  /// **'Change Password'**
+  /// In vi, this message translates to:
+  /// **'Đổi mật khẩu'**
   String get profileChangePassword;
 
   /// No description provided for @profileUpdateSuccess.
   ///
-  /// In en, this message translates to:
-  /// **'Profile updated successfully!'**
+  /// In vi, this message translates to:
+  /// **'Cập nhật Profile thành công!'**
   String get profileUpdateSuccess;
 }
 

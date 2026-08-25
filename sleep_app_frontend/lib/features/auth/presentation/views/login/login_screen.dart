@@ -9,7 +9,6 @@ import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
-import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
 import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,14 +19,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late TextEditingController _usernameController;
+  late TextEditingController _emailController;
   late TextEditingController _passwordController;
   bool _isPasswordVisible = true;
 
   @override
   void initState() {
     super.initState();
-    _usernameController = TextEditingController();
+    _emailController = TextEditingController();
     _passwordController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthViewModel>().clearAllErrors();
@@ -36,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -105,11 +104,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ), // Tạo khoảng cách với ô nhập liệu bên dưới
                           ],
                           CustomTextField(
-                            controller: _usernameController,
-                            label: l10n.loginUsernameLabel,
-                            hint: l10n.loginUsernameHint,
-                            prefixIcon: Icons.person_outline,
-                            errorText: authVMLogin.usernameError,
+                            controller: _emailController,
+                            label: l10n.loginEmailLabel,
+                            hint: l10n.loginEmailHint,
+                            prefixIcon: Icons.email_outlined,
+                            errorText: authVMLogin.emailError,
                           ),
                           SizedBox(height: AppSizes.vGap12),
                           CustomTextField(
@@ -134,18 +133,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                   text: l10n.loginButton,
                                   onPressed: () async {
                                     bool isSuccess = await authVMLogin
-                                        .signInWithUsername(
-                                          username: _usernameController.text,
+                                        .signInWithEmail(
+                                          email: _emailController.text.trim(),
                                           password: _passwordController.text,
                                         );
+
                                     if (!context.mounted) return;
+
                                     if (isSuccess) {
-                                      Navigator.pushReplacement(
+                                      // Tự động kiểm tra: Nếu đã làm khảo sát -> MainAppScreen, chưa làm -> QuestionnaireScreen
+                                      await authVMLogin.handleLoginSuccess(
                                         context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const QuestionnaireScreen(),
-                                        ),
                                       );
                                     }
                                   },
