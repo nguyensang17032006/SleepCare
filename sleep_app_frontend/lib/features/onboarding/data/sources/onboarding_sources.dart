@@ -55,7 +55,7 @@ class OnboardingRemoteSource {
           .eq('assessment_type', 'baseline_full')
           .maybeSingle();
 
-      if (hasBaseline != null) {
+      if (hasBaseline != null && assessmentData['assessment_type'] == 'baseline_full') {
         assessmentData['assessment_type'] = 'repeat_full';
       }
 

@@ -8,6 +8,7 @@ import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/logout_vm.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/profile_vm.dart';
 import 'package:sleep_app_frontend/core/app/locale_provider.dart';
+import 'sleep_schedule_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -33,7 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await profileVM.loadProfile(_userId);
 
       if (profileVM.user != null) {
-        final u = profileVM.user!;
+        // user is loaded
       }
     });
   }
@@ -51,24 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.settingsTitle,
-                style: const TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 10,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.settingsSleepHygiene,
-                style: const TextStyle(
-                  color: AppTheme.textLight,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               const SizedBox(height: 24),
 
               GestureDetector(
@@ -199,6 +182,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: AppTheme.textLight,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SleepScheduleScreen(),
+                    ),
+                  );
+                },
+                child: _buildTile(
+                  Icons.schedule,
+                  'Lịch Hẹn Ngủ',
+                  'Thiết lập giờ đi ngủ và nhắc nhở',
+                  trailing: const Icon(Icons.chevron_right, color: AppTheme.textMuted),
                 ),
               ),
               const SizedBox(height: 16),

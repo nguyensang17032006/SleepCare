@@ -21,16 +21,6 @@ class LibraryScreen extends StatelessWidget {
               SearchBox(),
               const SizedBox(height: 30),
 
-              Text(
-                l10n.libraryPersonalized,
-                style: const TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 10,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
               ViewAllWidget(title: l10n.libraryRecommended, onViewAll: () {}),
               const SizedBox(height: 16),
 
@@ -50,17 +40,6 @@ class LibraryScreen extends StatelessWidget {
                 const Color(0xFF2C5E47),
               ),
               const SizedBox(height: 30),
-
-              Text(
-                l10n.libraryAtmosphere,
-                style: const TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 10,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
 
               ViewAllWidget(title: l10n.libraryNatureMusic, onViewAll: () {}),
 

@@ -833,7 +833,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportSleepQualityIndex.
   ///
   /// In vi, this message translates to:
-  /// **'Chỉ số chất lượng giấc ngủ'**
+  /// **'Chất lượng giấc ngủ'**
   String get reportSleepQualityIndex;
 
   /// No description provided for @reportWeekly.

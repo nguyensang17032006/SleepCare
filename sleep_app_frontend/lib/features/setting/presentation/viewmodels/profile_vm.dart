@@ -110,7 +110,7 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print('Error updating profile: $e');
+      debugPrint('Error updating profile: $e');
       return false;
     } finally {
       _isLoading = false;

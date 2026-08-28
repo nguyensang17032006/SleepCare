@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -21,15 +22,23 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sleep_app_frontend/core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+  );
   await dotenv.load(fileName: ".env");
   await Supabase.initialize(
     url: '${dotenv.env['SUPABASE_URL']}',
     // ignore: deprecated_member_use
     anonKey: '${dotenv.env['SUPABASE_ANON_KEY']}',
   );
+
+  await NotificationService().init();
 
   runApp(
     MultiProvider(
@@ -80,8 +89,9 @@ class _MyAppState extends State<MyApp> {
     _authSubscription = supabaseClient.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
 
-      // Khi đăng nhập thành công, chuyển hướng về AuthWrapper để kiểm tra logic onboarding
-      if (event == AuthChangeEvent.signedIn) {
+      // Khi đăng nhập thành công hoặc có session ban đầu, chuyển hướng về AuthWrapper để kiểm tra logic onboarding
+      if (event == AuthChangeEvent.signedIn ||
+          event == AuthChangeEvent.initialSession) {
         _navigatorKey.currentState?.pushReplacement(
           MaterialPageRoute(builder: (_) => const AuthWrapper()),
         );
@@ -130,7 +140,7 @@ class _MyAppState extends State<MyApp> {
           home: child,
         );
       },
-      child: const LoginScreen(),
+      child: const AuthWrapper(),
     );
   }
 }

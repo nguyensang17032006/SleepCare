@@ -167,7 +167,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       key: ValueKey(isWeekly),
       LineChartData(
         minY: 0,
-        maxY: 10,
+        maxY: 100,
         minX: isWeekly ? 0 : 1,
         maxX: isWeekly ? 6 : 4,
         titlesData: FlTitlesData(

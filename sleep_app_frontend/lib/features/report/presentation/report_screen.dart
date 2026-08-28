@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sleep_app_frontend/features/report/presentation/widget/bar_chart_widget.dart';
 import 'package:sleep_app_frontend/features/report/presentation/widget/line_chart_widget.dart';
 import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../../core/theme/theme.dart';
 import '../../../core/app/widget/primary_button.dart';
+import 'viewmodels/report_vm.dart';
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => ReportViewModel()..loadReportData(),
+      child: const _ReportView(),
+    );
+  }
+}
+
+class _ReportView extends StatelessWidget {
+  const _ReportView();
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = context.watch<ReportViewModel>();
     final l10n = AppLocalizations.of(context)!;
+    
+    if (vm.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppTheme.bgColor,
+        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryColor)),
+      );
+    }
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
@@ -19,25 +41,6 @@ class ReportScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.reportInsightsEngine,
-                style: const TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 10,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.reportSleepArchitecture,
-                style: const TextStyle(
-                  color: AppTheme.textLight,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2,
-                ),
-              ),
               const SizedBox(height: 24),
 
               Container(
@@ -63,9 +66,9 @@ class ReportScreen extends StatelessWidget {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              const Text(
-                                '7.5',
-                                style: TextStyle(
+                              Text(
+                                vm.avgDurationHours.toStringAsFixed(1),
+                                style: const TextStyle(
                                   color: AppTheme.textLight,
                                   fontSize: 36,
                                   fontWeight: FontWeight.bold,
@@ -117,11 +120,14 @@ class ReportScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              const BarChartWidget(),
+              BarChartWidget(weeklyData: vm.weeklyData),
 
               const SizedBox(height: 30),
 
-              const LineChartWidget(weeklySpots: [], monthlySpots: []),
+              LineChartWidget(
+                weeklySpots: vm.weeklySpots,
+                monthlySpots: vm.monthlySpots,
+              ),
 
               const SizedBox(height: 30),
 
