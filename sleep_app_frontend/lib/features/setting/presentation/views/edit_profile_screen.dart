@@ -92,8 +92,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       phoneNumber: _phoneController.text,
     );
 
+    if (!mounted) return;
     if (success) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.profileUpdateSuccess),
@@ -210,7 +210,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               const SizedBox(height: 8),
                               DropdownButtonFormField<String>(
-                                value: _selectedGender,
+                                initialValue: _selectedGender,
                                 hint: Text(
                                   l10n.profileSelect,
                                   style: const TextStyle(

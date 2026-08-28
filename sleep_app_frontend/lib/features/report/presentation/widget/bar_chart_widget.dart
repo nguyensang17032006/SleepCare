@@ -4,7 +4,8 @@ import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 class BarChartWidget extends StatelessWidget {
-  const BarChartWidget({super.key});
+  final List<double> weeklyData;
+  const BarChartWidget({super.key, required this.weeklyData});
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +91,13 @@ class BarChartWidget extends StatelessWidget {
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
         barGroups: [
-          _makeBarData(0, 6, false),
-          _makeBarData(1, 7, false),
-          _makeBarData(2, 5, false),
-          _makeBarData(3, 8, true),
-          _makeBarData(4, 7.5, false),
-          _makeBarData(5, 6.5, false),
-          _makeBarData(6, 9, false),
+          _makeBarData(0, weeklyData[0], false),
+          _makeBarData(1, weeklyData[1], false),
+          _makeBarData(2, weeklyData[2], false),
+          _makeBarData(3, weeklyData[3], false),
+          _makeBarData(4, weeklyData[4], false),
+          _makeBarData(5, weeklyData[5], false),
+          _makeBarData(6, weeklyData[6], false),
         ],
       ),
     );

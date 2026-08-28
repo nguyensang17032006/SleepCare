@@ -305,8 +305,8 @@ class _DailyShortSurveyScreenState extends State<DailyShortSurveyScreen> {
                             );
                             return;
                           }
-                          final success = await vm.submitDailySurvey();
-                          if (success && context.mounted) {
+                          final error = await vm.submitDailySurvey();
+                          if (error == null && context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(l10n.dailySurveySuccess)),
                             );
@@ -314,7 +314,8 @@ class _DailyShortSurveyScreenState extends State<DailyShortSurveyScreen> {
                           } else if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(l10n.dailySurveyErrorGeneric),
+                                content: Text("Lỗi: $error"),
+                                duration: const Duration(seconds: 10),
                               ),
                             );
                           }

@@ -391,7 +391,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get daySun => 'CN';
 
   @override
-  String get reportSleepQualityIndex => 'Chỉ số chất lượng giấc ngủ';
+  String get reportSleepQualityIndex => 'Chất lượng giấc ngủ';
 
   @override
   String get reportWeekly => 'Hàng tuần';
