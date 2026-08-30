@@ -45,15 +45,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final res = await supabaseClient
           .from('music_recommendations')
-          .select('recommendation_reason, tracks(id, title, description, cover_url)')
+          .select(
+            'recommendation_reason, tracks(id, title, description, cover_url)',
+          )
           .eq('user_id', userId)
           .eq('status', 'shown')
           .order('recommendation_score', ascending: false)
           .limit(2);
 
-      if (res != null && mounted) {
+      if (mounted) {
         setState(() {
-          _recommendations = List<Map<String, dynamic>>.from(res as List);
+          _recommendations = List<Map<String, dynamic>>.from(res);
         });
       }
     } catch (e) {
@@ -412,16 +414,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Padding(
                       padding: EdgeInsets.only(bottom: 12.h),
                       child: GlassCard(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 16.h,
+                        ),
                         child: Row(
                           children: [
                             Container(
                               padding: EdgeInsets.all(10.w),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                                color: AppTheme.primaryColor.withValues(
+                                  alpha: 0.2,
+                                ),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(Icons.music_note, color: AppTheme.primaryColor, size: 20.sp),
+                              child: Icon(
+                                Icons.music_note,
+                                color: AppTheme.primaryColor,
+                                size: 20.sp,
+                              ),
                             ),
                             SizedBox(width: 16.w),
                             Expanded(
@@ -447,7 +458,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ),
-                            Icon(Icons.play_circle_fill, color: AppTheme.primaryColor, size: 24.sp),
+                            Icon(
+                              Icons.play_circle_fill,
+                              color: AppTheme.primaryColor,
+                              size: 24.sp,
+                            ),
                           ],
                         ),
                       ),

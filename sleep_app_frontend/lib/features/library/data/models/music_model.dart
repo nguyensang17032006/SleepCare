@@ -6,6 +6,7 @@ class MusicModel {
   final String? coverUrl;
   final List<String> genre;
   final List<String>? artist;
+  final String? sleepStage;
 
   MusicModel({
     required this.id,
@@ -15,23 +16,56 @@ class MusicModel {
     required this.coverUrl,
     required this.genre,
     required this.artist,
+    required this.sleepStage,
   });
 
   factory MusicModel.fromJson(Map<String, dynamic> json) {
+    final trackGenres =
+        json['track_genres'] as List<dynamic>? ?? [];
+
+    final genres = trackGenres
+        .map((item) {
+          final genreData = item['genres'];
+
+          if (genreData is Map<String, dynamic>) {
+            return genreData['name']?.toString();
+          }
+
+          return null;
+        })
+        .whereType<String>()
+        .toList();
+
+    final trackArtists =
+        json['track_artists'] as List<dynamic>? ?? [];
+
+    final artists = trackArtists
+        .map((item) {
+          final artistData = item['artists'];
+
+          if (artistData is Map<String, dynamic>) {
+            return artistData['name']?.toString();
+          }
+
+          return null;
+        })
+        .whereType<String>()
+        .toList();
+
     return MusicModel(
-      id: json['id'] as String,
-      description: json['description'] as String,
-      title: json['title'] as String,
-      audioUrl: json['audio_url'] as String,
-      coverUrl: json['cover_url'] as String?,
-      genre:
-          (json['genre'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-          [],
-      artist:
-          (json['artist'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          [],
+      id: json['id'].toString(),
+      description:
+          json['description']?.toString() ?? '',
+      title:
+          json['title']?.toString() ?? '',
+      audioUrl:
+          json['audio_url']?.toString() ?? '',
+      coverUrl:
+          json['cover_url']?.toString(),
+      genre: genres,
+      artist: artists,
+      sleepStage:
+          json['sleep_stage']?.toString(),
     );
   }
 }

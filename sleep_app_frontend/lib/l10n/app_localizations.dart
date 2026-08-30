@@ -677,7 +677,7 @@ abstract class AppLocalizations {
   /// No description provided for @librarySearchHint.
   ///
   /// In vi, this message translates to:
-  /// **'Tìm kiếm tần số, thiên nhiên, tâm trạng'**
+  /// **'Tìm kiếm nhạc'**
   String get librarySearchHint;
 
   /// No description provided for @libraryPersonalized.

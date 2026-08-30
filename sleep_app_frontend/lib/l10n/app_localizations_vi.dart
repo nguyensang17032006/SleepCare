@@ -311,7 +311,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get qPsqiGood => 'Giấc ngủ của bạn khá tốt!';
 
   @override
-  String get librarySearchHint => 'Tìm kiếm tần số, thiên nhiên, tâm trạng';
+  String get librarySearchHint => 'Tìm kiếm nhạc';
 
   @override
   String get libraryPersonalized => 'CÁ NHÂN HÓA';

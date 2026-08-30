@@ -24,7 +24,10 @@ class _SleepScheduleView extends StatefulWidget {
 }
 
 class _SleepScheduleViewState extends State<_SleepScheduleView> {
-  Future<void> _selectBedtime(BuildContext context, ScheduleViewModel vm) async {
+  Future<void> _selectBedtime(
+    BuildContext context,
+    ScheduleViewModel vm,
+  ) async {
     final picked = await showTimePicker(
       context: context,
       initialTime: vm.bedtime,
@@ -97,11 +100,16 @@ class _SleepScheduleViewState extends State<_SleepScheduleView> {
                 GestureDetector(
                   onTap: () => _selectBedtime(context, vm),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.cardLightColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -149,7 +157,9 @@ class _SleepScheduleViewState extends State<_SleepScheduleView> {
                         child: Text(
                           days[index],
                           style: TextStyle(
-                            color: isSelected ? Colors.white : AppTheme.textMuted,
+                            color: isSelected
+                                ? Colors.white
+                                : AppTheme.textMuted,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -169,7 +179,10 @@ class _SleepScheduleViewState extends State<_SleepScheduleView> {
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.cardLightColor,
                     borderRadius: BorderRadius.circular(16),
@@ -182,9 +195,18 @@ class _SleepScheduleViewState extends State<_SleepScheduleView> {
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                       items: const [
                         DropdownMenuItem(value: 0, child: Text('Đúng giờ')),
-                        DropdownMenuItem(value: 15, child: Text('Trước 15 phút')),
-                        DropdownMenuItem(value: 30, child: Text('Trước 30 phút')),
-                        DropdownMenuItem(value: 60, child: Text('Trước 1 tiếng')),
+                        DropdownMenuItem(
+                          value: 15,
+                          child: Text('Trước 15 phút'),
+                        ),
+                        DropdownMenuItem(
+                          value: 30,
+                          child: Text('Trước 30 phút'),
+                        ),
+                        DropdownMenuItem(
+                          value: 60,
+                          child: Text('Trước 1 tiếng'),
+                        ),
                       ],
                       onChanged: (val) {
                         if (val != null) vm.updateReminderOffset(val);
@@ -204,13 +226,16 @@ class _SleepScheduleViewState extends State<_SleepScheduleView> {
                     ),
                   ),
                   value: vm.notificationsEnabled,
+                  // ignore: deprecated_member_use
                   activeColor: AppTheme.primaryColor,
                   onChanged: vm.toggleNotifications,
                 ),
                 const SizedBox(height: 40),
                 vm.isSaving
                     ? const Center(
-                        child: CircularProgressIndicator(color: AppTheme.primaryColor),
+                        child: CircularProgressIndicator(
+                          color: AppTheme.primaryColor,
+                        ),
                       )
                     : PrimaryButton(
                         text: 'Lưu Lịch Hẹn',
@@ -218,12 +243,18 @@ class _SleepScheduleViewState extends State<_SleepScheduleView> {
                           final success = await vm.saveSchedule();
                           if (success && context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Đã lưu lịch hẹn ngủ thành công!')),
+                              const SnackBar(
+                                content: Text(
+                                  'Đã lưu lịch hẹn ngủ thành công!',
+                                ),
+                              ),
                             );
                             Navigator.pop(context);
                           } else if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Có lỗi xảy ra khi lưu!')),
+                              const SnackBar(
+                                content: Text('Có lỗi xảy ra khi lưu!'),
+                              ),
                             );
                           }
                         },

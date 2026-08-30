@@ -17,7 +17,7 @@ class MusicPersonalizationService {
           .eq('user_id', userId)
           .gte('started_at', twelveHoursAgo.toUtc().toIso8601String());
 
-      if (sessions == null || (sessions as List).isEmpty) {
+      if (sessions.isEmpty) {
         return;
       }
 
