@@ -3,8 +3,10 @@ import 'package:sleep_app_frontend/core/app/widget/app_bar.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/features/home/presentation/home_screen.dart';
 import 'package:sleep_app_frontend/features/library/presentation/library_screen.dart';
+import 'package:sleep_app_frontend/features/library/presentation/widget/mini_player.dart';
 import 'package:sleep_app_frontend/features/report/presentation/report_screen.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/views/settings_screen.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/sleep_prep_screen.dart';
 
 class MainAppScreen extends StatefulWidget {
   const MainAppScreen({super.key});
@@ -13,84 +15,125 @@ class MainAppScreen extends StatefulWidget {
   State<MainAppScreen> createState() => _MainAppScreenState();
 }
 
-class _MainAppScreenState extends State<MainAppScreen> {
+class _MainAppScreenState extends State<MainAppScreen>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
+
+  late AnimationController _animationController;
 
   final List<Widget> _screens = const [
     HomeScreen(),
     LibraryScreen(),
+    SleepPrepScreen(),
     ReportScreen(),
     SettingsScreen(),
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 300,
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _onTabTapped(int index) {
+    if (_currentIndex != index) {
+      setState(() {
+        _currentIndex = index;
+      });
+
+      _animationController.forward(
+        from: 0.0,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
-        onProfileTap: () => setState(() {
-          _currentIndex = 3;
-        }),
+        onProfileTap: () => _onTabTapped(4),
       ),
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppTheme.bgColor,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppTheme.primaryColor,
-        unselectedItemColor: AppTheme.textMuted,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.nightlight_round),
+
+      body: FadeTransition(
+        opacity: _animationController,
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
+        ),
+      ),
+
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Mini player sẽ nằm ngay trên NavigationBar
+          const MiniPlayer(),
+
+          NavigationBar(
+            height: 60,
+            selectedIndex: _currentIndex,
+            onDestinationSelected: _onTabTapped,
+            backgroundColor: AppTheme.bgColor,
+            indicatorColor: AppTheme.primaryColor.withValues(
+              alpha: 0.2,
             ),
-            activeIcon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.nightlight_round, color: AppTheme.primaryColor),
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.library_music_outlined),
-            ),
-            activeIcon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.library_music, color: AppTheme.primaryColor),
-            ),
-            label: 'Library',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.bar_chart_outlined),
-            ),
-            activeIcon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.bar_chart, color: AppTheme.primaryColor),
-            ),
-            label: 'Report',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.settings_outlined),
-            ),
-            activeIcon: Padding(
-              padding: EdgeInsets.only(bottom: 4),
-              child: Icon(Icons.settings, color: AppTheme.primaryColor),
-            ),
-            label: 'Settings',
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(
+                  Icons.nightlight_round,
+                ),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(
+                  Icons.library_music_outlined,
+                ),
+                selectedIcon: Icon(
+                  Icons.library_music,
+                ),
+                label: 'Library',
+              ),
+              NavigationDestination(
+                icon: Icon(
+                  Icons.bedtime_outlined,
+                ),
+                selectedIcon: Icon(
+                  Icons.bedtime,
+                ),
+                label: 'Sleep',
+              ),
+              NavigationDestination(
+                icon: Icon(
+                  Icons.bar_chart_outlined,
+                ),
+                selectedIcon: Icon(
+                  Icons.bar_chart,
+                ),
+                label: 'Report',
+              ),
+              NavigationDestination(
+                icon: Icon(
+                  Icons.settings_outlined,
+                ),
+                selectedIcon: Icon(
+                  Icons.settings,
+                ),
+                label: 'Settings',
+              ),
+            ],
           ),
         ],
       ),

@@ -8,8 +8,8 @@ import 'package:sleep_app_frontend/features/auth/presentation/views/login/widget
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
-import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/toggle_password_vm.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,14 +19,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late TextEditingController _usernameController;
+  late TextEditingController _emailController;
   late TextEditingController _passwordController;
   bool _isPasswordVisible = true;
 
   @override
   void initState() {
     super.initState();
-    _usernameController = TextEditingController();
+    _emailController = TextEditingController();
     _passwordController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthViewModel>().clearAllErrors();
@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -43,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authVMLogin = context.watch<AuthViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -103,17 +104,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             ), // Tạo khoảng cách với ô nhập liệu bên dưới
                           ],
                           CustomTextField(
-                            controller: _usernameController,
-                            label: 'Tài khoản',
-                            hint: 'Nhập tên người dùng',
-                            prefixIcon: Icons.person_outline,
-                            errorText: authVMLogin.usernameError,
+                            controller: _emailController,
+                            label: l10n.loginEmailLabel,
+                            hint: l10n.loginEmailHint,
+                            prefixIcon: Icons.email_outlined,
+                            errorText: authVMLogin.emailError,
                           ),
                           SizedBox(height: AppSizes.vGap12),
                           CustomTextField(
                             controller: _passwordController,
-                            label: 'Mật khẩu',
-                            hint: 'Nhập mật khẩu của bạn',
+                            label: l10n.loginPasswordLabel,
+                            hint: l10n.loginPasswordHint,
                             prefixIcon: Icons.lock_outline,
                             obscureText: _isPasswordVisible,
                             onSuffixIconPressed: () {
@@ -129,15 +130,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           authVMLogin.isLoading
                               ? const CircularProgressIndicator()
                               : PrimaryButton(
-                                  text: 'Đăng nhập ->',
+                                  text: l10n.loginButton,
                                   onPressed: () async {
                                     bool isSuccess = await authVMLogin
-                                        .signInWithUsername(
-                                          username: _usernameController.text,
+                                        .signInWithEmail(
+                                          email: _emailController.text.trim(),
                                           password: _passwordController.text,
                                         );
-                                    if (!context.mounted) {
-                                      return;
+
+                                    if (!context.mounted) return;
+
+                                    if (isSuccess) {
+                                      // Tự động kiểm tra: Nếu đã làm khảo sát -> MainAppScreen, chưa làm -> QuestionnaireScreen
+                                      await authVMLogin.handleLoginSuccess(
+                                        context,
+                                      );
                                     }
                                   },
                                 ),
@@ -154,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   horizontal: AppSizes.p12,
                                 ),
                                 child: Text(
-                                  'OR',
+                                  l10n.loginOr,
                                   style: TextStyle(
                                     color: AppTheme.textMuted.withValues(
                                       alpha: 0.5,
@@ -180,7 +187,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: EdgeInsets.only(bottom: AppSizes.p16),
                         child: Text(
-                          'Bằng cách đăng nhập, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.',
+                          l10n.loginTerms,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: AppTheme.textMuted.withValues(alpha: 0.6),
                             fontSize: AppSizes.f10,

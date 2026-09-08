@@ -73,7 +73,7 @@ class _TimeCircleState extends State<TimeCircle> {
                 'THỜI GIAN HIỆN TẠI',
                 style: TextStyle(
                   color: AppTheme.textMuted,
-                  fontSize: 10.sp,
+                  fontSize: 10,
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.bold,
                 ),

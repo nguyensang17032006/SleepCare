@@ -79,15 +79,7 @@ class WeatherCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'CURRENT LOCATION',
-                        style: TextStyle(
-                          color: AppTheme.textMuted,
-                          fontSize: 9.sp,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      SizedBox(height: 2.h),
+
                       Text(
                         weather.city,
                         style: TextStyle(

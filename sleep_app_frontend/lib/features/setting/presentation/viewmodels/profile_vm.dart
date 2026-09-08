@@ -34,7 +34,6 @@ class ProfileViewModel extends ChangeNotifier {
 
   Future<void> loadProfile(String userId) async {
     _isLoading = true;
-    notifyListeners();
 
     try {
       _user = await _repository.getUserProfile(userId);
@@ -111,7 +110,7 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print('Error updating profile: $e');
+      debugPrint('Error updating profile: $e');
       return false;
     } finally {
       _isLoading = false;

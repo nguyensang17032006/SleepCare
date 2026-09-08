@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../core/theme/theme.dart';
 import '../../core/app/widget/primary_button.dart';
 import 'quality_checklist_screen.dart';
@@ -37,10 +38,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   Future<void> _selectTime(BuildContext context, bool isBedtime) async {
     final vm = context.read<QuestionnaireViewModel>();
-    final initialTime = isBedtime 
-        ? (vm.bedtime ?? const TimeOfDay(hour: 22, minute: 30)) 
+    final initialTime = isBedtime
+        ? (vm.bedtime ?? const TimeOfDay(hour: 22, minute: 30))
         : (vm.wakeUpTime ?? const TimeOfDay(hour: 6, minute: 30));
-        
+
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: initialTime,
@@ -94,7 +95,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  value ?? 'Chọn thời gian',
+                  value ?? AppLocalizations.of(context)!.q1SelectTime,
                   style: TextStyle(
                     color: value != null ? Colors.white : AppTheme.textMuted,
                     fontSize: 16,
@@ -115,7 +116,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     );
   }
 
-  Widget _buildInputQuestion(String title, String hint, TextEditingController controller, ValueChanged<String> onChanged) {
+  Widget _buildInputQuestion(
+    String title,
+    String hint,
+    TextEditingController controller,
+    ValueChanged<String> onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -147,9 +153,17 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             onChanged: onChanged,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: const TextStyle(color: AppTheme.textMuted, fontSize: 16, fontWeight: FontWeight.normal),
+              hintStyle: const TextStyle(
+                color: AppTheme.textMuted,
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+              ),
               border: InputBorder.none,
-              suffixIcon: const Icon(Icons.edit, color: AppTheme.textMuted, size: 20),
+              suffixIcon: const Icon(
+                Icons.edit,
+                color: AppTheme.textMuted,
+                size: 20,
+              ),
             ),
           ),
         ),
@@ -161,13 +175,14 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<QuestionnaireViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(
-          'STEP 1 OF 3 | Q1-Q4',
-          style: TextStyle(
+        title: Text(
+          l10n.qStep1,
+          style: const TextStyle(
             color: AppTheme.textMuted,
             fontSize: 12,
             letterSpacing: 1.2,
@@ -183,23 +198,23 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hi, welcome to\nSleepCare',
+                  l10n.qWelcome,
                   style: Theme.of(
                     context,
                   ).textTheme.displayMedium?.copyWith(fontSize: 28),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  "Hãy cho chúng tôi biết về giấc ngủ của bạn\ntrong tháng vừa qua.",
+                  l10n.qIntro,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(height: 1.5),
                 ),
                 const SizedBox(height: 30),
 
-                const Text(
-                  'CÂU HỎI 01',
-                  style: TextStyle(
+                Text(
+                  l10n.qQuestion1,
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -208,14 +223,14 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 ),
                 const SizedBox(height: 8),
                 _buildTimeQuestion(
-                  'Trong tháng vừa rồi, bạn thường bắt đầu\nđi ngủ lúc mấy giờ?',
+                  l10n.q1Desc,
                   vm.bedtime?.format(context),
                   () => _selectTime(context, true),
                 ),
 
-                const Text(
-                  'CÂU HỎI 02',
-                  style: TextStyle(
+                Text(
+                  l10n.qQuestion2,
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -223,21 +238,18 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildInputQuestion(
-                  'Mỗi đêm bạn thường mất khoảng bao\nnhiêu phút để ngủ được?',
-                  'Ví dụ: 15',
-                  _q2Controller,
-                  (value) {
-                    final mins = int.tryParse(value);
-                    if (mins != null) {
-                      vm.updateSleepLatency(mins);
-                    }
-                  },
-                ),
+                _buildInputQuestion(l10n.q2Desc, l10n.q2Hint, _q2Controller, (
+                  value,
+                ) {
+                  final mins = int.tryParse(value);
+                  if (mins != null) {
+                    vm.updateSleepLatency(mins);
+                  }
+                }),
 
-                const Text(
-                  'CÂU HỎI 03',
-                  style: TextStyle(
+                Text(
+                  l10n.qQuestion3,
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -246,14 +258,14 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 ),
                 const SizedBox(height: 8),
                 _buildTimeQuestion(
-                  'Bạn thường thức dậy lúc mấy giờ?',
+                  l10n.q3Desc,
                   vm.wakeUpTime?.format(context),
                   () => _selectTime(context, false),
                 ),
 
-                const Text(
-                  'CÂU HỎI 04',
-                  style: TextStyle(
+                Text(
+                  l10n.qQuestion4,
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -261,25 +273,25 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildInputQuestion(
-                  'Mỗi đêm bạn thường ngủ thực tế\nđược mấy tiếng?',
-                  'Ví dụ: 7.5',
-                  _q4Controller,
-                  (value) {
-                    final hours = double.tryParse(value);
-                    if (hours != null) {
-                      vm.updateHoursSlept(hours);
-                    }
-                  },
-                ),
+                _buildInputQuestion(l10n.q4Desc, l10n.q4Hint, _q4Controller, (
+                  value,
+                ) {
+                  final hours = double.tryParse(value);
+                  if (hours != null) {
+                    vm.updateHoursSlept(hours);
+                  }
+                }),
 
                 const SizedBox(height: 20),
                 PrimaryButton(
-                  text: 'Tiếp tục ->',
+                  text: l10n.qContinue,
                   onPressed: () {
-                    if (vm.bedtime == null || vm.sleepLatencyMinutes == null || vm.wakeUpTime == null || vm.hoursSlept == null) {
+                    if (vm.bedtime == null ||
+                        vm.sleepLatencyMinutes == null ||
+                        vm.wakeUpTime == null ||
+                        vm.hoursSlept == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Vui lòng trả lời đầy đủ các câu hỏi')),
+                        SnackBar(content: Text(l10n.qErrorFillAll)),
                       );
                       return;
                     }

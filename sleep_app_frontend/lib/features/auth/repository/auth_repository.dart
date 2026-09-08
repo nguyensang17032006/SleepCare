@@ -9,14 +9,12 @@ class AuthRepository {
   //  đăng ký bằng email
   Future<void> registerWithEmail({
     required String fullname,
-    required String username,
     required String email,
     required String password,
   }) async {
     try {
       await _authRemoteSource.signUpWithEmail(
         fullname: fullname,
-        username: username,
         email: email,
         password: password,
       );
@@ -34,13 +32,13 @@ class AuthRepository {
     }
   }
 
-  // đăng nhập bằng username && password
-   Future<void> signInWithUsername({
-    required String username,
+  // đăng nhập bằng email && password
+   Future<void> signInWithEmail({
+    required String email,
     required String password,
   }) async {
     try {
-      await _authRemoteSource.signInWithUsername(username: username, password: password);
+      await _authRemoteSource.signInWithEmail(email: email, password: password);
     } catch (e) {
       rethrow;
     }

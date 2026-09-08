@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../core/theme/theme.dart';
 import '../../core/app/widget/primary_button.dart';
 import 'viewmodels/questionnaire_vm.dart';
@@ -19,7 +20,7 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
     QuestionnaireViewModel vm,
   ) {
     int? groupValue = vm.q5[mapKey];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -35,10 +36,30 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildRadioColumn('Không', 0, groupValue, (v) => vm.updateQ5(mapKey, v)),
-            _buildRadioColumn('<1 lần\n/tuần', 1, groupValue, (v) => vm.updateQ5(mapKey, v)),
-            _buildRadioColumn('1-2 lần\n/tuần', 2, groupValue, (v) => vm.updateQ5(mapKey, v)),
-            _buildRadioColumn('>=3 lần\n/tuần', 3, groupValue, (v) => vm.updateQ5(mapKey, v)),
+            _buildRadioColumn(
+              AppLocalizations.of(context)!.qFreq0,
+              0,
+              groupValue,
+              (v) => vm.updateQ5(mapKey, v),
+            ),
+            _buildRadioColumn(
+              AppLocalizations.of(context)!.qFreq1,
+              1,
+              groupValue,
+              (v) => vm.updateQ5(mapKey, v),
+            ),
+            _buildRadioColumn(
+              AppLocalizations.of(context)!.qFreq2,
+              2,
+              groupValue,
+              (v) => vm.updateQ5(mapKey, v),
+            ),
+            _buildRadioColumn(
+              AppLocalizations.of(context)!.qFreq3,
+              3,
+              groupValue,
+              (v) => vm.updateQ5(mapKey, v),
+            ),
           ],
         ),
         const SizedBox(height: 20),
@@ -91,6 +112,7 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<QuestionnaireViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -98,9 +120,9 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
           icon: const Icon(Icons.arrow_back, color: AppTheme.textMuted),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'STEP 2 OF 3 | Q5',
-          style: TextStyle(
+        title: Text(
+          l10n.qStep2,
+          style: const TextStyle(
             color: AppTheme.textMuted,
             fontSize: 12,
             letterSpacing: 1.2,
@@ -117,14 +139,14 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
               children: [
                 const SizedBox(height: 8),
                 Text(
-                  'CÂU HỎI 05',
+                  l10n.qQuestion5,
                   style: Theme.of(
                     context,
                   ).textTheme.displayMedium?.copyWith(fontSize: 24),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Tần suất bạn gặp phải những hiện tượng gây khó ngủ trong tháng vừa qua?',
+                  l10n.q5Desc,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     height: 1.5,
                     fontSize: 16,
@@ -133,19 +155,19 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                _buildChecklistItem('a. Sau 30 phút nhắm mắt vẫn không thể ngủ được', 'a', vm),
-                _buildChecklistItem('b. Tỉnh dậy lúc nửa đêm hoặc sáng sớm', 'b', vm),
-                _buildChecklistItem('c. Phải dậy để đi vệ sinh', 'c', vm),
-                _buildChecklistItem('d. Không thể hít thở bình thường', 'd', vm),
-                _buildChecklistItem('e. Ho hoặc ngáy lớn tiếng khi ngủ', 'e', vm),
-                _buildChecklistItem('f. Cảm thấy quá lạnh nên không ngủ được', 'f', vm),
-                _buildChecklistItem('g. Cảm thấy quá nóng nên không ngủ được', 'g', vm),
-                _buildChecklistItem('h. Gặp ác mộng khó ngủ trở lại', 'h', vm),
-                _buildChecklistItem('i. Bị đau nên không ngủ được', 'i', vm),
-                
-                const Text(
-                  'j. Lý do khác khiến bạn khó ngủ',
-                  style: TextStyle(
+                _buildChecklistItem(l10n.q5a, 'a', vm),
+                _buildChecklistItem(l10n.q5b, 'b', vm),
+                _buildChecklistItem(l10n.q5c, 'c', vm),
+                _buildChecklistItem(l10n.q5d, 'd', vm),
+                _buildChecklistItem(l10n.q5e, 'e', vm),
+                _buildChecklistItem(l10n.q5f, 'f', vm),
+                _buildChecklistItem(l10n.q5g, 'g', vm),
+                _buildChecklistItem(l10n.q5h, 'h', vm),
+                _buildChecklistItem(l10n.q5i, 'i', vm),
+
+                Text(
+                  l10n.q5jTitle,
+                  style: const TextStyle(
                     color: AppTheme.textLight,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -153,34 +175,39 @@ class _QualityChecklistScreenState extends State<QualityChecklistScreen> {
                 ),
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.cardLightColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: .05)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: .05),
+                    ),
                   ),
                   child: TextField(
                     onChanged: (val) => vm.updateQ5jReason(val),
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      hintText: 'Nhập lý do của bạn...',
-                      hintStyle: TextStyle(color: AppTheme.textMuted),
+                    decoration: InputDecoration(
+                      hintText: l10n.q5jHint,
+                      hintStyle: const TextStyle(color: AppTheme.textMuted),
                       border: InputBorder.none,
                     ),
                   ),
                 ),
                 if (vm.q5jOtherReason.trim().isNotEmpty) ...[
                   const SizedBox(height: 20),
-                  _buildChecklistItem('Tần suất bạn mất ngủ vì lý do trên?', 'j', vm),
+                  _buildChecklistItem(l10n.q5jFreq, 'j', vm),
                 ],
 
                 const SizedBox(height: 40),
                 PrimaryButton(
-                  text: 'Tiếp tục ->',
+                  text: l10n.qContinue,
                   onPressed: () {
                     if (!vm.validateQ5()) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Vui lòng trả lời tất cả các câu hỏi')),
+                        SnackBar(content: Text(l10n.qErrorFillAll)),
                       );
                       return;
                     }

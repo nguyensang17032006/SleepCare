@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../core/app/main_layout.dart';
 import '../../core/theme/theme.dart';
 import '../../core/app/widget/primary_button.dart';
@@ -35,7 +36,12 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(options.length, (index) {
-            return _buildRadioColumn(options[index], index, groupValue, onChanged);
+            return _buildRadioColumn(
+              options[index],
+              index,
+              groupValue,
+              onChanged,
+            );
           }),
         ),
         const SizedBox(height: 20),
@@ -72,7 +78,9 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppTheme.primaryColor : AppTheme.textMuted,
+                  color: isSelected
+                      ? AppTheme.primaryColor
+                      : AppTheme.textMuted,
                   width: 2,
                 ),
                 color: isSelected ? AppTheme.primaryColor : Colors.transparent,
@@ -90,6 +98,7 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<QuestionnaireViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -97,9 +106,9 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
           icon: const Icon(Icons.arrow_back, color: AppTheme.textMuted),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'STEP 3 OF 3 | Q6-Q10',
-          style: TextStyle(
+        title: Text(
+          l10n.qStep3,
+          style: const TextStyle(
             color: AppTheme.textMuted,
             fontSize: 12,
             letterSpacing: 1.2,
@@ -115,134 +124,192 @@ class _QuestionnaireScreen3State extends State<QuestionnaireScreen3> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 30),
-                
+
                 _buildRadioGroup(
-                  title: '6. Bạn đánh giá chất lượng giấc ngủ trong tháng vừa qua như thế nào?',
-                  options: ['Rất tốt', 'Khá tốt', 'Khá tệ', 'Rất tệ'],
+                  title: l10n.q6Title,
+                  options: [l10n.qFreq0, l10n.qFreq1, l10n.qFreq2, l10n.qFreq3],
                   groupValue: vm.q6,
                   onChanged: vm.updateQ6,
                 ),
-                
+
                 _buildRadioGroup(
-                  title: '7. Tần suất bạn uống thuốc (cả kê đơn và không) để dễ ngủ hơn?',
-                  options: ['Không', '<1 lần\n/tuần', '1-2 lần\n/tuần', '>=3 lần\n/tuần'],
+                  title: l10n.q7Title,
+                  options: [l10n.qFreq0, l10n.qFreq1, l10n.qFreq2, l10n.qFreq3],
                   groupValue: vm.q7,
                   onChanged: vm.updateQ7,
                 ),
-                
+
                 _buildRadioGroup(
-                  title: '8. Tần suất bạn gặp khó khăn giữ tỉnh táo khi lái xe, ăn uống, xã hội?',
-                  options: ['Không', '<1 lần\n/tuần', '1-2 lần\n/tuần', '>=3 lần\n/tuần'],
+                  title: l10n.q8Title,
+                  options: [l10n.q8Opt0, l10n.q8Opt1, l10n.q8Opt2, l10n.q8Opt3],
                   groupValue: vm.q8,
                   onChanged: vm.updateQ8,
                 ),
-                
+
                 _buildRadioGroup(
-                  title: '9. Bạn cảm thấy việc hăng hái thực hiện mọi việc khó khăn thế nào?',
-                  options: ['Không vấn đề', 'Hơi vấn đề', 'Khá khó khăn', 'Rất khó khăn'],
+                  title: l10n.q9Title,
+                  options: [
+                    l10n.dailySurveyVeryGood,
+                    l10n.dailySurveyFairlyGood,
+                    l10n.dailySurveyFairlyBad,
+                    l10n.dailySurveyVeryBad,
+                  ],
                   groupValue: vm.q9,
                   onChanged: vm.updateQ9,
                 ),
-                
-                const Text(
-                  '10. Nếu bạn có bạn cùng phòng, họ có nhận thấy bạn:',
-                  style: TextStyle(
-                    color: AppTheme.textLight,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 12),
+
+                //10
                 _buildRadioGroup(
-                  title: 'a. Ngáy to',
-                  options: ['Không', '<1 lần\n/tuần', '1-2 lần\n/tuần', '>=3 lần\n/tuần'],
-                  groupValue: vm.q10['a'],
-                  onChanged: (v) => vm.updateQ10('a', v),
+                  title: l10n.q10Title,
+                  options: [l10n.qYes, l10n.qNo],
+                  groupValue: vm.q10HasPartner,
+                  onChanged: vm.updateQ10HasPartner,
                 ),
-                _buildRadioGroup(
-                  title: 'b. Ngưng thở một lúc khi ngủ',
-                  options: ['Không', '<1 lần\n/tuần', '1-2 lần\n/tuần', '>=3 lần\n/tuần'],
-                  groupValue: vm.q10['b'],
-                  onChanged: (v) => vm.updateQ10('b', v),
-                ),
-                _buildRadioGroup(
-                  title: 'c. Chân co giật khi ngủ',
-                  options: ['Không', '<1 lần\n/tuần', '1-2 lần\n/tuần', '>=3 lần\n/tuần'],
-                  groupValue: vm.q10['c'],
-                  onChanged: (v) => vm.updateQ10('c', v),
-                ),
-                _buildRadioGroup(
-                  title: 'd. Bị ngã khỏi giường',
-                  options: ['Không', '<1 lần\n/tuần', '1-2 lần\n/tuần', '>=3 lần\n/tuần'],
-                  groupValue: vm.q10['d'],
-                  onChanged: (v) => vm.updateQ10('d', v),
-                ),
-                
-                const Text(
-                  'e. Tình trạng đặc biệt khác',
-                  style: TextStyle(
-                    color: AppTheme.textLight,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardLightColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: .05)),
-                  ),
-                  child: TextField(
-                    onChanged: vm.updateQ10eReason,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      hintText: 'Nhập tình trạng khác...',
-                      hintStyle: TextStyle(color: AppTheme.textMuted),
-                      border: InputBorder.none,
+                if (vm.q10HasPartner == 0) ...[
+                  Text(
+                    l10n.q10SubTitle,
+                    style: const TextStyle(
+                      color: AppTheme.textLight,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
-                if (vm.q10eOtherReason.trim().isNotEmpty) ...[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   _buildRadioGroup(
-                    title: 'Tần suất xuất hiện?',
-                    options: ['Không', '<1 lần\n/tuần', '1-2 lần\n/tuần', '>=3 lần\n/tuần'],
-                    groupValue: vm.q10['e'],
-                    onChanged: (v) => vm.updateQ10('e', v),
+                    title: l10n.q10a,
+                    options: [
+                      l10n.qFreq0,
+                      l10n.qFreq1,
+                      l10n.qFreq2,
+                      l10n.qFreq3,
+                    ],
+                    groupValue: vm.q10['a'],
+                    onChanged: (v) => vm.updateQ10('a', v),
                   ),
+                  _buildRadioGroup(
+                    title: l10n.q10b,
+                    options: [
+                      l10n.qFreq0,
+                      l10n.qFreq1,
+                      l10n.qFreq2,
+                      l10n.qFreq3,
+                    ],
+                    groupValue: vm.q10['b'],
+                    onChanged: (v) => vm.updateQ10('b', v),
+                  ),
+                  _buildRadioGroup(
+                    title: l10n.q10c,
+                    options: [
+                      l10n.qFreq0,
+                      l10n.qFreq1,
+                      l10n.qFreq2,
+                      l10n.qFreq3,
+                    ],
+                    groupValue: vm.q10['c'],
+                    onChanged: (v) => vm.updateQ10('c', v),
+                  ),
+                  _buildRadioGroup(
+                    title: l10n.q10d,
+                    options: [
+                      l10n.qFreq0,
+                      l10n.qFreq1,
+                      l10n.qFreq2,
+                      l10n.qFreq3,
+                    ],
+                    groupValue: vm.q10['d'],
+                    onChanged: (v) => vm.updateQ10('d', v),
+                  ),
+
+                  Text(
+                    l10n.q10eTitle,
+                    style: const TextStyle(
+                      color: AppTheme.textLight,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardLightColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: .05),
+                      ),
+                    ),
+                    child: TextField(
+                      onChanged: vm.updateQ10eReason,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: l10n.q10eHint,
+                        hintStyle: const TextStyle(color: AppTheme.textMuted),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  if (vm.q10eOtherReason.trim().isNotEmpty) ...[
+                    const SizedBox(height: 20),
+                    _buildRadioGroup(
+                      title: l10n.q10eFreq,
+                      options: [
+                        l10n.qFreq0,
+                        l10n.qFreq1,
+                        l10n.qFreq2,
+                        l10n.qFreq3,
+                      ],
+                      groupValue: vm.q10['e'],
+                      onChanged: (v) => vm.updateQ10('e', v),
+                    ),
+                  ],
                 ],
 
                 const SizedBox(height: 40),
-                PrimaryButton(
-                  text: 'Hoàn thành',
-                  onPressed: () {
-                    if (!vm.calculatePSQI()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Vui lòng trả lời tất cả các câu hỏi')),
-                      );
-                      return;
-                    }
-                    
-                    // Hiển thị điểm số cho user thấy (có thể lưu DB sau này)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Điểm chất lượng giấc ngủ (PSQI) của bạn: ${vm.finalPsqiScore}\n'
-                            '${vm.finalPsqiScore != null && vm.finalPsqiScore! > 5 ? "Giấc ngủ của bạn có vẻ kém, cần cải thiện!" : "Giấc ngủ của bạn khá tốt!"}'),
-                        duration: const Duration(seconds: 4),
-                      ),
-                    );
+                vm.isSubmitting
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppTheme.primaryColor,
+                          ),
+                        ),
+                      )
+                    : PrimaryButton(
+                        text: l10n.qFinish,
+                        onPressed: () async {
+                          final success = await vm.submitQuestionnaire();
+                          if (!success) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.qErrorGeneric)),
+                              );
+                            }
+                            return;
+                          }
 
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const MainAppScreen(),
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '${l10n.qPsqiResult(vm.finalPsqiScore ?? 0)}\n'
+                                  '${vm.finalPsqiScore != null && vm.finalPsqiScore! > 5 ? l10n.qPsqiBad : l10n.qPsqiGood}',
+                                ),
+                                duration: const Duration(seconds: 4),
+                              ),
+                            );
+
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const MainAppScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          }
+                        },
                       ),
-                      (route) => false,
-                    );
-                  },
-                ),
                 const SizedBox(height: 30),
               ],
             ),

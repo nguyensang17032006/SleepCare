@@ -5,6 +5,7 @@ import 'package:sleep_app_frontend/core/app/widget/custom_text_field.dart';
 import "package:sleep_app_frontend/core/constants/app_size.dart";
 import "package:sleep_app_frontend/core/theme/theme.dart";
 import "package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm.dart";
+import "package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart";
 
 class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});
@@ -29,7 +30,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
     final authVM = context.watch<AuthViewModel>();
     return Scaffold(
       appBar: AppBar(
-        title:  Text(
+        title: Text(
           'New Password',
           style: TextStyle(color: AppTheme.textMuted, fontSize: AppSizes.f16),
         ),
@@ -46,7 +47,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               obscureText: true,
               errorText: authVM.passwordError,
             ),
-             SizedBox(height: AppSizes.p16),
+            SizedBox(height: AppSizes.p16),
 
             CustomTextField(
               controller: _confirmPasswordController,
@@ -56,7 +57,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               obscureText: true,
               errorText: authVM.confirmPasswordError,
             ),
-             SizedBox(height: AppSizes.p16),
+            SizedBox(height: AppSizes.p16),
 
             authVM.isLoading
                 ? const CircularProgressIndicator()
@@ -71,7 +72,11 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                         return;
                       }
                       if (isSuccess) {
-                        Navigator.pop(context);
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
                       }
                     },
                   ),

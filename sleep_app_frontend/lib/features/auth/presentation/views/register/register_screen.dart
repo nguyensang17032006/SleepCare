@@ -19,7 +19,6 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   //Khởi tạo controller cố định bên trong State
   late final TextEditingController _fullnameController;
-  late final TextEditingController _usernameController;
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
   late final TextEditingController _confirmPasswordController;
@@ -28,7 +27,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     super.initState();
     _fullnameController = TextEditingController();
-    _usernameController = TextEditingController();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
@@ -41,7 +39,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     // hủy các controller khi widget bị hủy để tránh rò rỉ bộ nhớ
     _fullnameController.dispose();
-    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -111,14 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: AppSizes.vGap16),
 
-                    CustomTextField(
-                      controller: _usernameController,
-                      label: 'Tài khoản',
-                      hint: 'Nhập tên tài khoản',
-                      prefixIcon: Icons.account_circle_outlined,
-                      errorText: authVM.usernameError,
-                    ),
-                    SizedBox(height: AppSizes.vGap16),
+                    
 
                     CustomTextField(
                       controller: _emailController,
@@ -208,7 +198,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               final isSuccess = await authVM.register(
                                 fullname: _fullnameController.text.trim(),
 
-                                username: _usernameController.text.trim(),
 
                                 email: _emailController.text.trim(),
 
