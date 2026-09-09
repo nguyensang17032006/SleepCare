@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../main.dart'; // supabaseClient
-import '../../../features/auth/presentation/views/login/login_screen.dart';
-import '../../../features/onboarding/questionnaire_screen.dart';
-import '../../../core/app/main_layout.dart';
-import '../../../features/setting/presentation/viewmodels/profile_vm.dart';
-import '../../../core/theme/theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart';
+import 'package:sleep_app_frontend/features/home/presentation/home_screen.dart';
+import 'package:sleep_app_frontend/features/onboarding/domain/entities/assessment_requirement.dart';
+import 'package:sleep_app_frontend/features/onboarding/domain/usecases/check_required_assessment.dart';
+import 'package:sleep_app_frontend/features/onboarding/presentation/questionnaire_screen.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -15,90 +16,115 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  bool _isLoading = true;
+  String? _errorMessage;
+  AssessmentRequirement? _requirement;
+
   @override
   void initState() {
     super.initState();
-    _checkAuthState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuthenticationAndAssessment();
+    });
   }
 
-  Future<void> _checkAuthState() async {
-    final session = supabaseClient.auth.currentSession;
-    
+  Future<void> _checkAuthenticationAndAssessment() async {
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
+
+    final session = Supabase.instance.client.auth.currentSession;
+
     if (session == null) {
-      // Not logged in -> Login Screen
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
-      }
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _requirement = null;
+      });
+
       return;
     }
 
-    // Logged in -> Fetch profile to check onboarding status
-    try {
-      final profileVm = context.read<ProfileViewModel>();
-      await profileVm.loadProfile(session.user.id);
-      
-      if (mounted) {
-        if (profileVm.user != null && profileVm.user!.onboardingCompleted) {
-          // Check if it's been 30 days since the last full PSQI
-          bool needsRepeat = false;
-          try {
-            final lastAssessment = await supabaseClient
-                .from('sleep_assessments')
-                .select('created_at')
-                .inFilter('assessment_type', ['baseline_full', 'repeat_full'])
-                .eq('user_id', session.user.id)
-                .order('created_at', ascending: false)
-                .limit(1)
-                .maybeSingle();
+    final useCase = context.read<CheckRequiredAssessment>();
+    final result = await useCase();
 
-            if (lastAssessment != null) {
-              final lastDate = DateTime.parse(lastAssessment['created_at']);
-              if (DateTime.now().difference(lastDate).inDays >= 30) {
-                needsRepeat = true;
-              }
-            }
-          } catch (e) {
-            // Ignore error and proceed to Main App
-          }
+    if (!mounted) return;
 
-          if (needsRepeat && mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const QuestionnaireScreen()),
-            );
-          } else if (mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const MainAppScreen()),
-            );
-          }
-        } else {
-          // Onboarding NOT completed -> Questionnaire
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const QuestionnaireScreen()),
-          );
-        }
-      }
-    } catch (e) {
-      // If error fetching profile, fallback to login or retry
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
-      }
-    }
+    result.match(
+      (failure) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = failure.message;
+        });
+      },
+      (requirement) {
+        setState(() {
+          _isLoading = false;
+          _requirement = requirement;
+        });
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Show a loading indicator while checking auth and fetching profile
-    return const Scaffold(
-      backgroundColor: AppTheme.bgColor,
-      body: Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+    final session = Supabase.instance.client.auth.currentSession;
+
+    if (session == null) {
+      return const LoginScreen();
+    }
+
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_errorMessage != null) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  color: Colors.redAccent,
+                  size: 48,
+                ),
+                const SizedBox(height: 12),
+                Text(_errorMessage!, textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _checkAuthenticationAndAssessment,
+                  child: const Text('Thử lại'),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+    switch (_requirement) {
+      case AssessmentRequirement.baselineFull:
+      case AssessmentRequirement.repeatFull:
+        // Bắt buộc làm khảo sát full.
+        return const QuestionnaireScreen();
+
+      case AssessmentRequirement.dailyShort:
+      case AssessmentRequirement.none:
+        // Daily chỉ hiện dưới dạng banner trong Home.
+        return const HomeScreen();
+
+      case null:
+        return const Scaffold(
+          body: Center(child: Text('Không xác định được trạng thái khảo sát')),
+        );
+    }
   }
 }

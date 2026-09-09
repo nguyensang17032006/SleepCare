@@ -132,20 +132,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               : PrimaryButton(
                                   text: l10n.loginButton,
                                   onPressed: () async {
-                                    bool isSuccess = await authVMLogin
-                                        .signInWithEmail(
-                                          email: _emailController.text.trim(),
-                                          password: _passwordController.text,
-                                        );
-
-                                    if (!context.mounted) return;
-
-                                    if (isSuccess) {
-                                      // Tự động kiểm tra: Nếu đã làm khảo sát -> MainAppScreen, chưa làm -> QuestionnaireScreen
-                                      await authVMLogin.handleLoginSuccess(
-                                        context,
-                                      );
-                                    }
+                                    await authVMLogin.signInWithEmail(
+                                      email: _emailController.text.trim(),
+                                      password: _passwordController.text,
+                                    );
                                   },
                                 ),
                           SizedBox(height: AppSizes.vGap12),

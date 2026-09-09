@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sleep_app_frontend/features/onboarding/domain/entities/assessment_requirement.dart';
+import 'package:sleep_app_frontend/features/onboarding/domain/usecases/check_required_assessment.dart';
 import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import '../../../core/theme/theme.dart';
 import '../data/services/location_service.dart';
@@ -11,8 +13,8 @@ import 'widget/time_circle.dart';
 import 'widget/card_music.dart';
 import 'widget/glass_card.dart';
 import 'widget/weather_card.dart';
-import '../../onboarding/daily_short_survey_screen.dart';
-import '../../onboarding/questionnaire_screen.dart';
+import '../../onboarding/presentation/daily_short_survey_screen.dart';
+import '../../onboarding/presentation/questionnaire_screen.dart';
 import '../../../../main.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,16 +27,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int? _psqiScore;
   bool _isLoadingPsqi = true;
-  bool _shouldShowDailySurvey = true;
-  bool _shouldShowMonthlySurvey = false;
+  AssessmentRequirement? _assessmentRequirement;
+  bool _isLoadingAssessmentRequirement = true;
   List<Map<String, dynamic>> _recommendations = [];
 
   @override
   void initState() {
     super.initState();
     _fetchPsqiScore();
-    _checkDailySurveyEligibility();
-    _checkMonthlySurveyEligibility();
+    _loadAssessmentRequirement();
     _fetchRecommendations();
   }
 
@@ -63,71 +64,29 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _checkMonthlySurveyEligibility() async {
-    try {
-      final userId = supabaseClient.auth.currentUser?.id;
-      if (userId == null) return;
+  Future<void> _loadAssessmentRequirement() async {
+    final useCase = context.read<CheckRequiredAssessment>();
 
-      final latestFullAssessment = await supabaseClient
-          .from('sleep_assessments')
-          .select('completed_at')
-          .eq('user_id', userId)
-          .inFilter('assessment_type', ['baseline_full', 'repeat_full'])
-          .order('completed_at', ascending: false)
-          .limit(1)
-          .maybeSingle();
+    final result = await useCase();
 
-      if (latestFullAssessment != null &&
-          latestFullAssessment['completed_at'] != null) {
-        final DateTime completedAt = DateTime.parse(
-          latestFullAssessment['completed_at'],
-        ).toLocal();
-        final int daysPassed = DateTime.now().difference(completedAt).inDays;
+    if (!mounted) return;
 
-        if (daysPassed >= 30) {
-          if (mounted) {
-            setState(() {
-              _shouldShowMonthlySurvey = true;
-            });
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('Error checking monthly survey eligibility: $e');
-    }
-  }
+    result.match(
+      (failure) {
+        debugPrint('Error checking assessment requirement: ${failure.message}');
 
-  Future<void> _checkDailySurveyEligibility() async {
-    try {
-      final userId = supabaseClient.auth.currentUser?.id;
-      if (userId == null) return;
-
-      final latestAssessment = await supabaseClient
-          .from('sleep_assessments')
-          .select('completed_at')
-          .eq('user_id', userId)
-          .order('completed_at', ascending: false)
-          .limit(1)
-          .maybeSingle();
-
-      if (latestAssessment != null) {
-        final String completedAtStr = latestAssessment['completed_at'];
-        final DateTime completedAt = DateTime.parse(completedAtStr).toLocal();
-        final DateTime now = DateTime.now();
-
-        if (completedAt.year == now.year &&
-            completedAt.month == now.month &&
-            completedAt.day == now.day) {
-          if (mounted) {
-            setState(() {
-              _shouldShowDailySurvey = false;
-            });
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('Error checking daily survey eligibility: $e');
-    }
+        setState(() {
+          _assessmentRequirement = AssessmentRequirement.none;
+          _isLoadingAssessmentRequirement = false;
+        });
+      },
+      (requirement) {
+        setState(() {
+          _assessmentRequirement = requirement;
+          _isLoadingAssessmentRequirement = false;
+        });
+      },
+    );
   }
 
   Future<void> _fetchPsqiScore() async {
@@ -170,7 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final l10n = AppLocalizations.of(context)!;
+    final shouldShowDailySurvey =
+        !_isLoadingAssessmentRequirement &&
+        _assessmentRequirement == AssessmentRequirement.dailyShort;
 
+    final shouldShowFullSurvey =
+        !_isLoadingAssessmentRequirement &&
+        (_assessmentRequirement == AssessmentRequirement.baselineFull ||
+            _assessmentRequirement == AssessmentRequirement.repeatFull);
     return BlocProvider(
       create: (_) => WeatherCubit(
         repository: const WeatherRepository(
@@ -195,15 +161,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: 18.h),
 
                 // Daily Check-in Banner
-                if (_shouldShowDailySurvey) ...[
+                if (shouldShowDailySurvey) ...[
                   GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final completed = await Navigator.push<bool>(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const DailyShortSurveyScreen(),
                         ),
                       );
+
+                      if (completed == true && mounted) {
+                        await _loadAssessmentRequirement();
+                      }
                     },
                     child: GlassCard(
                       padding: EdgeInsets.symmetric(
@@ -264,15 +234,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
 
                 // Monthly 30-Day Check-in Banner
-                if (_shouldShowMonthlySurvey && !_shouldShowDailySurvey) ...[
+                if (shouldShowFullSurvey) ...[
                   GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final completed = await Navigator.push<bool>(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const QuestionnaireScreen(),
                         ),
                       );
+
+                      if (completed == true && mounted) {
+                        await _loadAssessmentRequirement();
+                        await _fetchPsqiScore();
+                      }
                     },
                     child: GlassCard(
                       padding: EdgeInsets.symmetric(

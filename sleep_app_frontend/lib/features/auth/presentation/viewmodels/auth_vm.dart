@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sleep_app_frontend/features/home/presentation/home_screen.dart';
-import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../repository/auth_repository.dart';
-import '../../../onboarding/data/sources/onboarding_sources.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
@@ -221,7 +218,7 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<bool> resetPassword({required String email}) async {
     clearAllErrors();
-    notifyListeners();
+
     bool hasValidationError = false;
 
     if (email.isEmpty) {
@@ -242,11 +239,15 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       await _authRepository.resetPassword(email: email);
+
       _isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
-      throw Exception('Reset mật khẩu thất bại: $e');
+      _isLoading = false;
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
+      return false;
     }
   }
 
@@ -314,28 +315,6 @@ class AuthViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return false;
-    }
-  }
-
-  // Điều hướng sau khi đăng nhập thành công
-  Future<void> handleLoginSuccess(BuildContext context) async {
-    final hasCompletedOnboarding =
-        await OnboardingRemoteSource().checkOnboardingStatus();
-
-    if (!context.mounted) return;
-
-    if (hasCompletedOnboarding) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false,
-      );
-    } else {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const QuestionnaireScreen()),
-        (route) => false,
-      );
     }
   }
 }

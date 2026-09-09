@@ -8,7 +8,7 @@ import 'package:sleep_app_frontend/core/theme/pin_theme.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/time_remaining_vm.dart';
 import 'package:sleep_app_frontend/features/home/presentation/widget/glass_card.dart';
-import 'package:sleep_app_frontend/features/onboarding/questionnaire_screen.dart';
+import 'package:sleep_app_frontend/features/onboarding/presentation/questionnaire_screen.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;

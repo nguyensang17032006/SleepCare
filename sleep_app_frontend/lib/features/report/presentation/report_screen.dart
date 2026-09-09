@@ -1,214 +1,485 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:sleep_app_frontend/features/report/presentation/widget/bar_chart_widget.dart';
-import 'package:sleep_app_frontend/features/report/presentation/widget/line_chart_widget.dart';
-import 'package:sleep_app_frontend/l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sleep_app_frontend/features/report/presentation/bloc/report_bloc.dart';
 import '../../../core/theme/theme.dart';
-import '../../../core/app/widget/primary_button.dart';
-import 'viewmodels/report_vm.dart';
+import '../domain/entities/bedtime_report.dart';
+import '../domain/entities/music_report.dart';
+import '../domain/entities/overview_report.dart';
+import '../domain/entities/sleep_music_report.dart';
+import '../domain/entities/sleep_report.dart';
 
-class ReportScreen extends StatelessWidget {
+class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ReportViewModel()..loadReportData(),
-      child: const _ReportView(),
-    );
-  }
+  State<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _ReportView extends StatelessWidget {
-  const _ReportView();
+class _ReportScreenState extends State<ReportScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ReportBloc>().add(LoadReportData("user123"));
+  }
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<ReportViewModel>();
-    final l10n = AppLocalizations.of(context)!;
-    
-    if (vm.isLoading) {
-      return const Scaffold(
-        backgroundColor: AppTheme.bgColor,
-        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryColor)),
-      );
-    }
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
-
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppTheme.cardLightColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.reportAvgDuration,
-                            style: const TextStyle(
-                              color: AppTheme.textMuted,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                vm.avgDurationHours.toStringAsFixed(1),
-                                style: const TextStyle(
-                                  color: AppTheme.textLight,
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.bold,
-                                  height: 1.0,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4.0),
-                                child: Text(
-                                  l10n.reportHours,
-                                  style: const TextStyle(
-                                    color: AppTheme.textMuted,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.arrow_upward,
-                                color: Colors.greenAccent,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                l10n.reportMoreSleep,
-                                style: const TextStyle(
-                                  color: Colors.greenAccent,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(
-                      Icons.nightlight_round,
-                      color: AppTheme.primaryColor,
-                      size: 48,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              BarChartWidget(weeklyData: vm.weeklyData),
-
-              const SizedBox(height: 30),
-
-              LineChartWidget(
-                weeklySpots: vm.weeklySpots,
-                monthlySpots: vm.monthlySpots,
-              ),
-
-              const SizedBox(height: 30),
-
-              Text(
-                l10n.reportPillowTalkTitle,
-                style: const TextStyle(
-                  color: AppTheme.textMuted,
-                  fontSize: 10,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              _buildInsightCard(
-                Icons.lightbulb_outline,
-                l10n.reportNightlyRhythms,
-                l10n.reportNightlyRhythmsDesc,
-              ),
-
-              const SizedBox(height: 12),
-
-              _buildInsightCard(
-                Icons.star_outline,
-                l10n.reportPillowTalk,
-                l10n.reportPillowTalkDesc,
-              ),
-              const SizedBox(height: 30),
-
-              PrimaryButton(text: l10n.reportGeneratePdf, onPressed: () {}),
-              const SizedBox(height: 30),
-            ],
+        child: SafeArea(
+          child: BlocBuilder<ReportBloc, ReportState>(
+            builder: (context, state) {
+              if (state is ReportLoading || state is ReportInitial) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: AppTheme.primaryColor,
+                  ),
+                );
+              } else if (state is ReportError) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                );
+              } else if (state is ReportLoaded) {
+                return _buildDashboard(context, state);
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInsightCard(IconData icon, String title, String description) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: Row(
+  Widget _buildDashboard(BuildContext context, ReportLoaded state) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppTheme.cardLightColor,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+          const SizedBox(height: 10),
+          const Text(
+            "Good morning, Sáng 👋",
+            style: TextStyle(color: AppTheme.textMuted, fontSize: 16),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
+          const SizedBox(height: 4),
+          const Text(
+            "Theo dõi giấc ngủ của bạn",
+            style: TextStyle(
+              color: AppTheme.textLight,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          _buildSleepReportCard(state.sleepReport),
+          const SizedBox(height: 16),
+
+          _buildOverviewCard(state.overviewReport),
+          const SizedBox(height: 16),
+
+          _buildBedtimeGoalCard(state.bedtimeReport),
+          const SizedBox(height: 16),
+
+          _buildMusicHabitCard(state.musicReport),
+          const SizedBox(height: 16),
+
+          _buildSuggestionCard(state.sleepMusicReport),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.cardLightColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildSleepReportCard(SleepReport report) {
+    final hours = report.sleepDurationHours.floor();
+    final minutes = ((report.sleepDurationHours - hours) * 60).round();
+
+    return _buildCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.nightlight_round,
+                color: AppTheme.primaryColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                "GIẤC NGỦ ĐÊM QUA",
+                style: TextStyle(
+                  color: AppTheme.textMuted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        "${hours}h ${minutes}m",
+                        style: const TextStyle(
+                          color: AppTheme.textLight,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    "Thời gian ngủ",
+                    style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  "😴 ${report.sleepQuality}    ⭐ ${report.sleepScore}/100",
                   style: const TextStyle(
-                    color: AppTheme.textLight,
-                    fontSize: 14,
+                    color: AppTheme.primaryColor,
                     fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    color: AppTheme.textMuted,
                     fontSize: 12,
-                    height: 1.5,
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverviewCard(OverviewReport report) {
+    final hours = report.averageSleepDurationHours.floor();
+    final minutes = ((report.averageSleepDurationHours - hours) * 60).round();
+    final isUp = report.deltaMinutes >= 0;
+
+    return _buildCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.bar_chart,
+                color: AppTheme.primaryColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                "TUẦN NÀY",
+                style: TextStyle(
+                  color: AppTheme.textMuted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (var day in ["T2", "T3", "T4", "T5", "T6", "T7", "CN"])
+                Column(
+                  children: [
+                    Text(
+                      day,
+                      style: const TextStyle(
+                        color: AppTheme.textMuted,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: day != "CN"
+                            ? AppTheme.primaryColor
+                            : AppTheme.cardColor,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          Text(
+            "Trung bình: ${hours}h ${minutes.toString().padLeft(2, '0')}m",
+            style: const TextStyle(
+              color: AppTheme.textLight,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              const Text(
+                "So với tuần trước: ",
+                style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+              ),
+              Icon(
+                isUp ? Icons.arrow_upward : Icons.arrow_downward,
+                color: isUp ? Colors.greenAccent : Colors.redAccent,
+                size: 14,
+              ),
+              Text(
+                " ${report.deltaMinutes.abs()} phút",
+                style: TextStyle(
+                  color: isUp ? Colors.greenAccent : Colors.redAccent,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBedtimeGoalCard(BedtimeReport report) {
+    double progress = report.daysAchieved / report.totalDays;
+
+    return _buildCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.track_changes,
+                color: Colors.orangeAccent,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                "MỤC TIÊU",
+                style: TextStyle(
+                  color: AppTheme.textMuted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "Ngủ trước ${report.targetBedtime}",
+            style: const TextStyle(
+              color: AppTheme.textLight,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: AppTheme.cardColor,
+                    color: Colors.orangeAccent,
+                    minHeight: 12,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "${report.daysAchieved}/${report.totalDays} ngày",
+                style: const TextStyle(
+                  color: AppTheme.textMuted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMusicHabitCard(MusicReport report) {
+    return _buildCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.music_note,
+                color: Colors.purpleAccent,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                "THÓI QUEN NGHE NHẠC",
+                style: TextStyle(
+                  color: AppTheme.textMuted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.local_fire_department,
+                color: Colors.orange,
+                size: 28,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "${report.consecutiveDays} ngày liên tiếp",
+                style: const TextStyle(
+                  color: AppTheme.textLight,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(Icons.headphones, color: AppTheme.textMuted, size: 16),
+              const SizedBox(width: 8),
+              Text(
+                "${report.averageListeningMinutes} phút/ngày",
+                style: const TextStyle(color: AppTheme.textLight, fontSize: 14),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.nightlight, color: AppTheme.textMuted, size: 16),
+              const SizedBox(width: 8),
+              Text(
+                "${report.favoriteGenre} là thể loại yêu thích",
+                style: const TextStyle(color: AppTheme.textLight, fontSize: 14),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestionCard(SleepMusicReport report) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.primaryColor.withValues(alpha: 0.8),
+            AppTheme.primaryColor.withValues(alpha: 0.6),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.lightbulb, color: Colors.yellowAccent, size: 20),
+              const SizedBox(width: 8),
+              const Text(
+                "GỢI Ý CHO TỐI NAY",
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '"${report.suggestionText}"',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              height: 1.5,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                // Navigate to relaxation/music screen
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: AppTheme.primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                "Bắt đầu thư giãn",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ),
           ),
         ],
