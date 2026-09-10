@@ -21,11 +21,17 @@ class _MainAppScreenState extends State<MainAppScreen>
 
   late AnimationController _animationController;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    LibraryScreen(),
-    SleepPrepScreen(),
-    ReportScreen(),
+  late final List<Widget> _screens = [
+    const HomeScreen(),
+    const LibraryScreen(),
+    const SleepPrepScreen(),
+    ReportScreen(
+      onOpenSleep: () {
+        setState(() {
+          _currentIndex = 2;
+        });
+      },
+    ),
     SettingsScreen(),
   ];
 
@@ -35,9 +41,7 @@ class _MainAppScreenState extends State<MainAppScreen>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(
-        milliseconds: 300,
-      ),
+      duration: const Duration(milliseconds: 300),
     );
 
     _animationController.forward();
@@ -55,25 +59,18 @@ class _MainAppScreenState extends State<MainAppScreen>
         _currentIndex = index;
       });
 
-      _animationController.forward(
-        from: 0.0,
-      );
+      _animationController.forward(from: 0.0);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(
-        onProfileTap: () => _onTabTapped(4),
-      ),
+      appBar: AppBarWidget(onProfileTap: () => _onTabTapped(4)),
 
       body: FadeTransition(
         opacity: _animationController,
-        child: IndexedStack(
-          index: _currentIndex,
-          children: _screens,
-        ),
+        child: IndexedStack(index: _currentIndex, children: _screens),
       ),
 
       bottomNavigationBar: Column(
@@ -87,50 +84,30 @@ class _MainAppScreenState extends State<MainAppScreen>
             selectedIndex: _currentIndex,
             onDestinationSelected: _onTabTapped,
             backgroundColor: AppTheme.bgColor,
-            indicatorColor: AppTheme.primaryColor.withValues(
-              alpha: 0.2,
-            ),
+            indicatorColor: AppTheme.primaryColor.withValues(alpha: 0.2),
             destinations: const [
               NavigationDestination(
-                icon: Icon(
-                  Icons.nightlight_round,
-                ),
+                icon: Icon(Icons.nightlight_round),
                 label: 'Home',
               ),
               NavigationDestination(
-                icon: Icon(
-                  Icons.library_music_outlined,
-                ),
-                selectedIcon: Icon(
-                  Icons.library_music,
-                ),
+                icon: Icon(Icons.library_music_outlined),
+                selectedIcon: Icon(Icons.library_music),
                 label: 'Library',
               ),
               NavigationDestination(
-                icon: Icon(
-                  Icons.bedtime_outlined,
-                ),
-                selectedIcon: Icon(
-                  Icons.bedtime,
-                ),
+                icon: Icon(Icons.bedtime_outlined),
+                selectedIcon: Icon(Icons.bedtime),
                 label: 'Sleep',
               ),
               NavigationDestination(
-                icon: Icon(
-                  Icons.bar_chart_outlined,
-                ),
-                selectedIcon: Icon(
-                  Icons.bar_chart,
-                ),
+                icon: Icon(Icons.bar_chart_outlined),
+                selectedIcon: Icon(Icons.bar_chart),
                 label: 'Report',
               ),
               NavigationDestination(
-                icon: Icon(
-                  Icons.settings_outlined,
-                ),
-                selectedIcon: Icon(
-                  Icons.settings,
-                ),
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings),
                 label: 'Settings',
               ),
             ],

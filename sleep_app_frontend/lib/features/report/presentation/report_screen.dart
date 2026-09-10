@@ -7,9 +7,11 @@ import '../domain/entities/music_report.dart';
 import '../domain/entities/overview_report.dart';
 import '../domain/entities/sleep_music_report.dart';
 import '../domain/entities/sleep_report.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({super.key});
+  final VoidCallback onOpenSleep;
+  const ReportScreen({super.key, required this.onOpenSleep});
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
@@ -19,7 +21,8 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ReportBloc>().add(LoadReportData("user123"));
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    context.read<ReportBloc>().add(LoadReportData(userId.toString()));
   }
 
   @override
@@ -55,15 +58,18 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _buildDashboard(BuildContext context, ReportLoaded state) {
+    final name =
+        Supabase.instance.client.auth.currentUser?.userMetadata?['full_name']
+            as String?;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 10),
-          const Text(
-            "Good morning, Sáng 👋",
-            style: TextStyle(color: AppTheme.textMuted, fontSize: 16),
+          Text(
+            "Good morning, $name",
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 16),
           ),
           const SizedBox(height: 4),
           const Text(
@@ -173,7 +179,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  "😴 ${report.sleepQuality}    ⭐ ${report.sleepScore}/100",
+                  "${report.sleepQuality}    ${report.sleepScore}/100",
                   style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontWeight: FontWeight.bold,
@@ -465,9 +471,7 @@ class _ReportScreenState extends State<ReportScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                // Navigate to relaxation/music screen
-              },
+              onPressed: widget.onOpenSleep,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: AppTheme.primaryColor,

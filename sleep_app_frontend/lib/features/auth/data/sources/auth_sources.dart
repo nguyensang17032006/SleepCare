@@ -26,12 +26,11 @@ class AuthRemoteSource {
   }) async {
     try {
       //Tìm email dựa trên username từ bảng 'profile_sleep_app'
-
       final response = await supabaseClient
           .from('profile_sleep_app')
-          .select('email').eq('email', email)
+          .select('email')
+          .eq('email', email)
           .maybeSingle(); // Trả về 1 dòng duy nhất hoặc null nếu không thấy
-
       // Nếu không tìm thấy username trong hệ thống
       if (response == null || response['email'] == null) {
         throw AuthApiException(
@@ -39,9 +38,7 @@ class AuthRemoteSource {
           statusCode: '404',
         );
       }
-
       final String realEmail = response['email'];
-
       // Gọi hàm đăng nhập bằng email tìm được
       await supabaseClient.auth.signInWithPassword(
         email: realEmail,
@@ -96,7 +93,7 @@ class AuthRemoteSource {
     }
   }
 
-// xac minh otp reset password
+  // xac minh otp reset password
   Future<bool> verifyResetPasswordOTP({
     required String email,
     required String otp,
@@ -114,7 +111,7 @@ class AuthRemoteSource {
     }
   }
 
-// new pass
+  // new pass
   Future<void> updatePassword({required String newPassword}) async {
     try {
       await supabaseClient.auth.updateUser(
@@ -124,6 +121,7 @@ class AuthRemoteSource {
       rethrow;
     }
   }
+
   // Check trùng username dựa vào bảng public profile
   Future<bool> isUsernameExist(String username) async {
     final response = await supabaseClient

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/core/app/main_layout.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart';
-import 'package:sleep_app_frontend/features/home/presentation/home_screen.dart';
 import 'package:sleep_app_frontend/features/onboarding/domain/entities/assessment_requirement.dart';
 import 'package:sleep_app_frontend/features/onboarding/domain/usecases/check_required_assessment.dart';
 import 'package:sleep_app_frontend/features/onboarding/presentation/questionnaire_screen.dart';
@@ -113,13 +113,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
     switch (_requirement) {
       case AssessmentRequirement.baselineFull:
       case AssessmentRequirement.repeatFull:
-        // Bắt buộc làm khảo sát full.
         return const QuestionnaireScreen();
 
       case AssessmentRequirement.dailyShort:
       case AssessmentRequirement.none:
-        // Daily chỉ hiện dưới dạng banner trong Home.
-        return const HomeScreen();
+        return const MainAppScreen();
 
       case null:
         return const Scaffold(

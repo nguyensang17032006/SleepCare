@@ -179,7 +179,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     required SleepMetricsModel metrics,
     required DailySleepScoreModel dailyScore,
   }) async {
-    final userId = _currentUserId;
+    final userId = _currentUserId();
 
     final questionnaireCode = _getQuestionnaireCode(assessment.assessmentType);
 
@@ -265,7 +265,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final userId = _currentUserId;
+    final userId = _currentUserId();
 
     final response = await supabaseClient
         .from('daily_sleep_scores')
