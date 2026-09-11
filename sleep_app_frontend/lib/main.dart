@@ -5,6 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
+import 'package:sleep_app_frontend/features/library/domain/repositories/library_repository.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:sleep_app_frontend/core/services/audio_player_service.dart';
@@ -143,14 +145,27 @@ Future<void> main() async {
           ),
         ),
 
+        Provider<LibraryRemoteDatasource>(
+          create: (_) =>
+              LibraryRemoteDatasource(supabase: Supabase.instance.client),
+        ),
+
+        Provider<LibraryRepository>(
+          create: (context) => LibraryRepositoryImpl(
+            remoteDatasource: context.read<LibraryRemoteDatasource>(),
+          ),
+        ),
+
         BlocProvider<LibraryBloc>(
-          create: (_) => LibraryBloc(
-            repository: LibraryRepositoryImpl(
-              remoteDatasource: LibraryRemoteDatasource(
-                supabase: Supabase.instance.client,
-              ),
-            ),
-          )..add(LoadLibrary()),
+          create: (context) =>
+              LibraryBloc(repository: context.read<LibraryRepository>())
+                ..add(LoadLibrary()),
+        ),
+
+        BlocProvider<SleepPrepBloc>(
+          create: (context) => SleepPrepBloc(
+            libraryRepository: context.read<LibraryRepository>(),
+          ),
         ),
 
         BlocProvider<ReportBloc>(

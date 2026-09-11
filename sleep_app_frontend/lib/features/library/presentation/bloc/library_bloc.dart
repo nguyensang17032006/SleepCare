@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/music.dart';
@@ -47,14 +48,11 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       final savedTrackIds = await repository.getSavedTrackIds();
 
       emit(
-        LibraryLoaded(
-          genrePreviews: previews,
-          savedTrackIds: savedTrackIds,
-        ),
+        LibraryLoaded(genrePreviews: previews, savedTrackIds: savedTrackIds),
       );
     } catch (e, stackTrace) {
-      print('LOAD LIBRARY ERROR: $e');
-      print('STACK TRACE: $stackTrace');
+      debugPrint('LOAD LIBRARY ERROR: $e');
+      debugPrint('STACK TRACE: $stackTrace');
 
       emit(LibraryError(e.toString()));
     }
@@ -84,18 +82,10 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       return;
     }
 
-    emit(
-      current.copyWith(
-        searchQuery: query,
-        isSearching: true,
-      ),
-    );
+    emit(current.copyWith(searchQuery: query, isSearching: true));
 
     try {
-      final results = await repository.searchMusics(
-        query: query,
-        limit: 20,
-      );
+      final results = await repository.searchMusics(query: query, limit: 20);
 
       final latestState = state;
 
@@ -107,25 +97,15 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
         return;
       }
 
-      emit(
-        latestState.copyWith(
-          searchResults: results,
-          isSearching: false,
-        ),
-      );
+      emit(latestState.copyWith(searchResults: results, isSearching: false));
     } catch (e, stackTrace) {
-      print('SEARCH LIBRARY ERROR: $e');
-      print('STACK TRACE: $stackTrace');
+      debugPrint('SEARCH LIBRARY ERROR: $e');
+      debugPrint('STACK TRACE: $stackTrace');
 
       final latestState = state;
 
       if (latestState is LibraryLoaded) {
-        emit(
-          latestState.copyWith(
-            searchResults: [],
-            isSearching: false,
-          ),
-        );
+        emit(latestState.copyWith(searchResults: [], isSearching: false));
       }
     }
   }
@@ -151,14 +131,10 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
         updatedIds.remove(event.trackId);
       }
 
-      emit(
-        current.copyWith(
-          savedTrackIds: updatedIds,
-        ),
-      );
+      emit(current.copyWith(savedTrackIds: updatedIds));
     } catch (e, stackTrace) {
-      print('TOGGLE SAVED ERROR: $e');
-      print('STACK TRACE: $stackTrace');
+      debugPrint('TOGGLE SAVED ERROR: $e');
+      debugPrint('STACK TRACE: $stackTrace');
     }
   }
 
@@ -175,14 +151,10 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     try {
       final ids = await repository.getSavedTrackIds();
 
-      emit(
-        current.copyWith(
-          savedTrackIds: ids,
-        ),
-      );
+      emit(current.copyWith(savedTrackIds: ids));
     } catch (e, stackTrace) {
-      print('REFRESH SAVED ERROR: $e');
-      print('STACK TRACE: $stackTrace');
+      debugPrint('REFRESH SAVED ERROR: $e');
+      debugPrint('STACK TRACE: $stackTrace');
     }
   }
 }

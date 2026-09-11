@@ -1,115 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
+import 'package:sleep_app_frontend/features/library/domain/entities/music.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_bloc.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_event.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_state.dart';
 import 'package:sleep_app_frontend/features/sleep_session/presentation/sleep_session_screen.dart';
 
 class SleepPrepScreen extends StatefulWidget {
-  const SleepPrepScreen({super.key});
+  final VoidCallback onOpenLibrary;
+
+  const SleepPrepScreen({super.key, required this.onOpenLibrary});
 
   @override
   State<SleepPrepScreen> createState() => _SleepPrepScreenState();
 }
 
 class _SleepPrepScreenState extends State<SleepPrepScreen> {
-  final _supabase = Supabase.instance.client;
-  bool _isLoading = true;
-  List<FileObject> _musicFiles = [];
-  String? _selectedMusicUrl;
-  String? _selectedMusicName;
-  int _selectedDurationMins = 30; // Default 30 minutes
-
-  final List<int> _durationOptions = [1, 15, 30, 45, 60, 90, 120];
+  final List<int> _durationOptions = [30, 45, 60, 90];
 
   @override
   void initState() {
     super.initState();
-    _fetchMusic();
-  }
 
-  Future<void> _fetchMusic() async {
-    try {
-      final List<FileObject> objects = await _supabase.storage
-          .from('music-audio')
-          .list();
-      // Filter only files (not directories or empty objects)
-      final files = objects
-          .where((obj) => obj.name.isNotEmpty && !obj.name.startsWith('.'))
-          .toList();
-
-      setState(() {
-        _musicFiles = files;
-        if (files.isNotEmpty) {
-          _selectedMusicName = files.first.name;
-          _selectedMusicUrl = _supabase.storage
-              .from('music-audio')
-              .getPublicUrl(files.first.name);
-        }
-      });
-    } catch (e) {
-      debugPrint('Error fetching music: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _showDurationPicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppTheme.bgColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Chọn thời lượng',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: _durationOptions.map((mins) {
-                  final isSelected = _selectedDurationMins == mins;
-                  return ChoiceChip(
-                    label: Text('${mins}m'),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() {
-                          _selectedDurationMins = mins;
-                        });
-                        Navigator.pop(context);
-                      }
-                    },
-                    selectedColor: AppTheme.primaryColor,
-                    labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : AppTheme.textLight,
-                    ),
-                    backgroundColor: AppTheme.cardLightColor,
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
+    context.read<SleepPrepBloc>().add(const SleepPrepStarted());
   }
 
   @override
@@ -123,182 +39,320 @@ class _SleepPrepScreenState extends State<SleepPrepScreen> {
           'Chuẩn bị ngủ',
           style: TextStyle(color: AppTheme.textLight),
         ),
-        iconTheme: const IconThemeData(color: AppTheme.textLight),
       ),
-      body: _isLoading
-          ? const Center(
+      body: BlocBuilder<SleepPrepBloc, SleepPrepState>(
+        builder: (context, state) {
+          if (state is SleepPrepInitial || state is SleepPrepLoading) {
+            return const Center(
               child: CircularProgressIndicator(color: AppTheme.primaryColor),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            );
+          }
+
+          if (state is SleepPrepFailure) {
+            return _buildFailure(state);
+          }
+
+          if (state is SleepPrepEmpty) {
+            return _buildEmpty();
+          }
+
+          if (state is SleepPrepLoaded) {
+            return _buildLoaded(state);
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+  }
+
+  Widget _buildEmpty() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.library_music_outlined,
+              color: AppTheme.primaryColor,
+              size: 72,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Bạn chưa lưu bài nhạc nào',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppTheme.textLight,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Hãy khám phá thư viện và lưu những bài nhạc bạn muốn nghe khi ngủ.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppTheme.textMuted,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            PrimaryButton(
+              text: 'Khám phá thư viện',
+              onPressed: widget.onOpenLibrary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFailure(SleepPrepFailure state) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+            const SizedBox(height: 12),
+            Text(
+              state.message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                context.read<SleepPrepBloc>().add(const SleepPrepStarted());
+              },
+              child: const Text('Thử lại'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoaded(SleepPrepLoaded state) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Nhạc đã lưu',
+            style: TextStyle(
+              color: AppTheme.textLight,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Chọn một bài để nghe khi ngủ',
+            style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+          ),
+          const SizedBox(height: 16),
+
+          Expanded(
+            child: ListView.separated(
+              itemCount: state.savedMusics.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final music = state.savedMusics[index];
+
+                return _buildMusicCard(
+                  music: music,
+                  isSelected: music.id == state.selectedMusic.id,
+                );
+              },
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          InkWell(
+            onTap: () => _showDurationPicker(state.durationMinutes),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.cardLightColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
                 children: [
-                  const Text(
-                    'Chọn nhạc nền',
-                    style: TextStyle(
-                      color: AppTheme.textLight,
-                      fontSize: 18,
+                  const Icon(
+                    Icons.timer_outlined,
+                    color: AppTheme.primaryColor,
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Thời gian phát nhạc',
+                      style: TextStyle(color: AppTheme.textLight, fontSize: 15),
+                    ),
+                  ),
+                  Text(
+                    '${state.durationMinutes} phút',
+                    style: const TextStyle(
+                      color: AppTheme.primaryColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  if (_musicFiles.isEmpty)
-                    const Text(
-                      'Không có bài nhạc nào.',
-                      style: TextStyle(color: AppTheme.textMuted),
-                    )
-                  else
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _musicFiles.length,
-                        itemBuilder: (context, index) {
-                          final file = _musicFiles[index];
-                          final isSelected = _selectedMusicName == file.name;
-                          return ListTile(
-                            onTap: () {
-                              setState(() {
-                                _selectedMusicName = file.name;
-                                _selectedMusicUrl = _supabase.storage
-                                    .from('music-audio')
-                                    .getPublicUrl(file.name);
-                              });
-                            },
-                            tileColor: isSelected
-                                ? AppTheme.primaryColor.withValues(alpha: 0.2)
-                                : null,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            leading: Icon(
-                              Icons.music_note,
-                              color: isSelected
-                                  ? AppTheme.primaryColor
-                                  : AppTheme.textMuted,
-                            ),
-                            title: Text(
-                              file.name,
-                              style: TextStyle(
-                                color: isSelected
-                                    ? AppTheme.primaryColor
-                                    : AppTheme.textLight,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                              ),
-                            ),
-                            trailing: isSelected
-                                ? const Icon(
-                                    Icons.check_circle,
-                                    color: AppTheme.primaryColor,
-                                  )
-                                : null,
-                          );
-                        },
-                      ),
-                    ),
-                  const SizedBox(height: 24),
-                  InkWell(
-                    onTap: () => _showDurationPicker(context),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.cardLightColor,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withValues(
-                                alpha: 0.2,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.music_note,
-                              color: AppTheme.primaryColor,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Phát nhạc',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Thời lượng',
-                                  style: TextStyle(
-                                    color: AppTheme.textMuted,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withValues(
-                                alpha: 0.2,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${_selectedDurationMins}m',
-                              style: const TextStyle(
-                                color: AppTheme.primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppTheme.textMuted,
                   ),
-                  const SizedBox(height: 40),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: PrimaryButton(
-                      text: 'Bắt đầu',
-                      isLoading: _isLoading,
-                      onPressed: (_selectedMusicUrl == null)
-                          ? () {}
-                          : () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (_) => SleepSessionScreen(
-                                    musicUrl: _selectedMusicUrl!,
-                                    musicName: _selectedMusicName!,
-                                    durationMinutes: _selectedDurationMins,
-                                  ),
-                                ),
-                              );
-                            },
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
+          ),
+
+          const SizedBox(height: 20),
+
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: PrimaryButton(
+              text: 'Bắt đầu ngủ',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SleepSessionScreen(
+                      musicUrl: state.selectedMusic.audioUrl,
+                      musicName: state.selectedMusic.title,
+                      durationMinutes: state.durationMinutes,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMusicCard({required Music music, required bool isSelected}) {
+    final artist = music.artist?.join(', ');
+
+    return InkWell(
+      onTap: () {
+        context.read<SleepPrepBloc>().add(SleepPrepTrackSelected(music));
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppTheme.primaryColor.withValues(alpha: 0.18)
+              : AppTheme.cardLightColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+          ),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                width: 58,
+                height: 58,
+                child: music.coverUrl != null && music.coverUrl!.isNotEmpty
+                    ? Image.network(
+                        music.coverUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) {
+                          return _buildDefaultCover();
+                        },
+                      )
+                    : _buildDefaultCover(),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    music.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppTheme.textLight,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (artist != null && artist.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      artist,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppTheme.textMuted,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Icon(
+              isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: isSelected ? AppTheme.primaryColor : AppTheme.textMuted,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDefaultCover() {
+    return Container(
+      color: AppTheme.cardColor,
+      child: const Icon(Icons.music_note, color: AppTheme.primaryColor),
+    );
+  }
+
+  void _showDurationPicker(int currentDuration) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.bgColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (bottomSheetContext) {
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: _durationOptions.map((minutes) {
+              return ChoiceChip(
+                label: Text('$minutes phút'),
+                selected: minutes == currentDuration,
+                onSelected: (_) {
+                  context.read<SleepPrepBloc>().add(
+                    SleepPrepDurationChanged(minutes),
+                  );
+
+                  Navigator.pop(bottomSheetContext);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }

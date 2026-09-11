@@ -32,8 +32,7 @@ class MusicListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final subtitleParts = <String>[
       if (music.genre.isNotEmpty) music.genre.first,
-      if (music.sleepStage != null &&
-          music.sleepStage!.trim().isNotEmpty)
+      if (music.sleepStage != null && music.sleepStage!.trim().isNotEmpty)
         music.sleepStage!,
     ];
 
@@ -47,13 +46,11 @@ class MusicListTile extends StatelessWidget {
           child: SizedBox(
             width: 58,
             height: 58,
-            child:
-                music.coverUrl != null &&
-                    music.coverUrl!.trim().isNotEmpty
+            child: music.coverUrl != null && music.coverUrl!.trim().isNotEmpty
                 ? Image.network(
                     music.coverUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) {
+                    errorBuilder: (_, _, _) {
                       return _buildPlaceholder();
                     },
                   )
@@ -75,9 +72,7 @@ class MusicListTile extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: isCurrent
-                      ? AppTheme.primaryColor
-                      : AppTheme.textLight,
+                  color: isCurrent ? AppTheme.primaryColor : AppTheme.textLight,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -89,10 +84,7 @@ class MusicListTile extends StatelessWidget {
                 subtitleParts.join(' · '),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: AppTheme.textMuted,
-                  fontSize: 13,
-                ),
+                style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
               ),
             ],
           ),
@@ -166,9 +158,7 @@ class MusicListTile extends StatelessWidget {
                         isSaved
                             ? 'Xóa khỏi danh sách phát'
                             : 'Thêm vào danh sách phát',
-                        style: const TextStyle(
-                          color: AppTheme.textLight,
-                        ),
+                        style: const TextStyle(color: AppTheme.textLight),
                       ),
                     ),
                   ],
@@ -192,9 +182,7 @@ class MusicListTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Thêm vào danh sách đang phát',
-                        style: TextStyle(
-                          color: AppTheme.textLight,
-                        ),
+                        style: TextStyle(color: AppTheme.textLight),
                       ),
                     ),
                   ],
@@ -211,10 +199,7 @@ class MusicListTile extends StatelessWidget {
     return Container(
       color: AppTheme.cardColor,
       alignment: Alignment.center,
-      child: const Icon(
-        Icons.music_note_rounded,
-        color: AppTheme.primaryColor,
-      ),
+      child: const Icon(Icons.music_note_rounded, color: AppTheme.primaryColor),
     );
   }
 }

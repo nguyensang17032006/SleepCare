@@ -25,7 +25,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   bool _sleepPreparationEnabled = true;
 
-
   late final ScheduleViewModel _scheduleVM;
 
   @override
@@ -59,9 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _openSleepSchedule() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const SleepScheduleScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const SleepScheduleScreen()),
     );
 
     if (mounted) {
@@ -72,9 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _openProfile() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const EditProfileScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
     );
 
     if (!mounted || _userId.isEmpty) return;
@@ -85,9 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _openSecurity() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const SecurityScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const SecurityScreen()),
     );
   }
 
@@ -97,19 +90,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: AppTheme.cardColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(28),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (sheetContext) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              16,
-              24,
-              28,
-            ),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,10 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 const Row(
                   children: [
-                    Icon(
-                      Icons.bedtime_outlined,
-                      color: AppTheme.primaryColor,
-                    ),
+                    Icon(Icons.bedtime_outlined, color: AppTheme.primaryColor),
                     SizedBox(width: 12),
                     Text(
                       'Hẹn giờ tắt nhạc',
@@ -242,9 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              _scheduleVM.errorMessage ?? 'Không thể tắt hẹn giờ.',
-            ),
+            content: Text(_scheduleVM.errorMessage ?? 'Không thể tắt hẹn giờ.'),
           ),
         );
       }
@@ -260,8 +241,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _scheduleVM.errorMessage ??
-                'Không thể lưu hẹn giờ tắt nhạc.',
+            _scheduleVM.errorMessage ?? 'Không thể lưu hẹn giờ tắt nhạc.',
           ),
         ),
       );
@@ -304,9 +284,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(
-                    alpha: 0.14,
-                  ),
+                  color: AppTheme.primaryColor.withValues(alpha: 0.14),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -342,10 +320,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               if (selected)
-                const Icon(
-                  Icons.check_circle,
-                  color: AppTheme.primaryColor,
-                ),
+                const Icon(Icons.check_circle, color: AppTheme.primaryColor),
             ],
           ),
         ),
@@ -374,9 +349,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           content: Text(
             l10n.settingsLogoutConfirm,
-            style: const TextStyle(
-              color: AppTheme.textMuted,
-            ),
+            style: const TextStyle(color: AppTheme.textMuted),
           ),
           actions: [
             TextButton(
@@ -385,9 +358,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
               child: Text(
                 l10n.settingsNo,
-                style: const TextStyle(
-                  color: AppTheme.textMuted,
-                ),
+                style: const TextStyle(color: AppTheme.textMuted),
               ),
             ),
             TextButton(
@@ -396,9 +367,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
               child: Text(
                 l10n.settingsYes,
-                style: const TextStyle(
-                  color: Colors.redAccent,
-                ),
+                style: const TextStyle(color: Colors.redAccent),
               ),
             ),
           ],
@@ -419,17 +388,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: AppTheme.bgColor,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.bgGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              12,
-              20,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
             children: [
               const Text(
                 'Cài đặt',
@@ -466,8 +428,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _settingItem(
                     icon: Icons.bedtime_outlined,
                     title: 'Lịch ngủ',
-                    subtitle:
-                        'Giờ đi ngủ, ngày áp dụng và nhắc nhở',
+                    subtitle: 'Giờ đi ngủ, ngày áp dụng và nhắc nhở',
                     onTap: _openSleepSchedule,
                   ),
 
@@ -491,62 +452,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _settingItem(
                     icon: Icons.snooze_rounded,
                     title: 'Báo lại',
-                    subtitle:
-                        'Nhắc lại sau ${_scheduleVM.snoozeMinutes} phút',
-                    trailing: _valueChip(
-                      '${_scheduleVM.snoozeMinutes} phút',
-                    ),
+                    subtitle: 'Nhắc lại sau ${_scheduleVM.snoozeMinutes} phút',
+                    trailing: _valueChip('${_scheduleVM.snoozeMinutes} phút'),
                     onTap: _showSnoozeOptions,
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 28),
-
-              _sectionTitle('ÂM THANH & THƯ GIÃN'),
-
-              const SizedBox(height: 12),
-
-              _buildSettingGroup(
-                children: [
-                  _settingItem(
-                    icon: Icons.timer_outlined,
-                    title: 'Hẹn giờ tắt nhạc',
-                    subtitle: _scheduleVM.sleepTimerMinutes == null
-                        ? 'Chưa đặt'
-                        : 'Tự dừng nhạc sau ${_scheduleVM.sleepTimerText}',
-                    trailing: _scheduleVM.isSleepTimerLoading
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : _scheduleVM.sleepTimerMinutes == null
-                            ? const Icon(
-                                Icons.chevron_right,
-                                color: AppTheme.textMuted,
-                              )
-                            : _valueChip(
-                                _scheduleVM.sleepTimerText,
-                              ),
-                    onTap: _scheduleVM.isSleepTimerLoading
-                        ? () {}
-                        : _selectSleepTimer,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 28),
-
-              _sectionTitle('ỨNG DỤNG'),
-
-              const SizedBox(height: 12),
-
-              _buildSettingGroup(
-                children: [
-                  _languageItem(),
                 ],
               ),
 
@@ -561,8 +470,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _settingItem(
                     icon: Icons.lock_outline_rounded,
                     title: 'Bảo mật & mật khẩu',
-                    subtitle:
-                        'Thay đổi mật khẩu và bảo vệ tài khoản',
+                    subtitle: 'Thay đổi mật khẩu và bảo vệ tài khoản',
                     onTap: _openSecurity,
                   ),
                 ],
@@ -573,15 +481,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SizedBox(
                 height: 54,
                 child: OutlinedButton.icon(
-                  onPressed:
-                      logoutVM.isLoading ? null : _handleLogout,
+                  onPressed: logoutVM.isLoading ? null : _handleLogout,
                   icon: logoutVM.isLoading
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(
                           Icons.logout_rounded,
@@ -597,9 +502,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
-                      color: Colors.redAccent.withValues(
-                        alpha: 0.45,
-                      ),
+                      color: Colors.redAccent.withValues(alpha: 0.45),
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -614,9 +517,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildProfileCard(
-    ProfileViewModel profileVM,
-  ) {
+  Widget _buildProfileCard(ProfileViewModel profileVM) {
     final user = profileVM.user;
 
     return InkWell(
@@ -627,9 +528,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         decoration: BoxDecoration(
           color: AppTheme.cardLightColor,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.06),
-          ),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         ),
         child: Row(
           children: [
@@ -637,9 +536,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               width: 54,
               height: 54,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(
-                  alpha: 0.16,
-                ),
+                color: AppTheme.primaryColor.withValues(alpha: 0.16),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -654,18 +551,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Expanded(
               child: profileVM.isLoading
                   ? const Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width: 100,
-                          child: LinearProgressIndicator(),
-                        ),
+                        SizedBox(width: 100, child: LinearProgressIndicator()),
                       ],
                     )
                   : Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           user?.fullName.isNotEmpty == true
@@ -693,10 +585,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
             ),
 
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: AppTheme.textMuted,
-            ),
+            const Icon(Icons.chevron_right_rounded, color: AppTheme.textMuted),
           ],
         ),
       ),
@@ -715,20 +604,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSettingGroup({
-    required List<Widget> children,
-  }) {
+  Widget _buildSettingGroup({required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.cardLightColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 
@@ -743,10 +626,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
             _iconBox(icon),
@@ -755,8 +635,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
@@ -800,10 +679,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required ValueChanged<bool> onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 14,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
           _iconBox(icon),
@@ -812,8 +688,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
@@ -851,17 +726,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       width: 42,
       height: 42,
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(
-          alpha: 0.13,
-        ),
+        color: AppTheme.primaryColor.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(13),
       ),
       alignment: Alignment.center,
-      child: Icon(
-        icon,
-        color: AppTheme.primaryColor,
-        size: 21,
-      ),
+      child: Icon(icon, color: AppTheme.primaryColor, size: 21),
     );
   }
 
@@ -878,14 +747,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _valueChip(String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(
-          alpha: 0.14,
-        ),
+        color: AppTheme.primaryColor.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
@@ -900,11 +764,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _languageItem() {
-    final localeProvider =
-        context.watch<LocaleProvider>();
+    final localeProvider = context.watch<LocaleProvider>();
 
-    final currentLanguage =
-        localeProvider.locale?.languageCode ?? 'vi';
+    final currentLanguage = localeProvider.locale?.languageCode ?? 'vi';
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -916,8 +778,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Ngôn ngữ',
@@ -930,10 +791,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(height: 4),
                 Text(
                   'Ngôn ngữ hiển thị của ứng dụng',
-                  style: TextStyle(
-                    color: AppTheme.textMuted,
-                    fontSize: 11.5,
-                  ),
+                  style: TextStyle(color: AppTheme.textMuted, fontSize: 11.5),
                 ),
               ],
             ),
@@ -943,26 +801,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             color: AppTheme.cardColor,
             initialValue: currentLanguage,
             onSelected: (value) {
-              localeProvider.setLocale(
-                Locale(value),
-              );
+              localeProvider.setLocale(Locale(value));
             },
             itemBuilder: (_) {
               return const [
-                PopupMenuItem(
-                  value: 'vi',
-                  child: Text('Tiếng Việt'),
-                ),
-                PopupMenuItem(
-                  value: 'en',
-                  child: Text('English'),
-                ),
+                PopupMenuItem(value: 'vi', child: Text('Tiếng Việt')),
+                PopupMenuItem(value: 'en', child: Text('English')),
               ];
             },
             child: _valueChip(
-              currentLanguage == 'vi'
-                  ? 'Tiếng Việt'
-                  : 'English',
+              currentLanguage == 'vi' ? 'Tiếng Việt' : 'English',
             ),
           ),
         ],
@@ -975,23 +823,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       backgroundColor: AppTheme.cardColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              20,
-              24,
-              28,
-            ),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Thời gian báo lại',
@@ -1019,26 +859,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [10, 15, 20, 30].map((minutes) {
-                    final selected =
-                        minutes == _scheduleVM.snoozeMinutes;
+                    final selected = minutes == _scheduleVM.snoozeMinutes;
 
                     return ChoiceChip(
                       selected: selected,
                       label: Text('$minutes phút'),
-                      selectedColor:
-                          AppTheme.primaryColor,
-                      backgroundColor:
-                          AppTheme.cardLightColor,
+                      selectedColor: AppTheme.primaryColor,
+                      backgroundColor: AppTheme.cardLightColor,
                       labelStyle: TextStyle(
-                        color: selected
-                            ? Colors.white
-                            : AppTheme.textMuted,
+                        color: selected ? Colors.white : AppTheme.textMuted,
                       ),
                       onSelected: (_) {
-                        Navigator.pop(
-                          context,
-                          minutes,
-                        );
+                        Navigator.pop(context, minutes);
                       },
                     );
                   }).toList(),
@@ -1058,9 +890,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Không thể lưu thời gian báo lại.'),
-        ),
+        const SnackBar(content: Text('Không thể lưu thời gian báo lại.')),
       );
     }
   }

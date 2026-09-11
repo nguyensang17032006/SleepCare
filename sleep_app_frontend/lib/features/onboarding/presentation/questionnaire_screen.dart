@@ -22,9 +22,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   void initState() {
     super.initState();
 
-    context.read<QuestionnaireBloc>().add(
-      const QuestionnaireStarted(),
-    );
+    context.read<QuestionnaireBloc>().add(const QuestionnaireStarted());
   }
 
   @override
@@ -33,17 +31,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       listener: (context, state) {
         if (state.status == QuestionnaireStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đã lưu khảo sát thành công'),
-            ),
+            const SnackBar(content: Text('Đã lưu khảo sát thành công')),
           );
 
           // Sau khi hoàn thành khảo sát -> vào MainAppScreen
           // để giữ Bottom Navigation Bar.
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (_) => const MainAppScreen(),
-            ),
+            MaterialPageRoute(builder: (_) => const MainAppScreen()),
             (route) => false,
           );
         }
@@ -52,33 +46,24 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
             state.questions.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                state.errorMessage ?? 'Không thể lưu khảo sát',
-              ),
+              content: Text(state.errorMessage ?? 'Không thể lưu khảo sát'),
             ),
           );
         }
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Khảo sát giấc ngủ đầy đủ'),
-          ),
+          appBar: AppBar(title: const Text('Khảo sát giấc ngủ đầy đủ')),
           body: _buildBody(context, state),
         );
       },
     );
   }
 
-  Widget _buildBody(
-    BuildContext context,
-    QuestionnaireState state,
-  ) {
+  Widget _buildBody(BuildContext context, QuestionnaireState state) {
     if (state.status == QuestionnaireStatus.initial ||
         state.status == QuestionnaireStatus.loading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (state.status == QuestionnaireStatus.failure &&
@@ -87,9 +72,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     }
 
     if (state.questions.isEmpty) {
-      return const Center(
-        child: Text('Chưa có câu hỏi cho khảo sát này'),
-      );
+      return const Center(child: Text('Chưa có câu hỏi cho khảo sát này'));
     }
 
     final requiredQuestions = state.questions
@@ -99,8 +82,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     final answeredCount = requiredQuestions.where((question) {
       final answer = state.answers[question.id];
 
-      return answer != null &&
-          !(answer is String && answer.trim().isEmpty);
+      return answer != null && !(answer is String && answer.trim().isEmpty);
     }).length;
 
     final progress = requiredQuestions.isEmpty
@@ -109,17 +91,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
     return Column(
       children: [
-        _buildHeader(
-          state,
-          answeredCount,
-          requiredQuestions.length,
-          progress,
-        ),
+        _buildHeader(state, answeredCount, requiredQuestions.length, progress),
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: state.questions.length + 1,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               if (index == state.questions.length) {
                 return Padding(
@@ -128,36 +105,32 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed:
-                          state.status == QuestionnaireStatus.submitting
-                              ? null
-                              : () {
-                                  if (!state.isComplete) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Vui lòng trả lời đầy đủ các câu bắt buộc',
-                                        ),
-                                      ),
-                                    );
-
-                                    return;
-                                  }
-
-                                  context.read<QuestionnaireBloc>().add(
-                                    const QuestionnaireSubmitted(),
-                                  );
-                                },
-                      child:
-                          state.status == QuestionnaireStatus.submitting
-                              ? const SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                      onPressed: state.status == QuestionnaireStatus.submitting
+                          ? null
+                          : () {
+                              if (!state.isComplete) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Vui lòng trả lời đầy đủ các câu bắt buộc',
+                                    ),
                                   ),
-                                )
-                              : const Text('Hoàn thành khảo sát'),
+                                );
+
+                                return;
+                              }
+
+                              context.read<QuestionnaireBloc>().add(
+                                const QuestionnaireSubmitted(),
+                              );
+                            },
+                      child: state.status == QuestionnaireStatus.submitting
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Hoàn thành khảo sát'),
                     ),
                   ),
                 );
@@ -185,8 +158,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   ) {
     final assessmentName =
         state.requirement == AssessmentRequirement.baselineFull
-            ? 'Khảo sát lần đầu'
-            : 'Đánh giá lại sau 30 ngày';
+        ? 'Khảo sát lần đầu'
+        : 'Đánh giá lại sau 30 ngày';
 
     return Container(
       width: double.infinity,
@@ -197,19 +170,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         children: [
           Text(
             assessmentName,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
-          Text(
-            'Đã trả lời $answeredCount/$requiredCount câu bắt buộc',
-          ),
+          Text('Đã trả lời $answeredCount/$requiredCount câu bắt buộc'),
           const SizedBox(height: 10),
-          LinearProgressIndicator(
-            value: progress,
-          ),
+          LinearProgressIndicator(value: progress),
         ],
       ),
     );
@@ -242,18 +208,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 if (question.isRequired)
                   const Text(
                     ' *',
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(color: Colors.redAccent, fontSize: 18),
                   ),
               ],
             ),
             const SizedBox(height: 16),
-            _buildAnswerInput(
-              question: question,
-              answer: answer,
-            ),
+            _buildAnswerInput(question: question, answer: answer),
           ],
         ),
       ),
@@ -265,33 +225,21 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     required Object? answer,
   }) {
     if (question.options.isNotEmpty) {
-      return _buildOptions(
-        question: question,
-        answer: answer,
-      );
+      return _buildOptions(question: question, answer: answer);
     }
 
     switch (question.questionType) {
       case 'time':
-        return _buildTimeInput(
-          question: question,
-          answer: answer,
-        );
+        return _buildTimeInput(question: question, answer: answer);
 
       case 'number':
       case 'integer':
       case 'duration_minutes':
-        return _buildNumberInput(
-          question: question,
-          answer: answer,
-        );
+        return _buildNumberInput(question: question, answer: answer);
 
       case 'text':
       default:
-        return _buildTextInput(
-          question: question,
-          answer: answer,
-        );
+        return _buildTextInput(question: question, answer: answer);
     }
   }
 
@@ -308,10 +256,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: () {
-              _changeAnswer(
-                questionId: question.id,
-                value: option.value,
-              );
+              _changeAnswer(questionId: question.id, value: option.value);
             },
             child: Container(
               width: double.infinity,
@@ -322,9 +267,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: selected
-                      ? AppTheme.primaryColor
-                      : AppTheme.textMuted,
+                  color: selected ? AppTheme.primaryColor : AppTheme.textMuted,
                   width: selected ? 1.5 : 1,
                 ),
               ),
@@ -343,9 +286,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                     child: Text(
                       option.label,
                       style: TextStyle(
-                        color: selected
-                            ? Colors.white
-                            : AppTheme.textMuted,
+                        color: selected ? Colors.white : AppTheme.textMuted,
                         fontWeight: selected
                             ? FontWeight.w600
                             : FontWeight.normal,
@@ -373,9 +314,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           border: OutlineInputBorder(),
           suffixIcon: Icon(Icons.access_time),
         ),
-        child: Text(
-          answer?.toString() ?? 'Chọn thời gian',
-        ),
+        child: Text(answer?.toString() ?? 'Chọn thời gian'),
       ),
     );
   }
@@ -387,18 +326,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     return TextFormField(
       key: ValueKey(question.id),
       initialValue: answer?.toString(),
-      keyboardType: const TextInputType.numberWithOptions(
-        decimal: true,
-      ),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: const InputDecoration(
         hintText: 'Nhập giá trị',
         border: OutlineInputBorder(),
       ),
       onChanged: (value) {
-        _changeAnswer(
-          questionId: question.id,
-          value: num.tryParse(value),
-        );
+        _changeAnswer(questionId: question.id, value: num.tryParse(value));
       },
     );
   }
@@ -416,10 +350,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         border: OutlineInputBorder(),
       ),
       onChanged: (value) {
-        _changeAnswer(
-          questionId: question.id,
-          value: value,
-        );
+        _changeAnswer(questionId: question.id, value: value);
       },
     );
   }
@@ -440,10 +371,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     final hour = selectedTime.hour.toString().padLeft(2, '0');
     final minute = selectedTime.minute.toString().padLeft(2, '0');
 
-    _changeAnswer(
-      questionId: question.id,
-      value: '$hour:$minute',
-    );
+    _changeAnswer(questionId: question.id, value: '$hour:$minute');
   }
 
   TimeOfDay? _parseTime(Object? value) {
@@ -464,39 +392,23 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       return null;
     }
 
-    return TimeOfDay(
-      hour: hour,
-      minute: minute,
-    );
+    return TimeOfDay(hour: hour, minute: minute);
   }
 
-  void _changeAnswer({
-    required String questionId,
-    required Object? value,
-  }) {
+  void _changeAnswer({required String questionId, required Object? value}) {
     context.read<QuestionnaireBloc>().add(
-      QuestionnaireAnswerChanged(
-        questionId: questionId,
-        value: value,
-      ),
+      QuestionnaireAnswerChanged(questionId: questionId, value: value),
     );
   }
 
-  Widget _buildError(
-    BuildContext context,
-    QuestionnaireState state,
-  ) {
+  Widget _buildError(BuildContext context, QuestionnaireState state) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.error_outline,
-              color: Colors.redAccent,
-              size: 48,
-            ),
+            const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
             const SizedBox(height: 12),
             Text(
               state.errorMessage ?? 'Không thể tải khảo sát',
