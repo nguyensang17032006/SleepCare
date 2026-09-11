@@ -1,4 +1,3 @@
-
 import '../data/sources/auth_sources.dart';
 
 class AuthRepository {
@@ -6,7 +5,6 @@ class AuthRepository {
 
   AuthRepository(this._authRemoteSource);
 
-  //  đăng ký bằng email
   Future<void> registerWithEmail({
     required String fullname,
     required String email,
@@ -23,29 +21,34 @@ class AuthRepository {
     }
   }
 
-  // xác minh email
-  Future<void> verifyEmail({required String email, required String otp}) async {
+  Future<void> verifyEmail({
+    required String email,
+    required String otp,
+  }) async {
     try {
-      await _authRemoteSource.verifyEmail(email: email, otp: otp);
+      await _authRemoteSource.verifyEmail(
+        email: email,
+        otp: otp,
+      );
     } catch (e) {
       rethrow;
     }
   }
 
-  // đăng nhập bằng email && password
-   Future<void> signInWithEmail({
+  Future<void> signInWithEmail({
     required String email,
     required String password,
   }) async {
     try {
-      await _authRemoteSource.signInWithEmail(email: email, password: password);
+      await _authRemoteSource.signInWithEmail(
+        email: email,
+        password: password,
+      );
     } catch (e) {
       rethrow;
     }
   }
- 
-  
-  // đăng nhập bằng Google
+
   Future<void> signInWithGoogle() async {
     try {
       await _authRemoteSource.signInWithGoogle();
@@ -54,18 +57,26 @@ class AuthRepository {
     }
   }
 
-  Future<void> resendOTP({required String email}) async {
+  Future<void> resendOTP({
+    required String email,
+  }) async {
     try {
-      await _authRemoteSource.resendOTP(email: email);
+      await _authRemoteSource.resendOTP(
+        email: email,
+      );
     } catch (e) {
       rethrow;
     }
   }
 
-
-  Future<bool> resetPassword({required String email}) async {
+  Future<bool> resetPassword({
+    required String email,
+  }) async {
     try {
-      await _authRemoteSource.resetPassword(email: email);
+      await _authRemoteSource.resetPassword(
+        email: email,
+      );
+
       return true;
     } catch (e) {
       rethrow;
@@ -77,7 +88,11 @@ class AuthRepository {
     required String otp,
   }) async {
     try {
-      await _authRemoteSource.verifyResetPasswordOTP(email: email, otp: otp);
+      await _authRemoteSource.verifyResetPasswordOTP(
+        email: email,
+        otp: otp,
+      );
+
       return true;
     } catch (e) {
       rethrow;
@@ -85,28 +100,42 @@ class AuthRepository {
   }
 
   Future<void> updatePassword({
-
     required String newPassword,
   }) async {
     try {
-      await _authRemoteSource.updatePassword(newPassword: newPassword);
+      await _authRemoteSource.updatePassword(
+        newPassword: newPassword,
+      );
     } catch (e) {
       rethrow;
     }
   }
-  // Kiểm tra username đã tồn tại chưa
-  Future<bool> checkUsernameExists(String username) async {
+
+  Future<void> signOut() async {
     try {
-      return await _authRemoteSource.isUsernameExist(username);
+      await _authRemoteSource.signOut();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> checkUsernameExists(
+    String username,
+  ) async {
+    try {
+      return await _authRemoteSource
+          .isUsernameExist(username);
     } catch (_) {
       return false;
     }
   }
 
-  // Kiểm tra email đã tồn tại chưa
-  Future<bool> checkEmailExists(String email) async {
+  Future<bool> checkEmailExists(
+    String email,
+  ) async {
     try {
-      return await _authRemoteSource.isEmailExist(email);
+      return await _authRemoteSource
+          .isEmailExist(email);
     } catch (_) {
       return false;
     }

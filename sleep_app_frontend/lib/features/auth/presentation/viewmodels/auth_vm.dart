@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../repository/auth_repository.dart';
 
 class AuthViewModel extends ChangeNotifier {
@@ -8,21 +9,28 @@ class AuthViewModel extends ChangeNotifier {
   AuthViewModel(this._authRepository);
 
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   String? _fullNameError;
+
   String? get fullNameError => _fullNameError;
 
   String? _emailError;
+
   String? get emailError => _emailError;
 
   String? _passwordError;
+
   String? get passwordError => _passwordError;
 
   String? _confirmPasswordError;
-  String? get confirmPasswordError => _confirmPasswordError;
+
+  String? get confirmPasswordError =>
+      _confirmPasswordError;
 
   String? _errorMessage;
+
   String? get errorMessage => _errorMessage;
 
   void clearAllErrors() {
@@ -32,6 +40,7 @@ class AuthViewModel extends ChangeNotifier {
     _confirmPasswordError = null;
     _errorMessage = null;
     _isLoading = false;
+
     notifyListeners();
   }
 
@@ -43,42 +52,54 @@ class AuthViewModel extends ChangeNotifier {
     required bool isTermsChecked,
   }) async {
     clearAllErrors();
-    notifyListeners();
+
     bool hasValidationError = false;
 
     if (fullname.isEmpty) {
-      _fullNameError = 'Vui lòng nhập họ và tên của bạn';
+      _fullNameError =
+          'Vui lòng nhập họ và tên của bạn';
       hasValidationError = true;
     }
 
     if (email.isEmpty) {
-      _emailError = 'Vui lòng nhập địa chỉ email';
+      _emailError =
+          'Vui lòng nhập địa chỉ email';
       hasValidationError = true;
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      _emailError = 'Định dạng email không hợp lệ';
+    } else if (!RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(email)) {
+      _emailError =
+          'Định dạng email không hợp lệ';
       hasValidationError = true;
     }
 
     if (password.isEmpty) {
-      _passwordError = 'Vui lòng nhập mật khẩu';
+      _passwordError =
+          'Vui lòng nhập mật khẩu';
       hasValidationError = true;
     } else if (password.length < 6) {
-      _passwordError = 'Mật khẩu phải chứa ít nhất 6 ký tự';
+      _passwordError =
+          'Mật khẩu phải chứa ít nhất 6 ký tự';
       hasValidationError = true;
     }
 
     if (confirmPassword.isEmpty) {
-      _confirmPasswordError = 'Vui lòng xác nhận lại mật khẩu';
+      _confirmPasswordError =
+          'Vui lòng xác nhận lại mật khẩu';
       hasValidationError = true;
     }
 
-    if (!hasValidationError && password != confirmPassword) {
-      _confirmPasswordError = 'Mật khẩu xác nhận không trùng khớp';
+    if (!hasValidationError &&
+        password != confirmPassword) {
+      _confirmPasswordError =
+          'Mật khẩu xác nhận không trùng khớp';
       hasValidationError = true;
     }
 
-    if (!hasValidationError && !isTermsChecked) {
-      _errorMessage = 'Bạn phải đồng ý với Điều khoản dịch vụ';
+    if (!hasValidationError &&
+        !isTermsChecked) {
+      _errorMessage =
+          'Bạn phải đồng ý với Điều khoản dịch vụ';
       hasValidationError = true;
     }
 
@@ -91,11 +112,17 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final isEmailTaken = await _authRepository.checkEmailExists(email);
+      final isEmailTaken =
+          await _authRepository
+              .checkEmailExists(email);
+
       if (isEmailTaken) {
-        _emailError = 'Địa chỉ email này đã được sử dụng';
+        _emailError =
+            'Địa chỉ email này đã được sử dụng';
+
         _isLoading = false;
         notifyListeners();
+
         return false;
       }
 
@@ -107,62 +134,88 @@ class AuthViewModel extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
+
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _errorMessage = e
+          .toString()
+          .replaceAll(
+            'Exception: ',
+            '',
+          );
+
       _isLoading = false;
       notifyListeners();
+
       return false;
     }
   }
 
-  // Xác thực email vừa tạo
   Future<bool> verifyEmail({
     required String email,
     required String token,
   }) async {
     _isLoading = true;
     notifyListeners();
+
     try {
-      await _authRepository.verifyEmail(email: email, otp: token);
+      await _authRepository.verifyEmail(
+        email: email,
+        otp: token,
+      );
+
       _isLoading = false;
       notifyListeners();
+
       return true;
     } catch (e) {
-      _errorMessage = "Sai mã xác minh hoặc mã đã hết hạn. Vui lòng thử lại.";
+      _errorMessage =
+          'Sai mã xác minh hoặc mã đã hết hạn. Vui lòng thử lại.';
+
       _isLoading = false;
       notifyListeners();
+
       return false;
     }
   }
 
-  // Gửi lại mã OTP
-  Future<void> resendOTP({required String email}) async {
+  Future<void> resendOTP({
+    required String email,
+  }) async {
     try {
-      await _authRepository.resendOTP(email: email);
+      await _authRepository.resendOTP(
+        email: email,
+      );
     } catch (e) {
-      throw Exception('Gửi lại mã OTP thất bại: $e');
+      throw Exception(
+        'Gửi lại mã OTP thất bại: $e',
+      );
     }
   }
 
-  // Đăng nhập bằng Email & Password
   Future<bool> signInWithEmail({
     required String email,
     required String password,
   }) async {
-    bool hasValidationError = false;
     clearAllErrors();
 
+    bool hasValidationError = false;
+
     if (email.isEmpty) {
-      _emailError = 'Vui lòng nhập địa chỉ email';
+      _emailError =
+          'Vui lòng nhập địa chỉ email';
       hasValidationError = true;
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      _emailError = 'Định dạng email không hợp lệ';
+    } else if (!RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(email)) {
+      _emailError =
+          'Định dạng email không hợp lệ';
       hasValidationError = true;
     }
 
     if (password.isEmpty) {
-      _passwordError = 'Vui lòng nhập mật khẩu';
+      _passwordError =
+          'Vui lòng nhập mật khẩu';
       hasValidationError = true;
     }
 
@@ -175,57 +228,90 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authRepository.signInWithEmail(email: email, password: password);
+      await _authRepository.signInWithEmail(
+        email: email,
+        password: password,
+      );
+
       _isLoading = false;
       notifyListeners();
+
       return true;
     } on AuthApiException catch (e) {
       _isLoading = false;
+
       if (e.code == 'invalid_credentials') {
-        _errorMessage = 'Địa chỉ email hoặc mật khẩu không chính xác';
+        _errorMessage =
+            'Địa chỉ email hoặc mật khẩu không chính xác';
       } else {
         _errorMessage = e.message;
       }
+
       notifyListeners();
+
       return false;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+
+      _errorMessage = e
+          .toString()
+          .replaceAll(
+            'Exception: ',
+            '',
+          );
+
       notifyListeners();
+
       return false;
     }
   }
 
-  // Đăng nhập bằng Google
   Future<bool> signInWithGoogle() async {
     try {
       _isLoading = true;
       _errorMessage = null;
+
       notifyListeners();
 
-      await _authRepository.signInWithGoogle();
+      await _authRepository
+          .signInWithGoogle();
 
       _isLoading = false;
       notifyListeners();
+
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+
+      _errorMessage = e
+          .toString()
+          .replaceAll(
+            'Exception: ',
+            '',
+          );
+
       notifyListeners();
+
       return false;
     }
   }
 
-  Future<bool> resetPassword({required String email}) async {
+  Future<bool> resetPassword({
+    required String email,
+  }) async {
     clearAllErrors();
 
     bool hasValidationError = false;
 
     if (email.isEmpty) {
-      _emailError = 'Vui lòng nhập địa chỉ email';
+      _emailError =
+          'Vui lòng nhập địa chỉ email';
       hasValidationError = true;
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      _emailError = 'Định dạng email không hợp lệ';
+    } else if (!RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(email)) {
+      _emailError =
+          'Định dạng email không hợp lệ';
       hasValidationError = true;
     }
 
@@ -238,15 +324,26 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authRepository.resetPassword(email: email);
+      await _authRepository.resetPassword(
+        email: email,
+      );
 
       _isLoading = false;
       notifyListeners();
+
       return true;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+
+      _errorMessage = e
+          .toString()
+          .replaceAll(
+            'Exception: ',
+            '',
+          );
+
       notifyListeners();
+
       return false;
     }
   }
@@ -256,18 +353,28 @@ class AuthViewModel extends ChangeNotifier {
     required String otp,
   }) async {
     clearAllErrors();
+
     _isLoading = true;
     notifyListeners();
 
     try {
-      await _authRepository.verifyResetPasswordOTP(email: email, otp: otp);
+      await _authRepository
+          .verifyResetPasswordOTP(
+        email: email,
+        otp: otp,
+      );
+
       _isLoading = false;
       notifyListeners();
+
       return true;
     } catch (e) {
-      _errorMessage = "Sai mã xác minh hoặc mã đã hết hạn. Vui lòng thử lại.";
+      _errorMessage =
+          'Sai mã xác minh hoặc mã đã hết hạn. Vui lòng thử lại.';
+
       _isLoading = false;
       notifyListeners();
+
       return false;
     }
   }
@@ -275,25 +382,32 @@ class AuthViewModel extends ChangeNotifier {
   Future<bool> updatePassword({
     required String newPassword,
     required String confirmPassword,
+    bool logoutAfterUpdate = true,
   }) async {
-    bool hasValidationError = false;
     clearAllErrors();
 
+    bool hasValidationError = false;
+
     if (newPassword.isEmpty) {
-      _passwordError = 'Vui lòng nhập mật khẩu mới';
+      _passwordError =
+          'Vui lòng nhập mật khẩu mới';
       hasValidationError = true;
     } else if (newPassword.length < 6) {
-      _passwordError = 'Mật khẩu phải chứa ít nhất 6 ký tự';
+      _passwordError =
+          'Mật khẩu phải chứa ít nhất 6 ký tự';
       hasValidationError = true;
     }
 
     if (confirmPassword.isEmpty) {
-      _confirmPasswordError = 'Vui lòng xác nhận lại mật khẩu mới';
+      _confirmPasswordError =
+          'Vui lòng xác nhận lại mật khẩu mới';
       hasValidationError = true;
     }
 
-    if (!hasValidationError && newPassword != confirmPassword) {
-      _confirmPasswordError = 'Mật khẩu xác nhận không trùng khớp';
+    if (!hasValidationError &&
+        newPassword != confirmPassword) {
+      _confirmPasswordError =
+          'Mật khẩu xác nhận không trùng khớp';
       hasValidationError = true;
     }
 
@@ -306,14 +420,29 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authRepository.updatePassword(newPassword: newPassword);
+      await _authRepository.updatePassword(
+        newPassword: newPassword,
+      );
+
+      if (logoutAfterUpdate) {
+        await _authRepository.signOut();
+      }
+
       _isLoading = false;
       notifyListeners();
+
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _errorMessage = e
+          .toString()
+          .replaceAll(
+            'Exception: ',
+            '',
+          );
+
       _isLoading = false;
       notifyListeners();
+
       return false;
     }
   }

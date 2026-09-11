@@ -1,48 +1,224 @@
-import '../../../../main.dart'; // To access supabaseClient
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ScheduleSource {
+  final SupabaseClient supabase;
+
+  ScheduleSource({SupabaseClient? supabase})
+      : supabase = supabase ?? Supabase.instance.client;
+
   Future<Map<String, dynamic>?> getSchedule() async {
-    final userId = supabaseClient.auth.currentUser?.id;
-    if (userId == null) return null;
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Người dùng chưa đăng nhập');
+    }
 
-    final data = await supabaseClient
-        .from('bedtime_schedules')
-        .select()
-        .eq('user_id', userId)
-        .maybeSingle();
+    try {
+      final response = await supabase
+          .from('bedtime_schedules')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-    return data;
+      debugPrint('BEDTIME SCHEDULE LOADED: $response');
+      return response;
+    } on PostgrestException catch (e) {
+      debugPrint('LOAD SCHEDULE SUPABASE ERROR');
+      debugPrint('message: ${e.message}');
+      debugPrint('code: ${e.code}');
+      debugPrint('details: ${e.details}');
+      debugPrint('hint: ${e.hint}');
+      rethrow;
+    }
   }
 
   Future<void> saveSchedule({
-    required String bedtime, // "HH:mm" format
-    required List<int> activeDays,
+    required String bedtime,
+    required Set<int> activeDays,
     required int reminderOffsetMinutes,
     required bool notificationsEnabled,
   }) async {
-    final userId = supabaseClient.auth.currentUser?.id;
-    if (userId == null) return;
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Người dùng chưa đăng nhập');
+    }
 
-    final existingSchedule = await getSchedule();
+    final now = DateTime.now().toUtc().toIso8601String();
+    final sortedDays = activeDays.toList()..sort();
 
-    final payload = {
-      'user_id': userId,
+    final payload = <String, dynamic>{
+      'user_id': user.id,
       'bedtime': bedtime,
-      'active_days': activeDays,
+      'active_days': sortedDays,
       'reminder_offset_minutes': reminderOffsetMinutes,
       'notifications_enabled': notificationsEnabled,
       'timezone': DateTime.now().timeZoneName,
-      'updated_at': DateTime.now().toIso8601String(),
+      'updated_at': now,
     };
 
-    if (existingSchedule != null) {
-      await supabaseClient
+    try {
+      final existing = await supabase
           .from('bedtime_schedules')
-          .update(payload)
-          .eq('user_id', userId);
-    } else {
-      payload['created_at'] = DateTime.now().toIso8601String();
-      await supabaseClient.from('bedtime_schedules').insert(payload);
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (existing == null) {
+        await supabase.from('bedtime_schedules').insert({
+          ...payload,
+          'created_at': now,
+        });
+      } else {
+        await supabase
+            .from('bedtime_schedules')
+            .update(payload)
+            .eq('user_id', user.id);
+      }
+    } on PostgrestException catch (e) {
+      debugPrint('SAVE SCHEDULE SUPABASE ERROR');
+      debugPrint('message: ${e.message}');
+      debugPrint('code: ${e.code}');
+      debugPrint('details: ${e.details}');
+      debugPrint('hint: ${e.hint}');
+      rethrow;
+    }
+  }
+
+  Future<int?> getSleepTimerMinutes() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Người dùng chưa đăng nhập');
+    }
+
+    final response = await supabase
+        .from('bedtime_schedules')
+        .select('sleep_timer_minutes')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    final value = response?['sleep_timer_minutes'];
+    return value == null ? null : (value as num).toInt();
+  }
+
+  Future<void> updateSleepTimerMinutes(int minutes) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Người dùng chưa đăng nhập');
+    }
+
+    final now = DateTime.now().toUtc().toIso8601String();
+
+    try {
+      final existing = await supabase
+          .from('bedtime_schedules')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (existing == null) {
+        await supabase.from('bedtime_schedules').insert({
+          'user_id': user.id,
+          'sleep_timer_minutes': minutes,
+          'snooze_minutes': 15,
+          'timezone': DateTime.now().timeZoneName,
+          'created_at': now,
+          'updated_at': now,
+        });
+      } else {
+        await supabase
+            .from('bedtime_schedules')
+            .update({
+              'sleep_timer_minutes': minutes,
+              'updated_at': now,
+            })
+            .eq('user_id', user.id);
+      }
+
+      debugPrint('SLEEP TIMER SAVED: $minutes phút');
+    } on PostgrestException catch (e) {
+      debugPrint('UPDATE SLEEP TIMER SUPABASE ERROR');
+      debugPrint('message: ${e.message}');
+      debugPrint('code: ${e.code}');
+      debugPrint('details: ${e.details}');
+      debugPrint('hint: ${e.hint}');
+      rethrow;
+    }
+  }
+
+  Future<void> clearSleepTimer() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Người dùng chưa đăng nhập');
+    }
+
+    await supabase
+        .from('bedtime_schedules')
+        .update({
+          'sleep_timer_minutes': null,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        })
+        .eq('user_id', user.id);
+
+    debugPrint('SLEEP TIMER CLEARED');
+  }
+
+  Future<int> getSnoozeMinutes() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Người dùng chưa đăng nhập');
+    }
+
+    final response = await supabase
+        .from('bedtime_schedules')
+        .select('snooze_minutes')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    final value = response?['snooze_minutes'];
+    return value == null ? 15 : (value as num).toInt();
+  }
+
+  Future<void> updateSnoozeMinutes(int minutes) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('Người dùng chưa đăng nhập');
+    }
+
+    final now = DateTime.now().toUtc().toIso8601String();
+
+    try {
+      final existing = await supabase
+          .from('bedtime_schedules')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (existing == null) {
+        await supabase.from('bedtime_schedules').insert({
+          'user_id': user.id,
+          'snooze_minutes': minutes,
+          'timezone': DateTime.now().timeZoneName,
+          'created_at': now,
+          'updated_at': now,
+        });
+      } else {
+        await supabase
+            .from('bedtime_schedules')
+            .update({
+              'snooze_minutes': minutes,
+              'updated_at': now,
+            })
+            .eq('user_id', user.id);
+      }
+
+      debugPrint('SNOOZE MINUTES SAVED: $minutes phút');
+    } on PostgrestException catch (e) {
+      debugPrint('UPDATE SNOOZE SUPABASE ERROR');
+      debugPrint('message: ${e.message}');
+      debugPrint('code: ${e.code}');
+      debugPrint('details: ${e.details}');
+      debugPrint('hint: ${e.hint}');
+      rethrow;
     }
   }
 }

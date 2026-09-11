@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Đảm bảo bạn đã thêm provider vào pubspec.yaml
+import 'package:provider/provider.dart';
+
 import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 import 'package:sleep_app_frontend/main.dart';
-import '../../../../core/theme/theme.dart';
+
 import '../../../../core/app/widget/custom_text_field.dart';
-import '../viewmodels/profile_vm.dart'; // Thay đổi đường dẫn đúng file của bạn
-import 'security_screen.dart';
+import '../../../../core/theme/theme.dart';
+import '../viewmodels/profile_vm.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -17,38 +18,57 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isEditing = false;
 
-  // Khởi tạo các controllers trống ban đầu
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController =
+      TextEditingController();
+
+  final TextEditingController _emailController =
+      TextEditingController();
+
+  final TextEditingController _phoneController =
+      TextEditingController();
+
   String? _selectedGender;
   DateTime? _selectedDate;
 
-  // Lấy ID của user đang đăng nhập hiện tại từ Supabase
-  final String _userId = supabaseClient.auth.currentUser?.id ?? '';
+  final String _userId =
+      supabaseClient.auth.currentUser?.id ?? '';
 
   @override
   void initState() {
     super.initState();
-    // Sau khi màn hình render xong, tiến hành fetch dữ liệu từ Database
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final profileVM = context.read<ProfileViewModel>();
-      await profileVM.loadProfile(_userId);
-
-      // Sau khi fetch xong, đổ dữ liệu từ viewModel vào các ô nhập liệu
-      if (profileVM.user != null) {
-        final u = profileVM.user!;
-        _nameController.text = u.fullName;
-        _emailController.text = u.email;
-        _phoneController.text = u.phoneNumber;
-        _selectedGender = u.sex.isEmpty ? null : u.sex;
-
-        if (u.dateOfBirth.isNotEmpty) {
-          _selectedDate = DateTime.tryParse(u.dateOfBirth);
-        }
-        setState(() {}); // Re-render để hiển thị lên UI
-      }
+      await _loadProfile();
     });
+  }
+
+  Future<void> _loadProfile() async {
+    if (_userId.isEmpty) return;
+
+    final profileVM =
+        context.read<ProfileViewModel>();
+
+    await profileVM.loadProfile(_userId);
+
+    if (!mounted) return;
+
+    final user = profileVM.user;
+
+    if (user == null) return;
+
+    _nameController.text = user.fullName;
+    _emailController.text = user.email;
+    _phoneController.text = user.phoneNumber;
+
+    _selectedGender =
+        user.sex.isEmpty ? null : user.sex;
+
+    if (user.dateOfBirth.isNotEmpty) {
+      _selectedDate =
+          DateTime.tryParse(user.dateOfBirth);
+    }
+
+    setState(() {});
   }
 
   @override
@@ -56,477 +76,673 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+
     super.dispose();
   }
 
-  // Hàm chọn ngày sinh
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate() async {
     if (!_isEditing) return;
 
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime(2000, 1, 1),
-      firstDate: DateTime(1950),
+      initialDate:
+          _selectedDate ?? DateTime(2000, 1, 1),
+      firstDate: DateTime(1950, 1, 1),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppTheme.primaryColor,
+              surface: AppTheme.cardColor,
+              onSurface: AppTheme.textLight,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
+
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      _selectedDate = picked;
+    });
   }
 
-  // Hàm thực thi việc Lưu dữ liệu lên Database
   Future<void> _handleSaveChanges() async {
-    final viewModel = context.read<ProfileViewModel>();
+    if (_userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Không tìm thấy người dùng hiện tại',
+          ),
+        ),
+      );
 
-    // Gọi hàm update từ ViewModel
-    bool success = await viewModel.updateProfile(
+      return;
+    }
+
+    final viewModel =
+        context.read<ProfileViewModel>();
+
+    final success =
+        await viewModel.updateProfile(
       id: _userId,
-      fullName: _nameController.text,
-      email: _emailController.text,
+      fullName: _nameController.text.trim(),
+      email: _emailController.text.trim(),
       sex: _selectedGender ?? '',
       dateOfBirth: _selectedDate != null
-          ? _selectedDate!.toIso8601String().split('T')[0]
+          ? _selectedDate!
+              .toIso8601String()
+              .split('T')
+              .first
           : '',
-      phoneNumber: _phoneController.text,
+      phoneNumber:
+          _phoneController.text.trim(),
     );
 
     if (!mounted) return;
+
     if (success) {
+      setState(() {
+        _isEditing = false;
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.profileUpdateSuccess),
+          content: Text(
+            AppLocalizations.of(context)!
+                .profileUpdateSuccess,
+          ),
         ),
       );
-      setState(() {
-        _isEditing = false; // Đưa UI về lại chế độ chỉ đọc
-      });
     }
+  }
+
+  void _cancelEditing() {
+    final user =
+        context.read<ProfileViewModel>().user;
+
+    if (user != null) {
+      _nameController.text = user.fullName;
+      _emailController.text = user.email;
+      _phoneController.text =
+          user.phoneNumber;
+
+      _selectedGender =
+          user.sex.isEmpty ? null : user.sex;
+
+      _selectedDate =
+          user.dateOfBirth.isNotEmpty
+              ? DateTime.tryParse(
+                  user.dateOfBirth,
+                )
+              : null;
+    }
+
+    setState(() {
+      _isEditing = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Theo dõi trạng thái loading của ViewModel để hiển thị vòng xoay nếu đang xử lý API
-    final profileVM = context.watch<ProfileViewModel>();
-    final l10n = AppLocalizations.of(context)!;
+    final profileVM =
+        context.watch<ProfileViewModel>();
+
+    final l10n =
+        AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppTheme.bgColor,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: AppTheme.textLight),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.chevron_left_rounded,
+            color: AppTheme.textLight,
+          ),
         ),
         title: Text(
           l10n.profileEditTitle,
-          style: const TextStyle(color: AppTheme.textLight, fontSize: 16),
+          style: const TextStyle(
+            color: AppTheme.textLight,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         actions: [
-          // Logic hoán đổi nút Cây bút vẽ và Chữ Save
-          _isEditing
-              ? TextButton(
-                  onPressed: profileVM.isLoading
+          if (!_isEditing)
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _isEditing = true;
+                });
+              },
+              icon: const Icon(
+                Icons.edit_outlined,
+                color: AppTheme.primaryColor,
+              ),
+            )
+          else ...[
+            TextButton(
+              onPressed:
+                  profileVM.isLoading
                       ? null
-                      : _handleSaveChanges, // Nhấn Save thì chạy hàm cập nhật
-                  child: Text(
-                    l10n.profileSave,
-                    style: const TextStyle(
-                      color: AppTheme.textMuted,
-                      fontSize: 14,
-                    ),
-                  ),
-                )
-              : IconButton(
-                  icon: const Icon(
-                    Icons.edit,
-                    color: AppTheme.textLight,
-                    size: 20,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = true; // Chuyển sang cho phép edit
-                    });
-                  },
+                      : _cancelEditing,
+              child: const Text(
+                'Hủy',
+                style: TextStyle(
+                  color: AppTheme.textMuted,
                 ),
+              ),
+            ),
+            TextButton(
+              onPressed:
+                  profileVM.isLoading
+                      ? null
+                      : _handleSaveChanges,
+              child: Text(
+                l10n.profileSave,
+                style: const TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
       body: Container(
-        height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        child: profileVM.isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              ) // Hiện vòng xoay khi fetch/update dữ liệu
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // --- CÁC TRƯỜNG DỮ LIỆU INPUT ---
-                    CustomTextField(
-                      controller: _nameController,
-                      label: l10n.profileFullName,
-                      hint: l10n.profileFullNameHint,
-                      prefixIcon: Icons.person_outline,
-                      enabled: _isEditing,
-                      errorText: profileVM.fullNameError,
-                    ),
-                    const SizedBox(height: 20),
-                    CustomTextField(
-                      controller: _emailController,
-                      label: l10n.profileEmail,
-                      hint: l10n.profileEmailHint,
-                      prefixIcon: Icons.email_outlined,
-                      enabled: _isEditing,
-                      errorText: profileVM.emailError,
-                    ),
-                    const SizedBox(height: 20),
-                    CustomTextField(
-                      controller: _phoneController,
-                      label: l10n.profilePhone,
-                      hint: l10n.profilePhoneHint,
-                      prefixIcon: Icons.phone_outlined,
-                      enabled: _isEditing,
-                      errorText: profileVM.phoneNumberError,
-                    ),
-                    const SizedBox(height: 20),
+        decoration: const BoxDecoration(
+          gradient: AppTheme.bgGradient,
+        ),
+        child: SafeArea(
+          top: false,
+          child: profileVM.isLoading
+              ? const Center(
+                  child:
+                      CircularProgressIndicator(
+                    color:
+                        AppTheme.primaryColor,
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.fromLTRB(
+                    24,
+                    20,
+                    24,
+                    40,
+                  ),
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      _buildProfileHeader(),
 
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Cột Gender (Dropdown)
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.profileGender,
-                                style: const TextStyle(
-                                  color: AppTheme.textMuted,
-                                  fontSize: 10,
-                                  letterSpacing: 1.5,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              DropdownButtonFormField<String>(
-                                initialValue: _selectedGender,
-                                hint: Text(
-                                  l10n.profileSelect,
-                                  style: const TextStyle(
-                                    color: AppTheme.textMuted,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                dropdownColor: AppTheme.cardLightColor,
-                                disabledHint: Text(
-                                  _selectedGender ?? l10n.profileNotSelected,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                icon: const Icon(
-                                  Icons.arrow_drop_down,
-                                  color: AppTheme.textMuted,
-                                ),
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: AppTheme.cardLightColor,
-                                  // TRUYỀN ERROR TEXT VÀO ĐÂY
-                                  errorText: profileVM.sexError,
-                                  errorStyle: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 14,
-                                  ),
-                                  prefixIcon: const Icon(
-                                    Icons.male,
-                                    color: AppTheme.textMuted,
-                                    size: 20,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  // Đảm bảo khi có lỗi border không bị đổi màu lạ nếu bạn muốn giữ giao diện phẳng
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: const BorderSide(
-                                      color: Colors.red,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: const BorderSide(
-                                      color: Colors.red,
-                                      width: 1,
-                                    ),
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                                items: _isEditing
-                                    ? [
-                                        DropdownMenuItem(
-                                          value:
-                                              'Nam', // Supabase currently stores 'Nam' or 'Nữ', let's keep value same or we should change the schema, I'll keep the UI label translated.
-                                          child: Text(l10n.profileMale),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'Nữ',
-                                          child: Text(l10n.profileFemale),
-                                        ),
-                                      ]
-                                    : null,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedGender = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
+                      const SizedBox(height: 32),
+
+                      const Text(
+                        'THÔNG TIN CÁ NHÂN',
+                        style: TextStyle(
+                          color:
+                              AppTheme.textMuted,
+                          fontSize: 11,
+                          fontWeight:
+                              FontWeight.w700,
+                          letterSpacing: 1.2,
                         ),
-                        const SizedBox(width: 16),
+                      ),
 
-                        // Cột Ngày sinh (DatePicker)
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 16),
+
+                      CustomTextField(
+                        controller:
+                            _nameController,
+                        label:
+                            l10n.profileFullName,
+                        hint: l10n
+                            .profileFullNameHint,
+                        prefixIcon:
+                            Icons.person_outline,
+                        enabled: _isEditing,
+                        errorText:
+                            profileVM.fullNameError,
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      CustomTextField(
+                        controller:
+                            _emailController,
+                        label:
+                            l10n.profileEmail,
+                        hint:
+                            l10n.profileEmailHint,
+                        prefixIcon:
+                            Icons.email_outlined,
+                        enabled: _isEditing,
+                        errorText:
+                            profileVM.emailError,
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      CustomTextField(
+                        controller:
+                            _phoneController,
+                        label:
+                            l10n.profilePhone,
+                        hint:
+                            l10n.profilePhoneHint,
+                        prefixIcon:
+                            Icons.phone_outlined,
+                        enabled: _isEditing,
+                        errorText: profileVM
+                            .phoneNumberError,
+                      ),
+
+                      const SizedBox(height: 26),
+
+                      _buildGenderField(
+                        profileVM,
+                        l10n,
+                      ),
+
+                      const SizedBox(height: 22),
+
+                      _buildDateField(
+                        profileVM,
+                        l10n,
+                      ),
+
+                      if (_isEditing) ...[
+                        const SizedBox(
+                            height: 34),
+
+                        Container(
+                          padding:
+                              const EdgeInsets.all(
+                            16,
+                          ),
+                          decoration:
+                              BoxDecoration(
+                            color: AppTheme
+                                .primaryColor
+                                .withValues(
+                              alpha: 0.08,
+                            ),
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              16,
+                            ),
+                            border: Border.all(
+                              color: AppTheme
+                                  .primaryColor
+                                  .withValues(
+                                alpha: 0.15,
+                              ),
+                            ),
+                          ),
+                          child: const Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment
+                                    .start,
                             children: [
-                              Text(
-                                l10n.profileDob,
-                                style: const TextStyle(
-                                  color: AppTheme.textMuted,
-                                  fontSize: 10,
-                                  letterSpacing: 1.5,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Icon(
+                                Icons
+                                    .info_outline_rounded,
+                                color: AppTheme
+                                    .primaryColor,
+                                size: 20,
                               ),
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () => _selectDate(context),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 16,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.cardLightColor,
-                                    borderRadius: BorderRadius.circular(16),
-                                    // Nếu có lỗi thì viền đỏ lên cho đồng bộ
-                                    border: Border.all(
-                                      color: profileVM.dateOfBirthError != null
-                                          ? Colors.red
-                                          : Colors.transparent,
-                                      width: profileVM.dateOfBirthError != null
-                                          ? 1
-                                          : 0,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today,
-                                        color: AppTheme.textMuted,
-                                        size: 16,
-                                      ),
-                                      Text(
-                                        _selectedDate == null
-                                            ? l10n.profileSelectDate
-                                            : '${_selectedDate!.day} ${_getMonthName(_selectedDate!.month)} ${_selectedDate!.year}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Kiểm tra lại thông tin trước khi lưu. '
+                                  'Các thông tin này được dùng để cá nhân hóa trải nghiệm SleepCare.',
+                                  style: TextStyle(
+                                    color: AppTheme
+                                        .textMuted,
+                                    fontSize: 12,
+                                    height: 1.5,
                                   ),
                                 ),
                               ),
-                              // HÌNH THỨC HIỂN THỊ CHỮ BÁO LỖI DƯỚI CONTAINER NGÀY SINH
-                              if (profileVM.dateOfBirthError != null) ...[
-                                const SizedBox(height: 6),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12),
-                                  child: Text(
-                                    profileVM.dateOfBirthError!,
-                                    style: const TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
                             ],
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 40),
-
-                    // --- PHẦN KHÁC GIỮ NGUYÊN ---
-                    Text(
-                      l10n.profileSleepSettings,
-                      style: const TextStyle(
-                        color: AppTheme.textLight,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildSettingCard(
-                      Icons.nights_stay,
-                      l10n.profileSleepGoal,
-                      l10n.profile8Hours,
-                      l10n.profileTarget,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingCard(
-                      Icons.wb_sunny,
-                      l10n.profileChronotype,
-                      l10n.profileEarlyBird,
-                      '',
-                    ),
-                    const SizedBox(height: 40),
-
-                    Text(
-                      l10n.profileSecurity,
-                      style: const TextStyle(
-                        color: AppTheme.textLight,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SecurityScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: AppTheme.cardLightColor,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.05),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.lock_outline,
-                              color: AppTheme.textLight,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.profileChangePassword,
-                              style: const TextStyle(
-                                color: AppTheme.textLight,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return months[month - 1];
-  }
+  Widget _buildProfileHeader() {
+    final name =
+        _nameController.text.trim();
 
-  Widget _buildSettingCard(
-    IconData icon,
-    String title,
-    String value,
-    String badge,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.cardLightColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
+    String initials = 'U';
+
+    if (name.isNotEmpty) {
+      final words = name
+          .split(RegExp(r'\s+'))
+          .where(
+            (word) => word.isNotEmpty,
+          )
+          .toList();
+
+      if (words.length >= 2) {
+        initials =
+            '${words.first[0]}${words.last[0]}'
+                .toUpperCase();
+      } else {
+        initials =
+            words.first[0].toUpperCase();
+      }
+    }
+
+    return Center(
+      child: Column(
         children: [
-          Icon(icon, color: AppTheme.primaryColor),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppTheme.textMuted,
-                    fontSize: 10,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: AppTheme.textLight,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+          Container(
+            width: 84,
+            height: 84,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor
+                  .withValues(alpha: 0.16),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppTheme.primaryColor
+                    .withValues(alpha: 0.35),
+                width: 1.5,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              initials,
+              style: const TextStyle(
+                color: AppTheme.primaryColor,
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-          if (badge.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                badge,
-                style: const TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
+
+          const SizedBox(height: 14),
+
+          Text(
+            name.isEmpty
+                ? 'SleepCare User'
+                : name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppTheme.textLight,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+
+          if (_emailController
+              .text
+              .isNotEmpty) ...[
+            const SizedBox(height: 5),
+            Text(
+              _emailController.text,
+              style: const TextStyle(
+                color: AppTheme.textMuted,
+                fontSize: 12,
               ),
             ),
+          ],
         ],
       ),
     );
+  }
+
+  Widget _buildGenderField(
+    ProfileViewModel profileVM,
+    AppLocalizations l10n,
+  ) {
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.profileGender,
+          style: const TextStyle(
+            color: AppTheme.textMuted,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.1,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        DropdownButtonFormField<String>(
+          value: _selectedGender,
+          onChanged: !_isEditing
+              ? null
+              : (value) {
+                  setState(() {
+                    _selectedGender = value;
+                  });
+                },
+          dropdownColor:
+              AppTheme.cardColor,
+          icon: const Icon(
+            Icons
+                .keyboard_arrow_down_rounded,
+            color: AppTheme.textMuted,
+          ),
+          style: const TextStyle(
+            color: AppTheme.textLight,
+            fontSize: 14,
+          ),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor:
+                AppTheme.cardLightColor,
+            prefixIcon: const Icon(
+              Icons.wc_outlined,
+              color: AppTheme.textMuted,
+            ),
+            errorText:
+                profileVM.sexError,
+            contentPadding:
+                const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(16),
+              borderSide:
+                  BorderSide.none,
+            ),
+            enabledBorder:
+                OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: Colors.white
+                    .withValues(
+                  alpha: 0.05,
+                ),
+              ),
+            ),
+            focusedBorder:
+                OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(16),
+              borderSide:
+                  const BorderSide(
+                color:
+                    AppTheme.primaryColor,
+              ),
+            ),
+          ),
+          hint: Text(
+            l10n.profileSelect,
+            style: const TextStyle(
+              color: AppTheme.textMuted,
+            ),
+          ),
+          items: [
+            DropdownMenuItem(
+              value: 'Nam',
+              child: Text(
+                l10n.profileMale,
+              ),
+            ),
+            DropdownMenuItem(
+              value: 'Nữ',
+              child: Text(
+                l10n.profileFemale,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateField(
+    ProfileViewModel profileVM,
+    AppLocalizations l10n,
+  ) {
+    final hasError =
+        profileVM.dateOfBirthError != null;
+
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.profileDob,
+          style: const TextStyle(
+            color: AppTheme.textMuted,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.1,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        InkWell(
+          borderRadius:
+              BorderRadius.circular(16),
+          onTap:
+              _isEditing ? _selectDate : null,
+          child: Container(
+            width: double.infinity,
+            padding:
+                const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 17,
+            ),
+            decoration: BoxDecoration(
+              color:
+                  AppTheme.cardLightColor,
+              borderRadius:
+                  BorderRadius.circular(16),
+              border: Border.all(
+                color: hasError
+                    ? Colors.redAccent
+                    : Colors.white
+                        .withValues(
+                      alpha: 0.05,
+                    ),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons
+                      .calendar_today_outlined,
+                  color:
+                      AppTheme.textMuted,
+                  size: 20,
+                ),
+
+                const SizedBox(width: 14),
+
+                Expanded(
+                  child: Text(
+                    _selectedDate == null
+                        ? l10n
+                            .profileSelectDate
+                        : _formatDate(
+                            _selectedDate!,
+                          ),
+                    style: TextStyle(
+                      color:
+                          _selectedDate ==
+                                  null
+                              ? AppTheme
+                                  .textMuted
+                              : AppTheme
+                                  .textLight,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+
+                if (_isEditing)
+                  const Icon(
+                    Icons
+                        .chevron_right_rounded,
+                    color:
+                        AppTheme.textMuted,
+                  ),
+              ],
+            ),
+          ),
+        ),
+
+        if (hasError) ...[
+          const SizedBox(height: 6),
+
+          Padding(
+            padding:
+                const EdgeInsets.only(
+              left: 12,
+            ),
+            child: Text(
+              profileVM
+                  .dateOfBirthError!,
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final day =
+        date.day.toString().padLeft(2, '0');
+
+    final month =
+        date.month
+            .toString()
+            .padLeft(2, '0');
+
+    return '$day/$month/${date.year}';
   }
 }
