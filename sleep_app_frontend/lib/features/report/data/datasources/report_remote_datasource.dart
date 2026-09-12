@@ -21,6 +21,52 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
 
   ReportRemoteDataSourceImpl({required this.supabaseClient});
 
+  DateTime _dateOnly(DateTime value) {
+    return DateTime(value.year, value.month, value.day);
+  }
+
+  String _formatDate(DateTime value) {
+    final year = value.year.toString().padLeft(4, '0');
+    final month = value.month.toString().padLeft(2, '0');
+    final day = value.day.toString().padLeft(2, '0');
+
+    return '$year-$month-$day';
+  }
+
+  List<String> _getGenreNames(Map<String, dynamic> row) {
+    final trackValue = row['tracks'];
+
+    if (trackValue is! Map) {
+      return [];
+    }
+
+    final track = Map<String, dynamic>.from(trackValue);
+    final trackGenresValue = track['track_genres'];
+
+    if (trackGenresValue is! List) {
+      return [];
+    }
+
+    final names = <String>[];
+
+    for (final item in trackGenresValue) {
+      if (item is! Map) continue;
+
+      final trackGenre = Map<String, dynamic>.from(item);
+      final genreValue = trackGenre['genres'];
+
+      if (genreValue is Map) {
+        final name = genreValue['name'];
+
+        if (name is String && name.trim().isNotEmpty) {
+          names.add(name);
+        }
+      }
+    }
+
+    return names;
+  }
+
   @override
   Future<OverviewReportModel> getOverviewReport(String userId) async {
     final now = DateTime.now();
@@ -192,18 +238,130 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
 
   @override
   Future<MusicReportModel> getMusicReport(String userId) async {
-    return const MusicReportModel(
-      consecutiveDays: 0,
-      averageListeningMinutes: 0,
-      favoriteGenre: 'Chưa có',
+    final today = _dateOnly(DateTime.now());
+    final thirtyDaysAgo = today.subtract(const Duration(days: 29));
+    final sevenDaysAgo = today.subtract(const Duration(days: 6));
+
+    final response = await supabaseClient
+        .from('listening_sessions')
+        .select('''
+        listened_seconds,
+        started_at,
+        tracks(
+          track_genres(
+            genres(name)
+          )
+        )
+      ''')
+        .eq('user_id', userId)
+        .not('bedtime_session_id', 'is', null)
+        .inFilter('status', ['completed', 'stopped'])
+        .gte('started_at', thirtyDaysAgo.toUtc().toIso8601String());
+
+    final dailyListeningSeconds = <String, int>{};
+    final genreListeningSeconds = <String, int>{};
+
+    for (final item in response) {
+      final row = Map<String, dynamic>.from(item);
+
+      final listenedSeconds = (row['listened_seconds'] as num?)?.toInt() ?? 0;
+
+      final startedAtValue = row['started_at'];
+
+      if (startedAtValue is String) {
+        final startedAt = DateTime.parse(startedAtValue).toLocal();
+        final dayKey = _formatDate(_dateOnly(startedAt));
+
+        dailyListeningSeconds[dayKey] =
+            (dailyListeningSeconds[dayKey] ?? 0) + listenedSeconds;
+      }
+
+      for (final genreName in _getGenreNames(row)) {
+        genreListeningSeconds[genreName] =
+            (genreListeningSeconds[genreName] ?? 0) + listenedSeconds;
+      }
+    }
+
+    // Trung bình số phút nghe trong 7 ngày gần nhất.
+    var lastSevenDaysSeconds = 0;
+
+    for (var index = 0; index < 7; index++) {
+      final date = sevenDaysAgo.add(Duration(days: index));
+      final dayKey = _formatDate(date);
+
+      lastSevenDaysSeconds += dailyListeningSeconds[dayKey] ?? 0;
+    }
+
+    final averageListeningMinutes = (lastSevenDaysSeconds / 7 / 60).round();
+
+    // Một ngày phải nghe tối thiểu 5 phút mới được tính chuỗi.
+    const minimumDailySeconds = 5 * 60;
+
+    final todayKey = _formatDate(today);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    var cursor = (dailyListeningSeconds[todayKey] ?? 0) >= minimumDailySeconds
+        ? today
+        : yesterday;
+
+    var consecutiveDays = 0;
+
+    while (true) {
+      final dayKey = _formatDate(cursor);
+      final listenedSeconds = dailyListeningSeconds[dayKey] ?? 0;
+
+      if (listenedSeconds < minimumDailySeconds) {
+        break;
+      }
+
+      consecutiveDays++;
+      cursor = cursor.subtract(const Duration(days: 1));
+    }
+
+    var favoriteGenre = 'Chưa có';
+
+    if (genreListeningSeconds.isNotEmpty) {
+      final sortedGenres = genreListeningSeconds.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+
+      favoriteGenre = sortedGenres.first.key;
+    }
+
+    return MusicReportModel(
+      consecutiveDays: consecutiveDays,
+      averageListeningMinutes: averageListeningMinutes,
+      favoriteGenre: favoriteGenre,
     );
   }
 
   @override
   Future<SleepMusicReportModel> getSleepMusicReport(String userId) async {
-    return const SleepMusicReportModel(
+    final musicReport = await getMusicReport(userId);
+
+    if (musicReport.averageListeningMinutes == 0) {
+      return const SleepMusicReportModel(
+        suggestionText:
+            'Hãy thử nghe một bản nhạc thư giãn trước khi ngủ tối nay.',
+      );
+    }
+
+    if (musicReport.consecutiveDays >= 7) {
+      return SleepMusicReportModel(
+        suggestionText:
+            'Bạn đã duy trì nghe nhạc ${musicReport.consecutiveDays} ngày liên tiếp. Hãy tiếp tục thói quen này.',
+      );
+    }
+
+    if (musicReport.averageListeningMinutes < 15) {
+      return SleepMusicReportModel(
+        suggestionText:
+            'Bạn có thể thử nghe nhạc ${musicReport.favoriteGenre} khoảng 15 phút trước khi ngủ.',
+      );
+    }
+
+    return SleepMusicReportModel(
       suggestionText:
-          'Bạn thường ngủ tốt hơn khi nghe nhạc khoảng 30 phút trước khi ngủ.',
+          '${musicReport.favoriteGenre} đang là thể loại bạn nghe nhiều nhất trước khi ngủ.',
     );
   }
 }

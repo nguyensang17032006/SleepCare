@@ -14,6 +14,7 @@ class AppTheme {
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
+      fontFamily: 'BeVietnamPro',
       scaffoldBackgroundColor: bgColor,
       primaryColor: primaryColor,
       colorScheme: const ColorScheme.dark(
@@ -21,9 +22,9 @@ class AppTheme {
         secondary: secondaryColor,
         surface: cardColor,
       ),
-      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme)
+      textTheme: GoogleFonts.lexendTextTheme(ThemeData.dark().textTheme)
           .copyWith(
-            displayLarge: GoogleFonts.poppins(
+            displayLarge: GoogleFonts.lexend(
               color: textLight,
               fontWeight: FontWeight.bold,
             ),

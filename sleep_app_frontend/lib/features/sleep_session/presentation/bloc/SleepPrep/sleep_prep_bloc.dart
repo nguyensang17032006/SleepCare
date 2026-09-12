@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:sleep_app_frontend/features/library/domain/repositories/library_repository.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_event.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_state.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_event.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_state.dart';
 
 class SleepPrepBloc extends Bloc<SleepPrepEvent, SleepPrepState> {
   final LibraryRepository libraryRepository;

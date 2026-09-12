@@ -7,8 +7,8 @@ import 'package:sleep_app_frontend/features/library/presentation/library_screen.
 import 'package:sleep_app_frontend/features/library/presentation/widget/mini_player.dart';
 import 'package:sleep_app_frontend/features/report/presentation/report_screen.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/views/settings_screen.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_bloc.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_event.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_bloc.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_event.dart';
 import 'package:sleep_app_frontend/features/sleep_session/presentation/sleep_prep_screen.dart';
 
 class MainAppScreen extends StatefulWidget {
@@ -104,27 +104,27 @@ class _MainAppScreenState extends State<MainAppScreen>
             destinations: const [
               NavigationDestination(
                 icon: Icon(Icons.nightlight_round),
-                label: 'Home',
+                label: '',
               ),
               NavigationDestination(
                 icon: Icon(Icons.library_music_outlined),
                 selectedIcon: Icon(Icons.library_music),
-                label: 'Library',
+                label: '',
               ),
               NavigationDestination(
                 icon: Icon(Icons.bedtime_outlined),
                 selectedIcon: Icon(Icons.bedtime),
-                label: 'Sleep',
+                label: '',
               ),
               NavigationDestination(
                 icon: Icon(Icons.bar_chart_outlined),
                 selectedIcon: Icon(Icons.bar_chart),
-                label: 'Report',
+                label: '',
               ),
               NavigationDestination(
                 icon: Icon(Icons.settings_outlined),
                 selectedIcon: Icon(Icons.settings),
-                label: 'Settings',
+                label: '',
               ),
             ],
           ),

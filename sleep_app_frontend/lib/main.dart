@@ -6,7 +6,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:sleep_app_frontend/features/library/domain/repositories/library_repository.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_bloc.dart';
+import 'package:sleep_app_frontend/features/sleep_session/data/repositories/sleep_session_repository_impl.dart';
+import 'package:sleep_app_frontend/features/sleep_session/data/sources/session_source.dart';
+import 'package:sleep_app_frontend/features/sleep_session/domain/repositories/sleep_session_repository.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_bloc.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepSession/sleep_session_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:sleep_app_frontend/core/services/audio_player_service.dart';
@@ -175,6 +179,30 @@ Future<void> main() async {
                 supabaseClient: Supabase.instance.client,
               ),
             ),
+          ),
+        ),
+        Provider<AudioPlayerService>(
+          create: (_) => AudioPlayerService(),
+          dispose: (_, service) {
+            service.dispose();
+          },
+        ),
+
+        Provider<SessionSource>(
+          create: (_) =>
+              SessionSource(supabaseClient: Supabase.instance.client),
+        ),
+
+        Provider<SleepSessionRepository>(
+          create: (context) => SleepSessionRepositoryImpl(
+            remoteDataSource: context.read<SessionSource>(),
+          ),
+        ),
+
+        BlocProvider<SleepSessionBloc>(
+          create: (context) => SleepSessionBloc(
+            repository: context.read<SleepSessionRepository>(),
+            audioPlayerService: context.read<AudioPlayerService>(),
           ),
         ),
       ],

@@ -21,8 +21,12 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
+
     final userId = Supabase.instance.client.auth.currentUser?.id;
-    context.read<ReportBloc>().add(LoadReportData(userId.toString()));
+
+    if (userId != null) {
+      context.read<ReportBloc>().add(LoadReportData(userId));
+    }
   }
 
   @override
@@ -404,17 +408,6 @@ class _ReportScreenState extends State<ReportScreen> {
               const SizedBox(width: 8),
               Text(
                 "${report.averageListeningMinutes} phút/ngày",
-                style: const TextStyle(color: AppTheme.textLight, fontSize: 14),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(Icons.nightlight, color: AppTheme.textMuted, size: 16),
-              const SizedBox(width: 8),
-              Text(
-                "${report.favoriteGenre} là thể loại yêu thích",
                 style: const TextStyle(color: AppTheme.textLight, fontSize: 14),
               ),
             ],

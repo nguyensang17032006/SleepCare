@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sleep_app_frontend/core/app/widget/primary_button.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/features/library/domain/entities/music.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_bloc.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_event.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/sleep_prep_state.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_bloc.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_event.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_state.dart';
 import 'package:sleep_app_frontend/features/sleep_session/presentation/sleep_session_screen.dart';
 
 class SleepPrepScreen extends StatefulWidget {
@@ -32,14 +32,7 @@ class _SleepPrepScreenState extends State<SleepPrepScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text(
-          'Chuẩn bị ngủ',
-          style: TextStyle(color: AppTheme.textLight),
-        ),
-      ),
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       body: BlocBuilder<SleepPrepBloc, SleepPrepState>(
         builder: (context, state) {
           if (state is SleepPrepInitial || state is SleepPrepLoading) {
@@ -160,7 +153,7 @@ class _SleepPrepScreenState extends State<SleepPrepScreen> {
           Expanded(
             child: ListView.separated(
               itemCount: state.savedMusics.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final music = state.savedMusics[index];
 
@@ -228,6 +221,7 @@ class _SleepPrepScreenState extends State<SleepPrepScreen> {
                       musicUrl: state.selectedMusic.audioUrl,
                       musicName: state.selectedMusic.title,
                       durationMinutes: state.durationMinutes,
+                      trackId: state.selectedMusic.id,
                     ),
                   ),
                 );
@@ -270,7 +264,7 @@ class _SleepPrepScreenState extends State<SleepPrepScreen> {
                     ? Image.network(
                         music.coverUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) {
+                        errorBuilder: (_, _, _) {
                           return _buildDefaultCover();
                         },
                       )
