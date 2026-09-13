@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sleep_app_frontend/features/onboarding/domain/entities/assessment_requirement.dart';
-import 'package:sleep_app_frontend/features/onboarding/domain/usecases/check_required_assessment.dart';
-import 'package:sleep_app_frontend/l10n/app_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../core/theme/theme.dart';
+import '../../onboarding/domain/entities/assessment_requirement.dart';
+import '../../onboarding/domain/usecases/check_required_assessment.dart';
+import '../../onboarding/presentation/daily_short_survey_screen.dart';
+import '../../onboarding/presentation/questionnaire_screen.dart';
+import '../../setting/data/sources/profile_sources.dart';
+import '../../setting/presentation/views/sleep_schedule_screen.dart';
 import '../data/services/location_service.dart';
 import '../data/services/weather_api_service.dart';
 import '../repository/weather_repository.dart';
 import 'bloc/weather_cubit.dart';
-import 'widget/time_circle.dart';
 import 'widget/card_music.dart';
-import 'widget/glass_card.dart';
-import 'widget/weather_card.dart';
-import '../../onboarding/presentation/daily_short_survey_screen.dart';
-import '../../onboarding/presentation/questionnaire_screen.dart';
-import '../../../../main.dart';
+import 'widget/home_header.dart';
+import 'widget/recommendation_card.dart';
+import 'widget/sleep_insight_card.dart';
+import 'widget/sleep_schedule_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,26 +28,114 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final SupabaseClient _supabase = Supabase.instance.client;
+  final ProfileRemoteDataSource _profileSource = ProfileRemoteDataSource();
+
   int? _psqiScore;
   bool _isLoadingPsqi = true;
+
   AssessmentRequirement? _assessmentRequirement;
   bool _isLoadingAssessmentRequirement = true;
+
   List<Map<String, dynamic>> _recommendations = [];
+
+  String _userName = '';
+  String? _bedtime;
+  int _reminderMinutes = 15;
+  bool _scheduleNotificationsEnabled = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchPsqiScore();
-    _loadAssessmentRequirement();
-    _fetchRecommendations();
+    _loadHome();
+  }
+
+  Future<void> _loadHome() async {
+    await Future.wait([
+      _fetchProfile(),
+      _fetchBedtimeSchedule(),
+      _fetchPsqiScore(),
+      _loadAssessmentRequirement(),
+      _fetchRecommendations(),
+    ]);
+  }
+
+  Future<void> _fetchProfile() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final data = await _profileSource.fetchUserProfile(user.id);
+
+      final rawName =
+          data['full_name'] ??
+          data['fullname'] ??
+          data['name'] ??
+          user.userMetadata?['full_name'] ??
+          user.userMetadata?['name'] ??
+          '';
+
+      final fullName = rawName.toString().trim();
+      final displayName = fullName.isEmpty
+          ? ''
+          : fullName.split(RegExp(r'\s+')).last;
+
+      if (!mounted) return;
+
+      setState(() {
+        _userName = displayName;
+      });
+    } catch (e) {
+      debugPrint('Error fetching home profile: $e');
+    }
+  }
+
+  Future<void> _fetchBedtimeSchedule() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final response = await _supabase
+          .from('bedtime_schedules')
+          .select(
+            'bedtime, reminder_offset_minutes, notifications_enabled, is_enabled',
+          )
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (!mounted || response == null) return;
+
+      final bedtime = response['bedtime']?.toString();
+      final reminder = response['reminder_offset_minutes'];
+      final notificationsEnabled = response['notifications_enabled'];
+      final isEnabled = response['is_enabled'];
+
+      setState(() {
+        _bedtime = bedtime;
+
+        if (reminder is num) {
+          _reminderMinutes = reminder.toInt();
+        }
+
+        if (notificationsEnabled is bool) {
+          _scheduleNotificationsEnabled = notificationsEnabled;
+        }
+
+        if (isEnabled is bool && !isEnabled) {
+          _scheduleNotificationsEnabled = false;
+        }
+      });
+    } catch (e) {
+      debugPrint('Error fetching bedtime schedule: $e');
+    }
   }
 
   Future<void> _fetchRecommendations() async {
     try {
-      final userId = supabaseClient.auth.currentUser?.id;
+      final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return;
 
-      final res = await supabaseClient
+      final res = await _supabase
           .from('music_recommendations')
           .select(
             'recommendation_reason, tracks(id, title, description, cover_url)',
@@ -54,11 +145,11 @@ class _HomeScreenState extends State<HomeScreen> {
           .order('recommendation_score', ascending: false)
           .limit(2);
 
-      if (mounted) {
-        setState(() {
-          _recommendations = List<Map<String, dynamic>>.from(res);
-        });
-      }
+      if (!mounted) return;
+
+      setState(() {
+        _recommendations = List<Map<String, dynamic>>.from(res);
+      });
     } catch (e) {
       debugPrint('Error fetching recommendations: $e');
     }
@@ -66,14 +157,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadAssessmentRequirement() async {
     final useCase = context.read<CheckRequiredAssessment>();
-
     final result = await useCase();
 
     if (!mounted) return;
 
     result.match(
       (failure) {
-        debugPrint('Error checking assessment requirement: ${failure.message}');
+        debugPrint(
+          'Error checking assessment requirement: ${failure.message}',
+        );
 
         setState(() {
           _assessmentRequirement = AssessmentRequirement.none;
@@ -91,24 +183,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchPsqiScore() async {
     try {
-      final userId = supabaseClient.auth.currentUser?.id;
+      final userId = _supabase.auth.currentUser?.id;
+
       if (userId == null) {
-        if (mounted) setState(() => _isLoadingPsqi = false);
+        if (mounted) {
+          setState(() => _isLoadingPsqi = false);
+        }
         return;
       }
 
-      final response = await supabaseClient
+      final response = await _supabase
           .from('sleep_assessments')
           .select('raw_total_score')
           .eq('user_id', userId)
-          .inFilter('assessment_type', ['baseline_full', 'repeat_full'])
+          .inFilter(
+            'assessment_type',
+            ['baseline_full', 'repeat_full'],
+          )
           .order('created_at', ascending: false)
           .limit(1)
           .maybeSingle();
 
       if (response != null && mounted) {
+        final score = response['raw_total_score'];
+
         setState(() {
-          final score = response['raw_total_score'];
           if (score is num) {
             _psqiScore = score.toInt();
           } else if (score is String) {
@@ -125,10 +224,139 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _openSleepSchedule() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SleepScheduleScreen(),
+      ),
+    );
+
+    if (!mounted) return;
+    await _fetchBedtimeSchedule();
+  }
+
+  Future<void> _openDailySurvey() async {
+    final completed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DailyShortSurveyScreen(),
+      ),
+    );
+
+    if (completed == true && mounted) {
+      await _loadAssessmentRequirement();
+    }
+  }
+
+  Future<void> _openFullSurvey() async {
+    final completed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const QuestionnaireScreen(),
+      ),
+    );
+
+    if (completed == true && mounted) {
+      await _loadAssessmentRequirement();
+      await _fetchPsqiScore();
+    }
+  }
+
+  Widget _sectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: AppTheme.textLight,
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+
+  Widget _assessmentBanner({
+    required String eyebrow,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(17.w),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withValues(alpha: 0.11),
+          borderRadius: BorderRadius.circular(22.r),
+          border: Border.all(
+            color: AppTheme.primaryColor.withValues(alpha: 0.18),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46.w,
+              height: 46.w,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withValues(alpha: 0.17),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: AppTheme.primaryColor,
+                size: 22.sp,
+              ),
+            ),
+            SizedBox(width: 14.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    eyebrow,
+                    style: TextStyle(
+                      color: AppTheme.primaryColor,
+                      fontSize: 9.sp,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: AppTheme.textLight,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: 3.h),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppTheme.textMuted,
+                      fontSize: 10.5.sp,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Icon(
+              Icons.arrow_forward_rounded,
+              color: AppTheme.primaryColor,
+              size: 20.sp,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final l10n = AppLocalizations.of(context)!;
     final shouldShowDailySurvey =
         !_isLoadingAssessmentRequirement &&
         _assessmentRequirement == AssessmentRequirement.dailyShort;
@@ -137,6 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
         !_isLoadingAssessmentRequirement &&
         (_assessmentRequirement == AssessmentRequirement.baselineFull ||
             _assessmentRequirement == AssessmentRequirement.repeatFull);
+
     return BlocProvider(
       create: (_) => WeatherCubit(
         repository: const WeatherRepository(
@@ -147,381 +376,109 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Container(
-          width: size.width,
-          decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.h),
-                const TimeCircle(),
-                SizedBox(height: 18.h),
-                const WeatherCard(),
-                SizedBox(height: 18.h),
-
-                // Daily Check-in Banner
-                if (shouldShowDailySurvey) ...[
-                  GestureDetector(
-                    onTap: () async {
-                      final completed = await Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const DailyShortSurveyScreen(),
-                        ),
-                      );
-
-                      if (completed == true && mounted) {
-                        await _loadAssessmentRequirement();
-                      }
-                    },
-                    child: GlassCard(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 16.h,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(10.w),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withValues(
-                                alpha: 0.2,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.assignment_turned_in,
-                              color: AppTheme.primaryColor,
-                              size: 20.sp,
-                            ),
-                          ),
-                          SizedBox(width: 16.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.homeRecordSleep,
-                                  style: TextStyle(
-                                    color: AppTheme.textMuted,
-                                    fontSize: 10.sp,
-                                    letterSpacing: 1.0,
-                                  ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  l10n.homeEnterLastNightData,
-                                  style: TextStyle(
-                                    color: AppTheme.textLight,
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: AppTheme.primaryColor,
-                            size: 24.sp,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                ],
-
-                // Monthly 30-Day Check-in Banner
-                if (shouldShowFullSurvey) ...[
-                  GestureDetector(
-                    onTap: () async {
-                      final completed = await Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const QuestionnaireScreen(),
-                        ),
-                      );
-
-                      if (completed == true && mounted) {
-                        await _loadAssessmentRequirement();
-                        await _fetchPsqiScore();
-                      }
-                    },
-                    child: GlassCard(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 16.h,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(10.w),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withValues(
-                                alpha: 0.2,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.calendar_month,
-                              color: AppTheme.primaryColor,
-                              size: 20.sp,
-                            ),
-                          ),
-                          SizedBox(width: 16.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "ĐÁNH GIÁ 30 NGÀY",
-                                  style: TextStyle(
-                                    color: AppTheme.textMuted,
-                                    fontSize: 10.sp,
-                                    letterSpacing: 1.0,
-                                  ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  "Làm khảo sát PSQI tháng này",
-                                  style: TextStyle(
-                                    color: AppTheme.textLight,
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: AppTheme.primaryColor,
-                            size: 24.sp,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                ],
-
-                // PSQI Score Card
-                if (!_isLoadingPsqi && _psqiScore != null) ...[
-                  GlassCard(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 16.h,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(10.w),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.analytics_outlined,
-                            color: AppTheme.primaryColor,
-                            size: 20.sp,
-                          ),
-                        ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "PSQI SCORE",
-                                style: TextStyle(
-                                  color: AppTheme.textMuted,
-                                  fontSize: 10.sp,
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                "${l10n.qPsqiResult(_psqiScore!)}/21",
-                                style: TextStyle(
-                                  color: AppTheme.textLight,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                _psqiScore! <= 5
-                                    ? l10n.qPsqiGood
-                                    : l10n.qPsqiBad,
-                                style: TextStyle(
-                                  color: _psqiScore! <= 5
-                                      ? Colors.greenAccent
-                                      : Colors.orangeAccent,
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                ],
-
-                if (_recommendations.isNotEmpty) ...[
-                  Text(
-                    "GỢI Ý CHO RIÊNG BẠN",
-                    style: TextStyle(
-                      color: AppTheme.primaryColor,
-                      fontSize: 10.sp,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  ..._recommendations.map((rec) {
-                    final track = rec['tracks'];
-                    if (track == null) return const SizedBox.shrink();
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 12.h),
-                      child: GlassCard(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 16.h,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(10.w),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withValues(
-                                  alpha: 0.2,
-                                ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.music_note,
-                                color: AppTheme.primaryColor,
-                                size: 20.sp,
-                              ),
-                            ),
-                            SizedBox(width: 16.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    track['title'] ?? 'Bài hát',
-                                    style: TextStyle(
-                                      color: AppTheme.textLight,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4.h),
-                                  Text(
-                                    rec['recommendation_reason'] ?? '',
-                                    style: TextStyle(
-                                      color: AppTheme.primaryColor,
-                                      fontSize: 10.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              Icons.play_circle_fill,
-                              color: AppTheme.primaryColor,
-                              size: 24.sp,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                  SizedBox(height: 24.h),
-                ],
-
-                Text(
-                  l10n.homeSoothingMelody,
-                  style: TextStyle(
-                    color: AppTheme.primaryColor,
-                    fontSize: 10.sp,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.bold,
-                  ),
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: AppTheme.bgGradient,
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: RefreshIndicator(
+              color: AppTheme.primaryColor,
+              onRefresh: _loadHome,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(
+                  20.w,
+                  16.h,
+                  20.w,
+                  32.h,
                 ),
-                SizedBox(height: 8.h),
-                Text(
-                  l10n.homeChooseMusic,
-                  style: TextStyle(
-                    color: AppTheme.textLight,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                const CardMusic(),
-
-                SizedBox(height: 30.h),
-                GlassCard(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20.w,
-                    vertical: 16.h,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10.w),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.water_drop,
-                          color: AppTheme.primaryColor,
-                          size: 20.sp,
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    HomeHeader(
+                      userName: _userName,
+                    ),
+                    SizedBox(height: 24.h),
+                    SleepScheduleCard(
+                      bedtime: _bedtime,
+                      reminderMinutes: _reminderMinutes,
+                      isEnabled: _scheduleNotificationsEnabled,
+                      onTap: _openSleepSchedule,
+                    ),
+                    if (shouldShowDailySurvey || shouldShowFullSurvey) ...[
+                      SizedBox(height: 24.h),
+                      _sectionTitle('Việc cần làm'),
+                      SizedBox(height: 12.h),
+                    ],
+                    if (shouldShowDailySurvey)
+                      _assessmentBanner(
+                        eyebrow: 'CHECK-IN GIẤC NGỦ',
+                        title: 'Bạn ngủ thế nào tối qua?',
+                        subtitle:
+                            'Ghi lại giấc ngủ để SleepCare hiểu bạn tốt hơn.',
+                        icon: Icons.nightlight_outlined,
+                        onTap: _openDailySurvey,
                       ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.homeActiveSession,
-                              style: TextStyle(
-                                color: AppTheme.textMuted,
-                                fontSize: 10.sp,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              l10n.homeOceanWaves,
-                              style: TextStyle(
-                                color: AppTheme.textLight,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                    if (shouldShowDailySurvey && shouldShowFullSurvey)
+                      SizedBox(height: 12.h),
+                    if (shouldShowFullSurvey)
+                      _assessmentBanner(
+                        eyebrow: 'ĐÁNH GIÁ ĐỊNH KỲ',
+                        title: 'Khảo sát PSQI đang chờ bạn',
+                        subtitle:
+                            'Cập nhật chất lượng giấc ngủ trong 30 ngày gần nhất.',
+                        icon: Icons.assignment_turned_in_outlined,
+                        onTap: _openFullSurvey,
                       ),
-                      Icon(
-                        Icons.equalizer,
-                        color: AppTheme.primaryColor,
-                        size: 22.sp,
+                    if (!_isLoadingPsqi && _psqiScore != null) ...[
+                      SizedBox(height: 26.h),
+                      _sectionTitle('Tình trạng giấc ngủ'),
+                      SizedBox(height: 12.h),
+                      SleepInsightCard(
+                        psqiScore: _psqiScore!,
                       ),
                     ],
-                  ),
+                    if (_recommendations.isNotEmpty) ...[
+                      SizedBox(height: 28.h),
+                      _sectionTitle('Dành cho bạn'),
+                      SizedBox(height: 12.h),
+                      ..._recommendations.map((rec) {
+                        final track = rec['tracks'];
+                        if (track == null) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final trackMap = Map<String, dynamic>.from(track);
+
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 10.h),
+                          child: RecommendationCard(
+                            title: trackMap['title']?.toString() ?? 'Bài hát',
+                            reason:
+                                rec['recommendation_reason']?.toString() ??
+                                'Được đề xuất cho giấc ngủ của bạn',
+                            coverUrl: trackMap['cover_url']?.toString(),
+                          ),
+                        );
+                      }),
+                    ],
+                    SizedBox(height: 28.h),
+                    _sectionTitle('Khám phá âm thanh ngủ'),
+                    SizedBox(height: 6.h),
+                    Text(
+                      'Thư giãn trước khi bước vào giấc ngủ',
+                      style: TextStyle(
+                        color: AppTheme.textMuted,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                    SizedBox(height: 13.h),
+                    const CardMusic(),
+                    SizedBox(height: 28.h),
+                  ],
                 ),
-                SizedBox(height: 30.h),
-              ],
+              ),
             ),
           ),
         ),

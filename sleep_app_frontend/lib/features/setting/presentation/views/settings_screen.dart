@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9d1e93d (fix: ui home)
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/logout_vm.dart';
 import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/profile_vm.dart';
@@ -83,6 +87,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+<<<<<<< HEAD
+=======
+  
+
+  
+
+>>>>>>> 9d1e93d (fix: ui home)
   Future<void> _handleLogout() async {
     final logoutVM = context.read<LogoutViewModel>();
     final l10n = AppLocalizations.of(context)!;
@@ -518,6 +529,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+<<<<<<< HEAD
+=======
+  
+
+>>>>>>> 9d1e93d (fix: ui home)
   Future<void> _showSnoozeOptions() async {
     final result = await showModalBottomSheet<int>(
       context: context,

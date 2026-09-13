@@ -103,28 +103,29 @@ class _MainAppScreenState extends State<MainAppScreen>
             indicatorColor: AppTheme.primaryColor.withValues(alpha: 0.2),
             destinations: const [
               NavigationDestination(
-                icon: Icon(Icons.nightlight_round),
-                label: '',
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Trang chủ',
               ),
               NavigationDestination(
                 icon: Icon(Icons.library_music_outlined),
                 selectedIcon: Icon(Icons.library_music),
-                label: '',
+                label: 'Thư viện',
               ),
               NavigationDestination(
                 icon: Icon(Icons.bedtime_outlined),
                 selectedIcon: Icon(Icons.bedtime),
-                label: '',
+                label: 'Ngủ',
               ),
               NavigationDestination(
                 icon: Icon(Icons.bar_chart_outlined),
                 selectedIcon: Icon(Icons.bar_chart),
-                label: '',
+                label: 'Báo cáo',
               ),
               NavigationDestination(
                 icon: Icon(Icons.settings_outlined),
                 selectedIcon: Icon(Icons.settings),
-                label: '',
+                label: 'Cài đặt',
               ),
             ],
           ),
