@@ -5,22 +5,21 @@ import 'package:just_audio/just_audio.dart';
 import '../../features/library/domain/entities/music.dart';
 
 class AudioPlayerService {
-  AudioPlayerService();
+  static final AudioPlayerService _instance =
+      AudioPlayerService._internal();
+
+  factory AudioPlayerService() => _instance;
+
+  AudioPlayerService._internal();
 
   final AudioPlayer _player = AudioPlayer();
 
   AudioPlayer get player => _player;
 
-  // =========================================================
-  // QUEUE
-  // =========================================================
-
   List<Music> _queue = [];
 
   List<Music> get queue => List.unmodifiable(_queue);
 
-  /// Cho UI lắng nghe khi queue thay đổi:
-  /// add / remove / setQueue
   final ValueNotifier<List<Music>> queueNotifier =
       ValueNotifier<List<Music>>([]);
 
@@ -40,10 +39,6 @@ class AudioPlayerService {
     return _queue[index];
   }
 
-  // =========================================================
-  // STREAM
-  // =========================================================
-
   Stream<PlayerState> get playerStateStream =>
       _player.playerStateStream;
 
@@ -62,10 +57,6 @@ class AudioPlayerService {
   Stream<bool> get shuffleModeEnabledStream =>
       _player.shuffleModeEnabledStream;
 
-  // =========================================================
-  // CREATE AUDIO SOURCE
-  // =========================================================
-
   AudioSource _createAudioSource(Music music) {
     return AudioSource.uri(
       Uri.parse(music.audioUrl),
@@ -73,8 +64,7 @@ class AudioPlayerService {
         id: music.id,
         title: music.title,
         artist: music.artist?.join(', '),
-        artUri:
-            music.coverUrl != null &&
+        artUri: music.coverUrl != null &&
                 music.coverUrl!.isNotEmpty
             ? Uri.tryParse(music.coverUrl!)
             : null,
@@ -82,17 +72,11 @@ class AudioPlayerService {
     );
   }
 
-  // =========================================================
-  // SET QUEUE
-  // =========================================================
-
   Future<void> setQueue({
     required List<Music> musics,
     required int initialIndex,
   }) async {
-    if (musics.isEmpty) {
-      return;
-    }
+    if (musics.isEmpty) return;
 
     if (initialIndex < 0 ||
         initialIndex >= musics.length) {
@@ -103,144 +87,52 @@ class AudioPlayerService {
 
     _notifyQueueChanged();
 
-    debugPrint('===== AUDIO QUEUE =====');
-    debugPrint('Initial index: $initialIndex');
-    debugPrint('Title: ${musics[initialIndex].title}');
-    debugPrint('URL: ${musics[initialIndex].audioUrl}');
+    final sources =
+        musics.map(_createAudioSource).toList();
 
-    final sources = musics
-        .map(_createAudioSource)
-        .toList();
-
-    try {
-      await _player.setAudioSources(
-        sources,
-        initialIndex: initialIndex,
-        initialPosition: Duration.zero,
-      );
-
-      debugPrint(
-        'Audio source loaded successfully',
-      );
-    } on PlayerInterruptedException catch (e) {
-      debugPrint(
-        'PLAYER INTERRUPTED: ${e.message}',
-      );
-
-      rethrow;
-    } on PlayerException catch (e) {
-      debugPrint(
-        'PLAYER ERROR: ${e.code}',
-      );
-
-      debugPrint(
-        'PLAYER ERROR MESSAGE: ${e.message}',
-      );
-
-      rethrow;
-    } catch (e) {
-      debugPrint(
-        'UNKNOWN AUDIO ERROR: $e',
-      );
-
-      rethrow;
-    }
+    await _player.setAudioSources(
+      sources,
+      initialIndex: initialIndex,
+      initialPosition: Duration.zero,
+    );
   }
-
-  // =========================================================
-  // ADD TO CURRENT QUEUE
-  // =========================================================
 
   Future<void> addToQueue(Music music) async {
-    final alreadyExists = _queue.any(
-      (item) => item.id == music.id,
+    final alreadyExists =
+        _queue.any((item) => item.id == music.id);
+
+    if (alreadyExists) return;
+
+    await _player.addAudioSource(
+      _createAudioSource(music),
     );
 
-    if (alreadyExists) {
-      debugPrint(
-        'Track already exists in queue: ${music.title}',
-      );
-
-      return;
-    }
-
-    final source = _createAudioSource(music);
-
-    try {
-      await _player.addAudioSource(source);
-
-      _queue.add(music);
-
-      _notifyQueueChanged();
-
-      debugPrint(
-        'Added to queue: ${music.title}',
-      );
-    } catch (e) {
-      debugPrint(
-        'ADD TO QUEUE ERROR: $e',
-      );
-
-      rethrow;
-    }
+    _queue.add(music);
+    _notifyQueueChanged();
   }
 
-  // =========================================================
-  // REMOVE FROM CURRENT QUEUE
-  // =========================================================
+  Future<void> removeFromQueue(Music music) async {
+    final index =
+        _queue.indexWhere((item) => item.id == music.id);
 
-  Future<void> removeFromQueue(
-    Music music,
-  ) async {
-    final index = _queue.indexWhere(
-      (item) => item.id == music.id,
-    );
-
-    if (index == -1) {
-      return;
-    }
+    if (index == -1) return;
 
     await removeFromQueueAt(index);
   }
 
-  Future<void> removeFromQueueAt(
-    int index,
-  ) async {
-    if (index < 0 ||
-        index >= _queue.length) {
+  Future<void> removeFromQueueAt(int index) async {
+    if (index < 0 || index >= _queue.length) {
       return;
     }
 
-    final removedMusic = _queue[index];
+    await _player.removeAudioSourceAt(index);
 
-    try {
-      await _player.removeAudioSourceAt(index);
-
-      _queue.removeAt(index);
-
-      _notifyQueueChanged();
-
-      debugPrint(
-        'Removed from queue: ${removedMusic.title}',
-      );
-    } catch (e) {
-      debugPrint(
-        'REMOVE FROM QUEUE ERROR: $e',
-      );
-
-      rethrow;
-    }
+    _queue.removeAt(index);
+    _notifyQueueChanged();
   }
 
-  // =========================================================
-  // PLAY AT INDEX
-  // =========================================================
-
-  Future<void> playAtIndex(
-    int index,
-  ) async {
-    if (index < 0 ||
-        index >= _queue.length) {
+  Future<void> playAtIndex(int index) async {
+    if (index < 0 || index >= _queue.length) {
       return;
     }
 
@@ -251,10 +143,6 @@ class AudioPlayerService {
 
     await _player.play();
   }
-
-  // =========================================================
-  // PLAY / PAUSE
-  // =========================================================
 
   Future<void> play() async {
     await _player.play();
@@ -272,19 +160,9 @@ class AudioPlayerService {
     }
   }
 
-  // =========================================================
-  // SEEK
-  // =========================================================
-
-  Future<void> seek(
-    Duration position,
-  ) async {
+  Future<void> seek(Duration position) async {
     await _player.seek(position);
   }
-
-  // =========================================================
-  // PREVIOUS / NEXT
-  // =========================================================
 
   Future<void> previous() async {
     if (_player.hasPrevious) {
@@ -298,10 +176,6 @@ class AudioPlayerService {
     }
   }
 
-  // =========================================================
-  // SHUFFLE
-  // =========================================================
-
   Future<void> toggleShuffle() async {
     final enabled =
         !_player.shuffleModeEnabled;
@@ -310,44 +184,27 @@ class AudioPlayerService {
       await _player.shuffle();
     }
 
-    await _player.setShuffleModeEnabled(
-      enabled,
-    );
+    await _player.setShuffleModeEnabled(enabled);
   }
-
-  // =========================================================
-  // LOOP MODE
-  // =========================================================
 
   Future<void> changeLoopMode() async {
     switch (_player.loopMode) {
       case LoopMode.off:
-        await _player.setLoopMode(
-          LoopMode.all,
-        );
+        await _player.setLoopMode(LoopMode.all);
         break;
 
       case LoopMode.all:
-        await _player.setLoopMode(
-          LoopMode.one,
-        );
+        await _player.setLoopMode(LoopMode.one);
         break;
 
       case LoopMode.one:
-        await _player.setLoopMode(
-          LoopMode.off,
-        );
+        await _player.setLoopMode(LoopMode.off);
         break;
     }
   }
 
-  // =========================================================
-  // DISPOSE
-  // =========================================================
-
   Future<void> dispose() async {
     queueNotifier.dispose();
-
     await _player.dispose();
   }
 }

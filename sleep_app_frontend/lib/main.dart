@@ -5,18 +5,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
-import 'package:sleep_app_frontend/features/library/domain/repositories/library_repository.dart';
-import 'package:sleep_app_frontend/features/sleep_session/data/repositories/sleep_session_repository_impl.dart';
-import 'package:sleep_app_frontend/features/sleep_session/data/sources/session_source.dart';
-import 'package:sleep_app_frontend/features/sleep_session/domain/repositories/sleep_session_repository.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_bloc.dart';
-import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepSession/sleep_session_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:sleep_app_frontend/core/services/audio_player_service.dart';
-import 'package:sleep_app_frontend/core/services/notification_service.dart';
 import 'package:sleep_app_frontend/core/app/auth_wrapper.dart';
 import 'package:sleep_app_frontend/core/app/locale_provider.dart';
+import 'package:sleep_app_frontend/core/services/audio_player_service.dart';
+import 'package:sleep_app_frontend/core/services/notification_service.dart';
 import 'package:sleep_app_frontend/core/theme/theme.dart';
 
 import 'package:sleep_app_frontend/features/auth/data/sources/auth_sources.dart';
@@ -24,8 +18,9 @@ import 'package:sleep_app_frontend/features/auth/presentation/viewmodels/auth_vm
 import 'package:sleep_app_frontend/features/auth/presentation/views/login/login_screen.dart';
 import 'package:sleep_app_frontend/features/auth/repository/auth_repository.dart';
 
-import 'package:sleep_app_frontend/features/library/domain/repositories/library_repository_impl.dart';
 import 'package:sleep_app_frontend/features/library/data/datasource/library_remote_datasource.dart';
+import 'package:sleep_app_frontend/features/library/domain/repositories/library_repository.dart';
+import 'package:sleep_app_frontend/features/library/domain/repositories/library_repository_impl.dart';
 import 'package:sleep_app_frontend/features/library/presentation/bloc/library_bloc.dart';
 import 'package:sleep_app_frontend/features/library/presentation/bloc/library_event.dart';
 
@@ -51,242 +46,487 @@ import 'package:sleep_app_frontend/features/setting/presentation/viewmodels/prof
 import 'package:sleep_app_frontend/features/setting/repository/logout_repository.dart';
 import 'package:sleep_app_frontend/features/setting/repository/profile_repository.dart';
 
+import 'package:sleep_app_frontend/features/sleep_session/data/repositories/sleep_session_repository_impl.dart';
+import 'package:sleep_app_frontend/features/sleep_session/data/sources/session_source.dart';
+import 'package:sleep_app_frontend/features/sleep_session/domain/repositories/sleep_session_repository.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepPrep/sleep_prep_bloc.dart';
+import 'package:sleep_app_frontend/features/sleep_session/presentation/bloc/SleepSession/sleep_session_bloc.dart';
+
 import 'package:sleep_app_frontend/l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // =========================================================
+  // AUDIO BACKGROUND
+  // =========================================================
+
   await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
+    androidNotificationChannelId:
+        'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName:
+        'Audio playback',
     androidNotificationOngoing: true,
   );
 
-  await dotenv.load(fileName: '.env');
+  // =========================================================
+  // ENV
+  // =========================================================
+
+  await dotenv.load(
+    fileName: '.env',
+  );
+
+  // =========================================================
+  // SUPABASE
+  // =========================================================
 
   await Supabase.initialize(
     url: '${dotenv.env['SUPABASE_URL']}',
     // ignore: deprecated_member_use
-    anonKey: '${dotenv.env['SUPABASE_ANON_KEY']}',
+    anonKey:
+        '${dotenv.env['SUPABASE_ANON_KEY']}',
   );
 
+  // =========================================================
+  // NOTIFICATIONS
+  // =========================================================
+
   await NotificationService().init();
+
+  // =========================================================
+  // RUN APP
+  // =========================================================
 
   runApp(
     MultiProvider(
       providers: [
+        // ===================================================
+        // SLEEP SCORING
+        // ===================================================
+
         Provider<SleepScoringService>(
-          create: (_) => const SleepScoringService(),
+          create: (_) =>
+              const SleepScoringService(),
         ),
 
+        // ===================================================
+        // AUDIO PLAYER
+        // CHỈ KHAI BÁO 1 LẦN
+        // ===================================================
+
         Provider<AudioPlayerService>(
-          create: (_) => AudioPlayerService(),
+          create: (_) =>
+              AudioPlayerService(),
           dispose: (_, service) {
             service.dispose();
           },
         ),
 
-        ChangeNotifierProvider(
-          create: (_) => AuthViewModel(AuthRepository(AuthRemoteSource())),
-        ),
+        // ===================================================
+        // AUTH
+        // ===================================================
 
         ChangeNotifierProvider(
           create: (_) =>
-              LogoutViewModel(LogoutRepository(LogoutRemoteDataSource())),
+              AuthViewModel(
+            AuthRepository(
+              AuthRemoteSource(),
+            ),
+          ),
         ),
+
+        // ===================================================
+        // LOGOUT
+        // ===================================================
 
         ChangeNotifierProvider(
           create: (_) =>
-              ProfileViewModel(ProfileRepository(ProfileRemoteDataSource())),
+              LogoutViewModel(
+            LogoutRepository(
+              LogoutRemoteDataSource(),
+            ),
+          ),
         ),
 
-        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        // ===================================================
+        // PROFILE
+        // ===================================================
+
+        ChangeNotifierProvider(
+          create: (_) =>
+              ProfileViewModel(
+            ProfileRepository(
+              ProfileRemoteDataSource(),
+            ),
+          ),
+        ),
+
+        // ===================================================
+        // LOCALE
+        // ===================================================
+
+        ChangeNotifierProvider(
+          create: (_) =>
+              LocaleProvider(),
+        ),
+
+        // ===================================================
+        // ONBOARDING DATASOURCE
+        // ===================================================
 
         Provider<OnboardingRemoteDataSource>(
-          create: (_) => OnboardingRemoteDataSourceImpl(
-            supabaseClient: Supabase.instance.client,
+          create: (_) =>
+              OnboardingRemoteDataSourceImpl(
+            supabaseClient:
+                Supabase.instance.client,
           ),
         ),
 
+        // ===================================================
+        // ONBOARDING REPOSITORY
+        // ===================================================
+
         Provider<OnboardingRepository>(
-          create: (context) => OnboardingRepositoryImpl(
-            remoteDataSource: context.read<OnboardingRemoteDataSource>(),
+          create: (context) =>
+              OnboardingRepositoryImpl(
+            remoteDataSource:
+                context.read<
+                    OnboardingRemoteDataSource>(),
           ),
         ),
+
+        // ===================================================
+        // CHECK REQUIRED ASSESSMENT
+        // ===================================================
 
         Provider<CheckRequiredAssessment>(
           create: (context) =>
-              CheckRequiredAssessment(context.read<OnboardingRepository>()),
+              CheckRequiredAssessment(
+            context.read<
+                OnboardingRepository>(),
+          ),
         ),
+
+        // ===================================================
+        // GET ACTIVE QUESTIONS
+        // ===================================================
 
         Provider<GetActiveQuestions>(
           create: (context) =>
-              GetActiveQuestions(context.read<OnboardingRepository>()),
+              GetActiveQuestions(
+            context.read<
+                OnboardingRepository>(),
+          ),
         ),
+
+        // ===================================================
+        // GET DAILY SLEEP SCORES
+        // ===================================================
 
         Provider<GetDailySleepScores>(
           create: (context) =>
-              GetDailySleepScores(context.read<OnboardingRepository>()),
+              GetDailySleepScores(
+            context.read<
+                OnboardingRepository>(),
+          ),
         ),
+
+        // ===================================================
+        // SUBMIT ASSESSMENT
+        // ===================================================
 
         Provider<SubmitSleepAssessment>(
           create: (context) =>
-              SubmitSleepAssessment(context.read<OnboardingRepository>()),
+              SubmitSleepAssessment(
+            context.read<
+                OnboardingRepository>(),
+          ),
         ),
+
+        // ===================================================
+        // DAILY SHORT BLOC
+        // ===================================================
 
         BlocProvider<DailyShortBloc>(
-          create: (context) => DailyShortBloc(
-            getActiveQuestions: context.read<GetActiveQuestions>(),
-            submitSleepAssessment: context.read<SubmitSleepAssessment>(),
+          create: (context) =>
+              DailyShortBloc(
+            getActiveQuestions:
+                context.read<
+                    GetActiveQuestions>(),
+            submitSleepAssessment:
+                context.read<
+                    SubmitSleepAssessment>(),
           ),
         ),
 
+        // ===================================================
+        // QUESTIONNAIRE BLOC
+        // ===================================================
+
         BlocProvider<QuestionnaireBloc>(
-          create: (context) => QuestionnaireBloc(
-            checkRequiredAssessment: context.read<CheckRequiredAssessment>(),
-            getActiveQuestions: context.read<GetActiveQuestions>(),
-            submitSleepAssessment: context.read<SubmitSleepAssessment>(),
-            scoringService: context.read<SleepScoringService>(),
+          create: (context) =>
+              QuestionnaireBloc(
+            checkRequiredAssessment:
+                context.read<
+                    CheckRequiredAssessment>(),
+            getActiveQuestions:
+                context.read<
+                    GetActiveQuestions>(),
+            submitSleepAssessment:
+                context.read<
+                    SubmitSleepAssessment>(),
+            scoringService:
+                context.read<
+                    SleepScoringService>(),
           ),
         ),
+
+        // ===================================================
+        // LIBRARY DATASOURCE
+        // ===================================================
 
         Provider<LibraryRemoteDatasource>(
           create: (_) =>
-              LibraryRemoteDatasource(supabase: Supabase.instance.client),
-        ),
-
-        Provider<LibraryRepository>(
-          create: (context) => LibraryRepositoryImpl(
-            remoteDatasource: context.read<LibraryRemoteDatasource>(),
+              LibraryRemoteDatasource(
+            supabase:
+                Supabase.instance.client,
           ),
         ),
+
+        // ===================================================
+        // LIBRARY REPOSITORY
+        // ===================================================
+
+        Provider<LibraryRepository>(
+          create: (context) =>
+              LibraryRepositoryImpl(
+            remoteDatasource:
+                context.read<
+                    LibraryRemoteDatasource>(),
+          ),
+        ),
+
+        // ===================================================
+        // LIBRARY BLOC
+        // ===================================================
 
         BlocProvider<LibraryBloc>(
           create: (context) =>
-              LibraryBloc(repository: context.read<LibraryRepository>())
-                ..add(LoadLibrary()),
+              LibraryBloc(
+            repository:
+                context.read<
+                    LibraryRepository>(),
+          )..add(
+              LoadLibrary(),
+            ),
         ),
 
+        // ===================================================
+        // SLEEP PREP BLOC
+        // ===================================================
+
         BlocProvider<SleepPrepBloc>(
-          create: (context) => SleepPrepBloc(
-            libraryRepository: context.read<LibraryRepository>(),
+          create: (context) =>
+              SleepPrepBloc(
+            libraryRepository:
+                context.read<
+                    LibraryRepository>(),
           ),
         ),
 
+        // ===================================================
+        // REPORT BLOC
+        // ===================================================
+
         BlocProvider<ReportBloc>(
-          create: (_) => ReportBloc(
-            repository: ReportRepositoryImpl(
-              remoteDataSource: ReportRemoteDataSourceImpl(
-                supabaseClient: Supabase.instance.client,
+          create: (_) =>
+              ReportBloc(
+            repository:
+                ReportRepositoryImpl(
+              remoteDataSource:
+                  ReportRemoteDataSourceImpl(
+                supabaseClient:
+                    Supabase.instance.client,
               ),
             ),
           ),
         ),
-        Provider<AudioPlayerService>(
-          create: (_) => AudioPlayerService(),
-          dispose: (_, service) {
-            service.dispose();
-          },
-        ),
+
+        // ===================================================
+        // SESSION DATASOURCE
+        // ===================================================
 
         Provider<SessionSource>(
           create: (_) =>
-              SessionSource(supabaseClient: Supabase.instance.client),
-        ),
-
-        Provider<SleepSessionRepository>(
-          create: (context) => SleepSessionRepositoryImpl(
-            remoteDataSource: context.read<SessionSource>(),
+              SessionSource(
+            supabaseClient:
+                Supabase.instance.client,
           ),
         ),
 
+        // ===================================================
+        // SLEEP SESSION REPOSITORY
+        // ===================================================
+
+        Provider<SleepSessionRepository>(
+          create: (context) =>
+              SleepSessionRepositoryImpl(
+            remoteDataSource:
+                context.read<
+                    SessionSource>(),
+          ),
+        ),
+
+        // ===================================================
+        // SLEEP SESSION BLOC
+        // ===================================================
+
         BlocProvider<SleepSessionBloc>(
-          create: (context) => SleepSessionBloc(
-            repository: context.read<SleepSessionRepository>(),
-            audioPlayerService: context.read<AudioPlayerService>(),
+          create: (context) =>
+              SleepSessionBloc(
+            repository:
+                context.read<
+                    SleepSessionRepository>(),
+
+            audioPlayerService:
+                context.read<
+                    AudioPlayerService>(),
           ),
         ),
       ],
-      child: const MyApp(),
+
+      child:
+          const MyApp(),
     ),
   );
 }
 
-final supabaseClient = Supabase.instance.client;
+// ===========================================================
+// SUPABASE CLIENT
+// ===========================================================
+
+final supabaseClient =
+    Supabase.instance.client;
+
+// ===========================================================
+// APP
+// ===========================================================
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final localeProvider = context.watch<LocaleProvider>();
+  Widget build(
+    BuildContext context,
+  ) {
+    final localeProvider =
+        context.watch<
+            LocaleProvider>();
 
     return ScreenUtilInit(
-      designSize: const Size(360, 690),
+      designSize:
+          const Size(
+        360,
+        690,
+      ),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (context, child) {
+      builder:
+          (context, child) {
         return MaterialApp(
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner:
+              false,
 
-          title: 'SleepCare',
+          title:
+              'SleepCare',
 
-          theme: AppTheme.darkTheme,
+          theme:
+              AppTheme.darkTheme,
 
-          locale: localeProvider.locale,
+          locale:
+              localeProvider.locale,
 
-          localizationsDelegates: const [
+          localizationsDelegates:
+              const [
             AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
+            GlobalMaterialLocalizations
+                .delegate,
+            GlobalWidgetsLocalizations
+                .delegate,
+            GlobalCupertinoLocalizations
+                .delegate,
           ],
 
-          supportedLocales: const [Locale('en'), Locale('vi')],
+          supportedLocales:
+              const [
+            Locale('en'),
+            Locale('vi'),
+          ],
 
-          // ==========================================
+          // ===============================================
           // AUTH ROOT
-          // ==========================================
-          home: const _AuthRoot(),
+          // ===============================================
+
+          home:
+              const _AuthRoot(),
         );
       },
     );
   }
 }
 
-// =============================================================
+// ===========================================================
 // AUTH ROOT
-// =============================================================
+// ===========================================================
 
-class _AuthRoot extends StatefulWidget {
+class _AuthRoot
+    extends StatefulWidget {
   const _AuthRoot();
 
   @override
-  State<_AuthRoot> createState() => _AuthRootState();
+  State<_AuthRoot>
+      createState() =>
+          _AuthRootState();
 }
 
-class _AuthRootState extends State<_AuthRoot> {
-  late final SupabaseClient _supabase;
+class _AuthRootState
+    extends State<_AuthRoot> {
+  late final SupabaseClient
+      _supabase;
 
-  AuthChangeEvent? _lastEvent;
+  AuthChangeEvent?
+      _lastEvent;
 
   @override
   void initState() {
     super.initState();
 
-    _supabase = Supabase.instance.client;
+    _supabase =
+        Supabase.instance.client;
   }
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<AuthState>(
-      stream: _supabase.auth.onAuthStateChange,
+  Widget build(
+    BuildContext context,
+  ) {
+    return StreamBuilder<
+        AuthState>(
+      stream:
+          _supabase
+              .auth
+              .onAuthStateChange,
 
-      builder: (context, snapshot) {
+      builder:
+          (context, snapshot) {
         if (snapshot.hasData) {
-          final authState = snapshot.data!;
+          final authState =
+              snapshot.data!;
 
-          _lastEvent = authState.event;
+          _lastEvent =
+              authState.event;
 
           debugPrint(
             'AUTH ROOT EVENT: '
@@ -299,9 +539,15 @@ class _AuthRootState extends State<_AuthRoot> {
           );
         }
 
-        final session = _supabase.auth.currentSession;
+        final session =
+            _supabase
+                .auth
+                .currentSession;
 
-        final user = _supabase.auth.currentUser;
+        final user =
+            _supabase
+                .auth
+                .currentUser;
 
         debugPrint(
           'AUTH ROOT CURRENT SESSION: '
@@ -313,30 +559,33 @@ class _AuthRootState extends State<_AuthRoot> {
           '${user?.id}',
         );
 
-        // ==========================================
+        // ===================================================
         // PASSWORD RECOVERY
-        // ==========================================
+        // ===================================================
         //
         // Recovery tạo session tạm.
-        // Không được coi session recovery như login
-        // bình thường để nhảy vào Home.
-        // ==========================================
+        // Không được coi session recovery như login bình thường
+        // để nhảy vào Home.
+        // ===================================================
 
-        if (_lastEvent == AuthChangeEvent.passwordRecovery) {
+        if (_lastEvent ==
+            AuthChangeEvent
+                .passwordRecovery) {
           return const LoginScreen();
         }
 
-        // ==========================================
+        // ===================================================
         // NOT LOGGED IN
-        // ==========================================
+        // ===================================================
 
-        if (session == null || user == null) {
+        if (session == null ||
+            user == null) {
           return const LoginScreen();
         }
 
-        // ==========================================
+        // ===================================================
         // LOGGED IN
-        // ==========================================
+        // ===================================================
 
         return const AuthWrapper();
       },

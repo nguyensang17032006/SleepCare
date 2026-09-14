@@ -179,7 +179,7 @@ export function MusicForm({ editingTrack, artists, genres, onSubmit, onCancel, i
         <div className="space-y-5">
           <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Tags & Visibility</h3>
 
-          <div className="flex gap-4">
+          <div className="responsive-tag-grid flex gap-4">
             <div className="flex-1 space-y-2">
               <label className="text-sm font-medium text-gray-300">Artists</label>
               <input type="text" placeholder="Search artists..." className="w-full bg-[#131720] border border-white/10 rounded-lg px-3 py-3 text-xs text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" value={artistSearch} onChange={(e) => setArtistSearch(e.target.value)} />

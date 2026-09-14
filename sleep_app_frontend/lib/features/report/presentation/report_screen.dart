@@ -150,22 +150,19 @@ class _ReportScreenState extends State<ReportScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Column(
+              Expanded(
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        "${hours}h ${minutes}m",
-                        style: const TextStyle(
-                          color: AppTheme.textLight,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  Text(
+                    "${hours}h ${minutes}m",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppTheme.textLight,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
                       ),
-                    ],
                   ),
                   const Text(
                     "Thời gian ngủ",
@@ -173,7 +170,10 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ],
               ),
-              Container(
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
@@ -184,12 +184,15 @@ class _ReportScreenState extends State<ReportScreen> {
                 ),
                 child: Text(
                   "${report.sleepQuality}    ${report.sleepScore}/100",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
                 ),
+              ),
               ),
             ],
           ),
@@ -269,21 +272,25 @@ class _ReportScreenState extends State<ReportScreen> {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Text(
+              const Flexible(
+                child: Text(
                 "So với tuần trước: ",
                 style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+              ),
               ),
               Icon(
                 isUp ? Icons.arrow_upward : Icons.arrow_downward,
                 color: isUp ? Colors.greenAccent : Colors.redAccent,
                 size: 14,
               ),
-              Text(
+              Flexible(
+                child: Text(
                 " ${report.deltaMinutes.abs()} phút",
                 style: TextStyle(
                   color: isUp ? Colors.greenAccent : Colors.redAccent,
                   fontSize: 14,
                 ),
+              ),
               ),
             ],
           ),
@@ -391,13 +398,17 @@ class _ReportScreenState extends State<ReportScreen> {
                 size: 28,
               ),
               const SizedBox(width: 8),
-              Text(
+              Flexible(
+                child: Text(
                 "${report.consecutiveDays} ngày liên tiếp",
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: AppTheme.textLight,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
               ),
             ],
           ),

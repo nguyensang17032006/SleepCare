@@ -112,6 +112,49 @@ a:hover {
   @apply p-6 md:p-8 w-full max-w-7xl mx-auto;
 }
 
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-header > :last-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.responsive-tag-grid {
+  min-width: 0;
+}
+
+@media (max-width: 639px) {
+  .page-container {
+    padding: 20px 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 18px;
+  }
+
+  .page-header > :last-child {
+    align-items: stretch;
+  }
+
+  .page-header > :last-child > * {
+    flex: 1 1 100%;
+  }
+
+  .responsive-tag-grid {
+    flex-direction: column;
+  }
+}
+
 /* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;

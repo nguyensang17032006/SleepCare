@@ -1,22 +1,15 @@
-class MusicModel {
-  final String id;
-  final String description;
-  final String title;
-  final String audioUrl;
-  final String? coverUrl;
-  final List<String> genre;
-  final List<String>? artist;
-  final String? sleepStage;
+import '../../domain/entities/music.dart';
 
-  MusicModel({
-    required this.id,
-    required this.description,
-    required this.title,
-    required this.audioUrl,
-    required this.coverUrl,
-    required this.genre,
-    required this.artist,
-    required this.sleepStage,
+class MusicModel extends Music {
+  const MusicModel({
+    required super.id,
+    required super.description,
+    required super.title,
+    required super.audioUrl,
+    required super.coverUrl,
+    required super.genre,
+    required super.artist,
+    required super.sleepStage,
   });
 
   factory MusicModel.fromJson(Map<String, dynamic> json) {

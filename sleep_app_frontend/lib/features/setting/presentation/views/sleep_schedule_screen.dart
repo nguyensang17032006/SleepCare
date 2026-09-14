@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:sleep_app_frontend/core/services/notification_service.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/app/widget/primary_button.dart';
 import '../viewmodels/schedule_vm.dart';
@@ -60,42 +60,148 @@ class _SleepScheduleViewState
     }
   }
 
-  Future<void> _saveSchedule(
-    BuildContext context,
-    ScheduleViewModel vm,
-  ) async {
-    final success =
-        await vm.saveSchedule();
+ Future<void> _saveSchedule(
+  BuildContext context,
+  ScheduleViewModel vm,
+) async {
+  final success = await vm.saveSchedule();
+
+  if (!context.mounted) {
+    return;
+  }
+
+  if (!success) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          vm.errorMessage ??
+              'Không thể lưu lịch hẹn ngủ.',
+        ),
+      ),
+    );
+
+    return;
+  }
+
+  try {
+    if (vm.notificationsEnabled) {
+      // ==========================================
+      // TÍNH GIỜ NHẮC
+      // bedtime - reminderOffsetMinutes
+      // Ví dụ:
+      // 22:00 - 30 phút = 21:30
+      // ==========================================
+
+      final bedtimeMinutes =
+          vm.bedtime.hour * 60 +
+          vm.bedtime.minute;
+
+      var reminderMinutes =
+          bedtimeMinutes -
+          vm.reminderOffsetMinutes;
+
+      // Nếu bị âm thì lùi sang ngày hôm trước.
+      reminderMinutes =
+          (reminderMinutes + 24 * 60) %
+          (24 * 60);
+
+      final reminderHour =
+          reminderMinutes ~/ 60;
+
+      final reminderMinute =
+          reminderMinutes % 60;
+
+      debugPrint(
+        '==============================',
+      );
+
+      debugPrint(
+        'BEDTIME: '
+        '${vm.bedtime.hour.toString().padLeft(2, '0')}:'
+        '${vm.bedtime.minute.toString().padLeft(2, '0')}',
+      );
+
+      debugPrint(
+        'REMINDER OFFSET: '
+        '${vm.reminderOffsetMinutes} phút',
+      );
+
+      debugPrint(
+        'REMINDER TIME: '
+        '${reminderHour.toString().padLeft(2, '0')}:'
+        '${reminderMinute.toString().padLeft(2, '0')}',
+      );
+
+      debugPrint(
+        'ACTIVE DAYS: ${vm.activeDays}',
+      );
+
+      debugPrint(
+        '==============================',
+      );
+
+      await NotificationService()
+          .scheduleBedtimeReminders(
+        hour: reminderHour,
+        minute: reminderMinute,
+        activeDays:
+            vm.activeDays.toList(),
+        title:
+            '🌙 Đến giờ chuẩn bị đi ngủ',
+        body:
+            'Hãy thư giãn và chuẩn bị cho một giấc ngủ ngon.',
+        snoozeMinutes:
+            vm.snoozeMinutes,
+      );
+    } else {
+      // User tắt thông báo
+      await NotificationService()
+          .cancelAllBedtimeReminders();
+
+      debugPrint(
+        'Bedtime notifications disabled.',
+      );
+    }
+  } catch (e, stackTrace) {
+    debugPrint(
+      'SCHEDULE NOTIFICATION ERROR: $e',
+    );
+
+    debugPrint(
+      '$stackTrace',
+    );
 
     if (!context.mounted) {
       return;
     }
 
-    if (success) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Đã lưu lịch hẹn ngủ thành công!',
-          ),
-        ),
-      );
-
-      Navigator.pop(context);
-
-      return;
-    }
-
     ScaffoldMessenger.of(context)
         .showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text(
-          vm.errorMessage ??
-              'Có lỗi xảy ra khi lưu!',
+          'Đã lưu lịch nhưng không thể tạo thông báo.',
         ),
       ),
     );
+
+    return;
   }
+
+  if (!context.mounted) {
+    return;
+  }
+
+  ScaffoldMessenger.of(context)
+      .showSnackBar(
+    const SnackBar(
+      content: Text(
+        'Đã lưu lịch hẹn ngủ thành công!',
+      ),
+    ),
+  );
+
+  Navigator.pop(context);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -275,59 +381,36 @@ class _SleepScheduleViewState
                 ),
 
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment
-                          .spaceBetween,
-                  children:
-                      List.generate(
+                  children: List.generate(
                     7,
                     (index) {
-                      final day =
-                          index + 1;
+                      final day = index + 1;
+                      final isSelected = vm.activeDays.contains(day);
 
-                      final isSelected =
-                          vm.activeDays
-                              .contains(
-                        day,
-                      );
-
-                      return GestureDetector(
-                        onTap: () {
-                          vm.toggleDay(
-                            day,
-                          );
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          alignment:
-                              Alignment
-                                  .center,
-                          decoration:
-                              BoxDecoration(
-                            color: isSelected
-                                ? AppTheme
-                                    .primaryColor
-                                : AppTheme
-                                    .cardLightColor,
-                            shape:
-                                BoxShape
-                                    .circle,
-                          ),
-                          child: Text(
-                            days[index],
-                            style:
-                                TextStyle(
-                              color: isSelected
-                                  ? Colors
-                                      .white
-                                  : AppTheme
-                                      .textMuted,
-                              fontSize:
-                                  12,
-                              fontWeight:
-                                  FontWeight
-                                      .bold,
+                      return Expanded(
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () => vm.toggleDay(day),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppTheme.primaryColor
+                                    : AppTheme.cardLightColor,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                days[index],
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppTheme.textMuted,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
