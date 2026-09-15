@@ -16,71 +16,75 @@ class LocationCoordinates {
 class LocationService {
   const LocationService();
 
-  static const LocationCoordinates defaultCoordinates = LocationCoordinates(
-    latitude: 21.0278,
-    longitude: 105.8342,
-    label: 'Hanoi',
-  );
-
   static String _resolveLocationLabel(Placemark placemark) {
     final candidates = [
       placemark.locality,
       placemark.subAdministrativeArea,
       placemark.administrativeArea,
-      placemark.country,
     ];
 
     for (final candidate in candidates) {
       if (candidate != null && candidate.trim().isNotEmpty) {
-        return candidate;
+        return candidate.trim();
       }
     }
 
-    return 'Current Location';
+    return 'Vị trí hiện tại';
   }
 
   Future<LocationCoordinates> getCurrentLocation() async {
-    try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled =
+        await Geolocator.isLocationServiceEnabled();
 
-      if (!serviceEnabled) {
-        return defaultCoordinates;
-      }
+    if (!serviceEnabled) {
+      throw Exception('Dịch vụ vị trí đang bị tắt.');
+    }
 
-      var permission = await Geolocator.checkPermission();
+    var permission = await Geolocator.checkPermission();
 
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
 
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        return defaultCoordinates;
-      }
+    if (permission == LocationPermission.denied) {
+      throw Exception('Quyền truy cập vị trí đã bị từ chối.');
+    }
 
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ),
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception(
+        'Quyền truy cập vị trí đã bị từ chối vĩnh viễn.',
       );
+    }
 
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.medium,
+      ),
+    );
+
+    String label = 'Vị trí hiện tại';
+
+    try {
       final geocoding = Geocoding();
-      final placemarks = await geocoding.placemarkFromCoordinates(
+
+      final placemarks =
+          await geocoding.placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
 
-      final label = placemarks.isNotEmpty
-          ? _resolveLocationLabel(placemarks.first)
-          : defaultCoordinates.label;
-
-      return LocationCoordinates(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        label: label,
-      );
+      if (placemarks.isNotEmpty) {
+        label = _resolveLocationLabel(placemarks.first);
+      }
     } catch (_) {
-      return defaultCoordinates;
+      // Lấy được GPS nhưng reverse geocoding lỗi
+      // thì vẫn dùng dữ liệu thời tiết bình thường.
     }
+
+    return LocationCoordinates(
+      latitude: position.latitude,
+      longitude: position.longitude,
+      label: label,
+    );
   }
 }

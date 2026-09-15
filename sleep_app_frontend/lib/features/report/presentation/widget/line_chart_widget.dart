@@ -41,14 +41,19 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n.reportSleepQualityIndex,
-              style: TextStyle(
-                color: AppTheme.textLight,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+            Expanded(
+              child: Text(
+                l10n.reportSleepQualityIndex,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppTheme.textLight,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
+            const SizedBox(width: 12),
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(

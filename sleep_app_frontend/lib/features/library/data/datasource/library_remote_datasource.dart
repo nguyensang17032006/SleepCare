@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/music_model.dart';
@@ -315,4 +316,85 @@ class LibraryRemoteDatasource {
 
     return trackIds.map((id) => map[id]).whereType<MusicModel>().toList();
   }
+  Future<MusicModel?> getMostListenedMusic() async {
+  try {
+    // Lấy các lượt nghe.
+    final sessions = await supabase
+        .from('listening_sessions')
+        .select('track_id');
+
+    if ((sessions as List).isEmpty) {
+      return _getFallbackMusic();
+    }
+
+    final Map<String, int> playCounts = {};
+
+    for (final item in sessions) {
+      final trackId = item['track_id']?.toString();
+
+      if (trackId == null || trackId.isEmpty) {
+        continue;
+      }
+
+      playCounts[trackId] =
+          (playCounts[trackId] ?? 0) + 1;
+    }
+
+    if (playCounts.isEmpty) {
+      return _getFallbackMusic();
+    }
+
+    final entries = playCounts.entries.toList()
+      ..sort(
+        (a, b) => b.value.compareTo(a.value),
+      );
+
+    final mostPlayedTrackId = entries.first.key;
+
+    debugPrint(
+      'MOST PLAYED TRACK: '
+      '$mostPlayedTrackId - '
+      '${entries.first.value} lượt nghe',
+    );
+
+    final response = await supabase
+        .from('tracks')
+        .select(_trackSelect)
+        .eq('id', mostPlayedTrackId)
+        .eq('is_published', true)
+        .maybeSingle();
+
+    if (response == null) {
+      return _getFallbackMusic();
+    }
+
+    return MusicModel.fromJson(
+      Map<String, dynamic>.from(response),
+    );
+  } catch (e) {
+    debugPrint(
+      'GET MOST LISTENED MUSIC ERROR: $e',
+    );
+
+    return _getFallbackMusic();
+  }
+}
+
+Future<MusicModel?> _getFallbackMusic() async {
+  final response = await supabase
+      .from('tracks')
+      .select(_trackSelect)
+      .eq('is_published', true)
+      .order('published_at', ascending: false)
+      .limit(1)
+      .maybeSingle();
+
+  if (response == null) {
+    return null;
+  }
+
+  return MusicModel.fromJson(
+    Map<String, dynamic>.from(response),
+  );
+}
 }

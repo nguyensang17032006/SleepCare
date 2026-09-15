@@ -40,7 +40,7 @@ class PrimaryButton extends StatelessWidget {
         ),
         onPressed: isLoading ? null : onPressed,
         child: isLoading
-            ?  SizedBox(
+            ? SizedBox(
                 width: AppSizes.vGap12,
                 height: AppSizes.vGap12,
                 child: CircularProgressIndicator(
@@ -50,9 +50,10 @@ class PrimaryButton extends StatelessWidget {
               )
             : Text(
                 text,
-                style:  TextStyle(
+                style: TextStyle(
                   fontSize: AppSizes.f16,
                   fontWeight: FontWeight.w600,
+                  fontFamily: 'Tahoma',
                   color: Colors.white,
                 ),
               ),

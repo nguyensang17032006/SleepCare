@@ -57,7 +57,7 @@ function App() {
         path="/"
         element={
           session ? (
-            <div className="flex h-screen w-full bg-[#0B0E14] overflow-hidden">
+            <div className="admin-shell flex h-screen w-full bg-[#0B0E14] overflow-hidden">
               <Sidebar onLogout={handleLogout} />
               <div className="flex-1 flex flex-col h-full overflow-y-auto relative">
                 <Topbar user={session.user} />
@@ -74,7 +74,7 @@ function App() {
         path="/users"
         element={
           session ? (
-            <div className="flex h-screen w-full bg-[#0B0E14] overflow-hidden">
+            <div className="admin-shell flex h-screen w-full bg-[#0B0E14] overflow-hidden">
               <Sidebar onLogout={handleLogout} />
               <div className="flex-1 flex flex-col h-full overflow-y-auto relative">
                 <Topbar user={session.user} />
@@ -91,7 +91,7 @@ function App() {
         path="/music"
         element={
           session ? (
-            <div className="flex h-screen w-full bg-[#0B0E14] overflow-hidden">
+            <div className="admin-shell flex h-screen w-full bg-[#0B0E14] overflow-hidden">
               <Sidebar onLogout={handleLogout} />
               <div className="flex-1 flex flex-col h-full overflow-y-auto relative">
                 <Topbar user={session.user} />
@@ -108,7 +108,7 @@ function App() {
         path="/artists"
         element={
           session ? (
-            <div className="flex h-screen w-full bg-[#0B0E14] overflow-hidden">
+            <div className="admin-shell flex h-screen w-full bg-[#0B0E14] overflow-hidden">
               <Sidebar onLogout={handleLogout} />
               <div className="flex-1 flex flex-col h-full overflow-y-auto relative">
                 <Topbar user={session.user} />
@@ -125,7 +125,7 @@ function App() {
         path="/genres"
         element={
           session ? (
-            <div className="flex h-screen w-full bg-[#0B0E14] overflow-hidden">
+            <div className="admin-shell flex h-screen w-full bg-[#0B0E14] overflow-hidden">
               <Sidebar onLogout={handleLogout} />
               <div className="flex-1 flex flex-col h-full overflow-y-auto relative">
                 <Topbar user={session.user} />
