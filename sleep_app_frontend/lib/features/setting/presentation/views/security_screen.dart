@@ -17,7 +17,7 @@ class SecurityScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Security & Privacy',
+          'Bảo mật và quyền riêng tư',
           style: TextStyle(color: AppTheme.textLight, fontSize: 16),
         ),
       ),
