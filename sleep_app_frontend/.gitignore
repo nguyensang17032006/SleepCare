@@ -48,3 +48,10 @@ app.*.map.json
 # Ignored Files
 Docs/
 
+
+# Android release signing
+android/key.properties
+*.jks
+*.keystore
+
+.env

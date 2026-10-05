@@ -12,7 +12,11 @@ import 'package:sleep_app_frontend/features/onboarding/presentation/questionnair
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;
-  const VerifyEmailScreen({super.key, required this.email});
+
+  const VerifyEmailScreen({
+    super.key,
+    required this.email,
+  });
 
   @override
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
@@ -21,7 +25,9 @@ class VerifyEmailScreen extends StatefulWidget {
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   final pinController = TextEditingController();
   final focusNode = FocusNode();
-  final TimeRemainingViewModel _timeRemainingVM = TimeRemainingViewModel();
+
+  final TimeRemainingViewModel _timeRemainingVM =
+      TimeRemainingViewModel();
 
   @override
   void initState() {
@@ -45,13 +51,18 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Verify Email',
-          style: TextStyle(color: AppTheme.textMuted, fontSize: AppSizes.f16),
+          'Xác minh email',
+          style: TextStyle(
+            color: AppTheme.textMuted,
+            fontSize: AppSizes.f16,
+          ),
         ),
       ),
       body: Container(
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+        decoration: const BoxDecoration(
+          gradient: AppTheme.bgGradient,
+        ),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
@@ -60,15 +71,23 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             ),
             child: Column(
               children: [
-                SizedBox(height: AppSizes.vGap32),
+                SizedBox(
+                  height: AppSizes.vGap32,
+                ),
+
+                // Icon Email
                 Container(
-                  padding: EdgeInsets.all(AppSizes.p24),
+                  padding: EdgeInsets.all(
+                    AppSizes.p24,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.cardLightColor,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                        color: AppTheme.primaryColor.withValues(
+                          alpha: 0.2,
+                        ),
                         blurRadius: 40,
                         spreadRadius: 10,
                       ),
@@ -80,9 +99,14 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     size: AppSizes.p32,
                   ),
                 ),
-                SizedBox(height: AppSizes.p32),
+
+                SizedBox(
+                  height: AppSizes.p32,
+                ),
+
+                // Security Check
                 Text(
-                  'SECURITY CHECK',
+                  'XÁC MINH BẢO MẬT',
                   style: TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: AppSizes.f12,
@@ -90,22 +114,44 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     letterSpacing: 1.5,
                   ),
                 ),
-                SizedBox(height: AppSizes.vGap12),
-                Text(
-                  'Verify your email',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.displayMedium?.copyWith(fontSize: AppSizes.f24),
+
+                SizedBox(
+                  height: AppSizes.vGap12,
                 ),
-                SizedBox(height: AppSizes.vGap16),
+
+                // Title
                 Text(
-                  "We've sent a 6-digit verification code to your email address. Please enter it below to continue.",
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(height: 1.5),
+                  'Xác minh email của bạn',
+                  style: Theme.of(context)
+                      .textTheme
+                      .displayMedium
+                      ?.copyWith(
+                        fontSize: AppSizes.f24,
+                      ),
+                ),
+
+                SizedBox(
+                  height: AppSizes.vGap16,
+                ),
+
+                // Description
+                Text(
+                  'Chúng tôi đã gửi mã xác minh gồm 6 chữ số đến địa chỉ email của bạn. '
+                  'Vui lòng nhập mã bên dưới để tiếp tục.',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(
+                        height: 1.5,
+                      ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 40),
+
+                const SizedBox(
+                  height: 40,
+                ),
+
+                // OTP Input
                 Center(
                   child: Pinput(
                     length: 6,
@@ -117,7 +163,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     keyboardType: TextInputType.number,
 
                     errorText: authVM.errorMessage,
-                    forceErrorState: authVM.errorMessage != null,
+                    forceErrorState:
+                        authVM.errorMessage != null,
 
                     errorTextStyle: TextStyle(
                       color: Colors.redAccent,
@@ -125,59 +172,84 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: AppSizes.p32),
 
+                SizedBox(
+                  height: AppSizes.p32,
+                ),
+
+                // Verify Button
                 authVM.isLoading
                     ? const CircularProgressIndicator()
                     : PrimaryButton(
-                        text: 'Verify and Continue',
+                        text: 'Xác minh và tiếp tục',
                         onPressed: () async {
-                          final isSuccess = await authVM.verifyEmail(
+                          final isSuccess =
+                              await authVM.verifyEmail(
                             email: widget.email,
-                            token: pinController.text.trim(),
+                            token:
+                                pinController.text.trim(),
                           );
+
                           if (!context.mounted) {
                             return;
                           }
+
                           if (isSuccess) {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const QuestionnaireScreen(),
+                                builder: (_) =>
+                                    const QuestionnaireScreen(),
                               ),
                             );
                           }
                         },
                       ),
-                SizedBox(height: AppSizes.p16),
+
+                SizedBox(
+                  height: AppSizes.p16,
+                ),
+
+                // Resend OTP
                 Center(
                   child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
+                    crossAxisAlignment:
+                        WrapCrossAlignment.center,
                     children: [
                       Text(
-                        "Didn't receive a code? ",
-                        style: TextStyle(color: AppTheme.textMuted),
+                        'Chưa nhận được mã? ',
+                        style: TextStyle(
+                          color: AppTheme.textMuted,
+                        ),
                       ),
+
                       ListenableBuilder(
                         listenable: _timeRemainingVM,
                         builder: (context, child) {
                           return TextButton(
-                            onPressed: _timeRemainingVM.canResend
-                                ? () {
-                                    authVM.resendOTP(email: widget.email);
-                                    _timeRemainingVM.startCountdown();
-                                  }
-                                : null,
+                            onPressed:
+                                _timeRemainingVM.canResend
+                                    ? () {
+                                        authVM.resendOTP(
+                                          email:
+                                              widget.email,
+                                        );
 
+                                        _timeRemainingVM
+                                            .startCountdown();
+                                      }
+                                    : null,
                             child: Text(
                               _timeRemainingVM.canResend
-                                  ? 'Resend'
-                                  : 'Resend in ${_timeRemainingVM.secondsRemaining} s',
+                                  ? 'Gửi lại'
+                                  : 'Gửi lại sau ${_timeRemainingVM.secondsRemaining} giây',
                               style: TextStyle(
-                                color: _timeRemainingVM.canResend
+                                color: _timeRemainingVM
+                                        .canResend
                                     ? AppTheme.textLight
                                     : AppTheme.textMuted,
-                                fontWeight: FontWeight.bold,
+                                fontWeight:
+                                    FontWeight.bold,
                               ),
                             ),
                           );
@@ -186,9 +258,16 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: AppSizes.vGap32),
+
+                SizedBox(
+                  height: AppSizes.vGap32,
+                ),
+
+                // Spam Folder Info
                 GlassCard(
-                  padding: EdgeInsets.all(AppSizes.p16),
+                  padding: EdgeInsets.all(
+                    AppSizes.p16,
+                  ),
                   child: Row(
                     children: [
                       Icon(
@@ -196,27 +275,43 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         color: AppTheme.textMuted,
                         size: AppSizes.p24,
                       ),
-                      SizedBox(width: AppSizes.hGap16),
+
+                      SizedBox(
+                        width: AppSizes.hGap16,
+                      ),
+
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Check your spam folder',
+                              'Kiểm tra thư mục spam',
                               style: TextStyle(
-                                color: AppTheme.textLight,
-                                fontWeight: FontWeight.bold,
-                                fontSize: AppSizes.f14,
+                                color:
+                                    AppTheme.textLight,
+                                fontWeight:
+                                    FontWeight.bold,
+                                fontSize:
+                                    AppSizes.f14,
                               ),
                             ),
-                            SizedBox(height: AppSizes.vGap4),
+
+                            SizedBox(
+                              height:
+                                  AppSizes.vGap4,
+                            ),
+
                             Text(
-                              'Sometimes the verification email might end up in your spam or junk folder.',
+                              'Đôi khi email xác minh có thể được chuyển vào thư mục spam hoặc thư rác.',
                               style: TextStyle(
-                                color: AppTheme.textMuted.withValues(
-                                  alpha: 0.8,
-                                ),
-                                fontSize: AppSizes.f12,
+                                color: AppTheme
+                                    .textMuted
+                                    .withValues(
+                                      alpha: 0.8,
+                                    ),
+                                fontSize:
+                                    AppSizes.f12,
                               ),
                             ),
                           ],
